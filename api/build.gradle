@@ -1,0 +1,54 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+def majorVersion = 0
+def minorVersion = 0
+def patchVersion
+
+sourceSets {
+    test {
+        java {
+            // srcDir 'src/test/integration/java' // Removed until all tests are fixed
+            srcDir 'src/test/unit/java'
+        }
+    }
+}
+
+repositories 
+{
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.inject:guice:4.1.0'
+    compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+    compile 'com.amazonaws:aws-lambda-java-events:1.1.0'
+    compile 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
+    compile 'com.amazonaws:aws-java-sdk:1.11.77'
+    compile 'log4j:log4j:1.2.17'
+    compile 'mysql:mysql-connector-java:5.1.40'
+    testCompile 'junit:junit:4.+'
+    testCompile 'org.mockito:mockito-core:2.+'
+}
+
+task wrapper (type: Wrapper)
+
+task setVersion() {
+	doFirst {
+		// Get the patch version (if not on build server defaults to 0)
+		patchVersion = Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
+		project.version = "${majorVersion}.${minorVersion}.${patchVersion}"
+		println "Version set to: ${project.version}"
+	}
+}
+
+task buildZip(type: Zip) {
+	from compileJava
+	from processResources
+	into('lib') {
+		from configurations.runtime
+	}	
+}
+
+buildZip.dependsOn setVersion
+build.dependsOn buildZip

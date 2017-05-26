@@ -1,0 +1,56 @@
+package uk.gov.dvsa.mot.persist ;
+
+import java.util.List ;
+
+import uk.gov.dvsa.mot.persist.model.BodyType ;
+import uk.gov.dvsa.mot.persist.model.ColourLookup ;
+import uk.gov.dvsa.mot.persist.model.CountryLookup ;
+import uk.gov.dvsa.mot.persist.model.CountryOfRegistrationLookup ;
+import uk.gov.dvsa.mot.persist.model.DvlaVehicle ;
+import uk.gov.dvsa.mot.persist.model.EmptyReasonMap ;
+import uk.gov.dvsa.mot.persist.model.EmptyVinReasonLookup ;
+import uk.gov.dvsa.mot.persist.model.EmptyVrmReasonLookup ;
+import uk.gov.dvsa.mot.persist.model.FuelType ;
+import uk.gov.dvsa.mot.persist.model.Make ;
+import uk.gov.dvsa.mot.persist.model.Model ;
+import uk.gov.dvsa.mot.persist.model.ModelDetail ;
+import uk.gov.dvsa.mot.persist.model.TransmissionType ;
+import uk.gov.dvsa.mot.persist.model.Vehicle ;
+import uk.gov.dvsa.mot.persist.model.VehicleClass ;
+import uk.gov.dvsa.mot.persist.model.VehicleClassGroup ;
+import uk.gov.dvsa.mot.persist.model.WeightSourceLookup ;
+import uk.gov.dvsa.mot.persist.model.WheelplanType ;
+
+public interface VehicleReadDao
+{
+  Vehicle getVehicleById( int id ) ;
+  Vehicle getVehicleByIdAndVersion( int id, int version ) ;
+  DvlaVehicle getDvlaVehicleById( int id ) ;
+  List<Vehicle> getVehiclesById( int startid, int endid ) ;
+  List<Vehicle> getVehiclesByPage( int offset, int limit ) ;
+  Vehicle getVehicleByFullRegAndMake( String registration, String make ) ;
+  List<Vehicle> getVehicleByFullRegistration( String registration ) ;
+  List<Vehicle> getVehiclesByRegistrationOrVin( String registration, String vin ) ;
+  List<Vehicle> getVehiclesByFullRegAndFullVin( String registration, String vin, boolean includeDVLA ) ;
+  List<Vehicle> getVehiclesByFullRegAndPartialVin( String registration, String vin, boolean includeDVLA ) ;
+  List<Vehicle> getVehiclesByFullRegAndNullVin( String registration, boolean includeDVLA ) ;
+  List<Vehicle> getVehiclesByNullRegAndFullVin( String vin, boolean includeDVLA ) ;
+  Model getModelFromDvlaVehicle( DvlaVehicle vehicle ) ;
+  List<Make> getMakes() ;
+  ModelDetail getModelDetailById( int id ) ;
+  EmptyReasonMap getEmptyReasonMapByVehicle( Vehicle parent ) ;
+  EmptyVinReasonLookup getEmptyVinReasonLookupById( int id ) ;
+  EmptyVrmReasonLookup getEmptyVrmReasonLookupById( int id ) ;
+  Make getMakeById( int id ) ;
+  Model getModelById( int id ) ;
+  VehicleClass getVehicleClassById( int id ) ;
+  VehicleClassGroup getVehicleClassGroupById( int id ) ;
+  BodyType getBodyTypeById( int id ) ;
+  FuelType getFuelTypeById( int id ) ;
+  TransmissionType getTransmissionTypeById( int id ) ;
+  WheelplanType getWheelplanTypeById( int id ) ;
+  ColourLookup getColourLookupById( int id ) ;
+  WeightSourceLookup getWeightSourceLookupById( int id ) ;
+  CountryOfRegistrationLookup getCountryOfRegistrationLookupById( int id ) ;
+  CountryLookup getCountryLookupById( int id ) ;
+}
