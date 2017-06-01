@@ -1,21 +1,20 @@
-package uk.gov.dvsa.mot.vehicle.api ;
+package uk.gov.dvsa.mot.vehicle.api;
 
-import java.util.List ;
+import java.util.List;
 
-public class ValidationException extends RuntimeException
-{
+public class ValidationException extends RuntimeException {
 
-  private static final long serialVersionUID = 1L ;
+    private static final long serialVersionUID = 1L;
 
-  private final List<ValidationError> validationErrors ;
+    private final List<ValidationError> validationErrors;
 
-  public ValidationException( List<ValidationError> validationErrors )
-  {
-    this.validationErrors = validationErrors ;
-  }
+    public ValidationException(List<ValidationError> validationErrors) {
 
-  public List<ValidationError> getValidationErrors()
-  {
-    return validationErrors ;
-  }
+        this.validationErrors = validationErrors;
+    }
+
+    public List<ValidationError> getValidationErrors() {
+
+        return validationErrors;
+    }
 }

@@ -1,217 +1,215 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.math.BigDecimal ;
-import java.util.Date ;
-import java.util.List ;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The persistent class for the enforcement_site_assessment database table.
- * 
  */
-public class EnforcementSiteAssessment implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class EnforcementSiteAssessment implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private int aeOrganisationId ;
-  private String aeRepresentativeName ;
-  private String aeRepresentativePosition ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private BigDecimal siteAssessmentScore ;
-  private int version ;
-  private Date visitDate ;
-  // @JoinColumn(name="ae_representative_person_id")
-  private Person person1 ;
-  // @JoinColumn(name="examiner_person_id", nullable=false)
-  private Person person2 ;
-  private Site site ;
-  // @JoinColumn(name="tester_person_id")
-  private Person person3 ;
-  // @OneToMany(mappedBy="enforcementSiteAssessment")
-  private List<Site> sites ;
+    private int id;
+    private int aeOrganisationId;
+    private String aeRepresentativeName;
+    private String aeRepresentativePosition;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private BigDecimal siteAssessmentScore;
+    private int version;
+    private Date visitDate;
+    // @JoinColumn(name="ae_representative_person_id")
+    private Person person1;
+    // @JoinColumn(name="examiner_person_id", nullable=false)
+    private Person person2;
+    private Site site;
+    // @JoinColumn(name="tester_person_id")
+    private Person person3;
+    // @OneToMany(mappedBy="enforcementSiteAssessment")
+    private List<Site> sites;
 
-  public EnforcementSiteAssessment()
-  {
-  }
+    public EnforcementSiteAssessment() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public int getAeOrganisationId()
-  {
-    return this.aeOrganisationId ;
-  }
+        return this.id;
+    }
 
-  public void setAeOrganisationId( int aeOrganisationId )
-  {
-    this.aeOrganisationId = aeOrganisationId ;
-  }
+    public void setId(int id) {
 
-  public String getAeRepresentativeName()
-  {
-    return this.aeRepresentativeName ;
-  }
+        this.id = id;
+    }
 
-  public void setAeRepresentativeName( String aeRepresentativeName )
-  {
-    this.aeRepresentativeName = aeRepresentativeName ;
-  }
+    public int getAeOrganisationId() {
 
-  public String getAeRepresentativePosition()
-  {
-    return this.aeRepresentativePosition ;
-  }
+        return this.aeOrganisationId;
+    }
 
-  public void setAeRepresentativePosition( String aeRepresentativePosition )
-  {
-    this.aeRepresentativePosition = aeRepresentativePosition ;
-  }
+    public void setAeOrganisationId(int aeOrganisationId) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.aeOrganisationId = aeOrganisationId;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getAeRepresentativeName() {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.aeRepresentativeName;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setAeRepresentativeName(String aeRepresentativeName) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.aeRepresentativeName = aeRepresentativeName;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public String getAeRepresentativePosition() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.aeRepresentativePosition;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setAeRepresentativePosition(String aeRepresentativePosition) {
 
-  public BigDecimal getSiteAssessmentScore()
-  {
-    return this.siteAssessmentScore ;
-  }
+        this.aeRepresentativePosition = aeRepresentativePosition;
+    }
 
-  public void setSiteAssessmentScore( BigDecimal siteAssessmentScore )
-  {
-    this.siteAssessmentScore = siteAssessmentScore ;
-  }
+    public int getCreatedBy() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.createdBy;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Date getVisitDate()
-  {
-    return this.visitDate ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setVisitDate( Date visitDate )
-  {
-    this.visitDate = visitDate ;
-  }
+    public Date getCreatedOn() {
 
-  public Person getPerson1()
-  {
-    return this.person1 ;
-  }
+        return this.createdOn;
+    }
 
-  public void setPerson1( Person person1 )
-  {
-    this.person1 = person1 ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public Person getPerson2()
-  {
-    return this.person2 ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setPerson2( Person person2 )
-  {
-    this.person2 = person2 ;
-  }
+    public int getLastUpdatedBy() {
 
-  public Site getSite()
-  {
-    return this.site ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setSite( Site site )
-  {
-    this.site = site ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public Person getPerson3()
-  {
-    return this.person3 ;
-  }
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-  public void setPerson3( Person person3 )
-  {
-    this.person3 = person3 ;
-  }
+    public Date getLastUpdatedOn() {
 
-  public List<Site> getSites()
-  {
-    return this.sites ;
-  }
+        return this.lastUpdatedOn;
+    }
 
-  public void setSites( List<Site> sites )
-  {
-    this.sites = sites ;
-  }
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
 
-  public Site addSite( Site site )
-  {
-    getSites().add( site ) ;
-    site.setEnforcementSiteAssessment( this ) ;
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
 
-    return site ;
-  }
+    public BigDecimal getSiteAssessmentScore() {
 
-  public Site removeSite( Site site )
-  {
-    getSites().remove( site ) ;
-    site.setEnforcementSiteAssessment( null ) ;
+        return this.siteAssessmentScore;
+    }
 
-    return site ;
-  }
+    public void setSiteAssessmentScore(BigDecimal siteAssessmentScore) {
+
+        this.siteAssessmentScore = siteAssessmentScore;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public Date getVisitDate() {
+
+        return this.visitDate;
+    }
+
+    public void setVisitDate(Date visitDate) {
+
+        this.visitDate = visitDate;
+    }
+
+    public Person getPerson1() {
+
+        return this.person1;
+    }
+
+    public void setPerson1(Person person1) {
+
+        this.person1 = person1;
+    }
+
+    public Person getPerson2() {
+
+        return this.person2;
+    }
+
+    public void setPerson2(Person person2) {
+
+        this.person2 = person2;
+    }
+
+    public Site getSite() {
+
+        return this.site;
+    }
+
+    public void setSite(Site site) {
+
+        this.site = site;
+    }
+
+    public Person getPerson3() {
+
+        return this.person3;
+    }
+
+    public void setPerson3(Person person3) {
+
+        this.person3 = person3;
+    }
+
+    public List<Site> getSites() {
+
+        return this.sites;
+    }
+
+    public void setSites(List<Site> sites) {
+
+        this.sites = sites;
+    }
+
+    public Site addSite(Site site) {
+
+        getSites().add(site);
+        site.setEnforcementSiteAssessment(this);
+
+        return site;
+    }
+
+    public Site removeSite(Site site) {
+
+        getSites().remove(site);
+        site.setEnforcementSiteAssessment(null);
+
+        return site;
+    }
 
 }

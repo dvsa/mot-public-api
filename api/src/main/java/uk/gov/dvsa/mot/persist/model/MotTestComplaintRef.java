@@ -1,118 +1,116 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.sql.Timestamp ;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * The persistent class for the mot_test_complaint_ref database table.
- * 
  */
-public class MotTestComplaintRef implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class MotTestComplaintRef implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private long id ;
-  private String complaintRef ;
-  private int createdBy ;
-  private Timestamp createdOn ;
-  private int lastUpdatedBy ;
-  private Timestamp lastUpdatedOn ;
-  private int version ;
-  private MotTest motTestCurrent ;
-  private MotTestHistory motTestHistory ;
+    private long id;
+    private String complaintRef;
+    private int createdBy;
+    private Timestamp createdOn;
+    private int lastUpdatedBy;
+    private Timestamp lastUpdatedOn;
+    private int version;
+    private MotTest motTestCurrent;
+    private MotTestHistory motTestHistory;
 
-  public MotTestComplaintRef()
-  {
-  }
+    public MotTestComplaintRef() {
 
-  public long getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( long id )
-  {
-    this.id = id ;
-  }
+    public long getId() {
 
-  public String getComplaintRef()
-  {
-    return this.complaintRef ;
-  }
+        return this.id;
+    }
 
-  public void setComplaintRef( String complaintRef )
-  {
-    this.complaintRef = complaintRef ;
-  }
+    public void setId(long id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getComplaintRef() {
 
-  public Timestamp getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.complaintRef;
+    }
 
-  public void setCreatedOn( Timestamp createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setComplaintRef(String complaintRef) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.complaintRef = complaintRef;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public int getCreatedBy() {
 
-  public Timestamp getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedOn( Timestamp lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public Timestamp getCreatedOn() {
 
-  public MotTest getMotTestCurrent()
-  {
-    return this.motTestCurrent ;
-  }
+        return this.createdOn;
+    }
 
-  public void setMotTestCurrent( MotTest motTestCurrent )
-  {
-    this.motTestCurrent = motTestCurrent ;
-  }
+    public void setCreatedOn(Timestamp createdOn) {
 
-  public MotTestHistory getMotTestHistory()
-  {
-    return this.motTestHistory ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setMotTestHistory( MotTestHistory motTestHistory )
-  {
-    this.motTestHistory = motTestHistory ;
-  }
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Timestamp getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Timestamp lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public MotTest getMotTestCurrent() {
+
+        return this.motTestCurrent;
+    }
+
+    public void setMotTestCurrent(MotTest motTestCurrent) {
+
+        this.motTestCurrent = motTestCurrent;
+    }
+
+    public MotTestHistory getMotTestHistory() {
+
+        return this.motTestHistory;
+    }
+
+    public void setMotTestHistory(MotTestHistory motTestHistory) {
+
+        this.motTestHistory = motTestHistory;
+    }
 
 }

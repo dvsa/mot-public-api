@@ -1,128 +1,126 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the country_of_registration_lookup database table.
- * 
  */
-public class CountryOfRegistrationLookup implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class CountryOfRegistrationLookup implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String name ;
-  private String code ;
-  private CountryLookup countryLookup ;
-  private String licensingCopy ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
+    private int id;
+    private String name;
+    private String code;
+    private CountryLookup countryLookup;
+    private String licensingCopy;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
 
-  public CountryOfRegistrationLookup()
-  {
-  }
+    public CountryOfRegistrationLookup() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getCode()
-  {
-    return this.code ;
-  }
+        return this.id;
+    }
 
-  public void setCode( String code )
-  {
-    this.code = code ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getCode() {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.code;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setCode(String code) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.code = code;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public int getCreatedBy() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public String getLicensingCopy()
-  {
-    return this.licensingCopy ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLicensingCopy( String licensingCopy )
-  {
-    this.licensingCopy = licensingCopy ;
-  }
+    public Date getCreatedOn() {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        return this.createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public int getLastUpdatedBy() {
 
-  public CountryLookup getCountryLookup()
-  {
-    return this.countryLookup ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setCountryLookup( CountryLookup countryLookup )
-  {
-    this.countryLookup = countryLookup ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getLicensingCopy() {
+
+        return this.licensingCopy;
+    }
+
+    public void setLicensingCopy(String licensingCopy) {
+
+        this.licensingCopy = licensingCopy;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public CountryLookup getCountryLookup() {
+
+        return this.countryLookup;
+    }
+
+    public void setCountryLookup(CountryLookup countryLookup) {
+
+        this.countryLookup = countryLookup;
+    }
 }

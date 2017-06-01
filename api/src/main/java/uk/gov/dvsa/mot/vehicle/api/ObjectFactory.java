@@ -5,9 +5,9 @@
 // Generated on: 2016.07.09 at 08:46:59 PM BST 
 //
 
-package uk.gov.dvsa.mot.vehicle.api ;
+package uk.gov.dvsa.mot.vehicle.api;
 
-import javax.xml.bind.annotation.XmlRegistry ;
+import javax.xml.bind.annotation.XmlRegistry;
 
 /**
  * This object contains factory methods for each Java content interface and Java
@@ -18,28 +18,24 @@ import javax.xml.bind.annotation.XmlRegistry ;
  * can consist of schema derived interfaces and classes representing the binding
  * of schema type definitions, element declarations and model groups. Factory
  * methods for each of these are provided in this class.
- * 
  */
 @XmlRegistry
-public class ObjectFactory
-{
+public class ObjectFactory {
 
-  /**
-   * Create a new ObjectFactory that can be used to create new instances of
-   * schema derived classes for package: uk.gov.dvsa.mot.vehicle.api
-   * 
-   */
-  public ObjectFactory()
-  {
-  }
+    /**
+     * Create a new ObjectFactory that can be used to create new instances of
+     * schema derived classes for package: uk.gov.dvsa.mot.vehicle.api
+     */
+    public ObjectFactory() {
 
-  /**
-   * Create an instance of {@link Vehicle }
-   * 
-   */
-  public Vehicle createVehicle()
-  {
-    return new Vehicle() ;
-  }
+    }
+
+    /**
+     * Create an instance of {@link Vehicle }
+     */
+    public Vehicle createVehicle() {
+
+        return new Vehicle();
+    }
 
 }

@@ -1,27 +1,26 @@
-package uk.gov.dvsa.mot.trade.api ;
+package uk.gov.dvsa.mot.trade.api;
 
-public class RegMakeParam
-{
-  private String registration ;
-  private String make ;
+public class RegMakeParam {
+    private String registration;
+    private String make;
 
-  public String getRegistration()
-  {
-    return registration ;
-  }
+    public String getRegistration() {
 
-  public void setRegistration( String registration )
-  {
-    this.registration = registration ;
-  }
+        return registration;
+    }
 
-  public String getMake()
-  {
-    return make ;
-  }
+    public void setRegistration(String registration) {
 
-  public void setMake( String make )
-  {
-    this.make = make ;
-  }
+        this.registration = registration;
+    }
+
+    public String getMake() {
+
+        return make;
+    }
+
+    public void setMake(String make) {
+
+        this.make = make;
+    }
 }

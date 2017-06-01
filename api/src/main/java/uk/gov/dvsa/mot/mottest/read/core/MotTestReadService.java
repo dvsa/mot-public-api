@@ -1,29 +1,29 @@
-package uk.gov.dvsa.mot.mottest.read.core ;
+package uk.gov.dvsa.mot.mottest.read.core;
 
-import java.util.Date ;
-import java.util.List ;
+import uk.gov.dvsa.mot.mottest.api.MotTest;
+import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
+import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 
-import uk.gov.dvsa.mot.mottest.api.MotTest ;
-import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem ;
-import uk.gov.dvsa.mot.vehicle.api.Vehicle ;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A service which can read information about MOT tests
  */
-public interface MotTestReadService
-{
-  List<DisplayMotTestItem> getMotHistoryByDateRange( Date startDate, Date endDate ) ;
-  
-  MotTest getMotTestById( long id ) ;
+public interface MotTestReadService {
+    List<DisplayMotTestItem> getMotHistoryByDateRange(Date startDate, Date endDate);
 
-  MotTest getMotTestByNumber( long number ) ;
-  MotTest getLatestMotTestPassByVehicle( Vehicle vehicle ) ;
+    MotTest getMotTestById(long id);
 
-  List<MotTest> getMotTestsByVehicleId( int vehicleId ) ;
+    MotTest getMotTestByNumber(long number);
 
-  List<MotTest> getMotTestsByDateRange( Date startDate, Date endDate ) ;
+    MotTest getLatestMotTestPassByVehicle(Vehicle vehicle);
 
-  List<MotTest> getMotTestsByPage( Long startId, Long endId ) ;
+    List<MotTest> getMotTestsByVehicleId(int vehicleId);
 
-  List<MotTest> getMotTestsByDatePage( Date date, Integer page ) ;
+    List<MotTest> getMotTestsByDateRange(Date startDate, Date endDate);
+
+    List<MotTest> getMotTestsByPage(Long startId, Long endId);
+
+    List<MotTest> getMotTestsByDatePage(Date date, Integer page);
 }

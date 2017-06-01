@@ -1,131 +1,129 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.sql.Timestamp ;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * The persistent class for the model database table.
- * 
  */
-public class Model implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class Model implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private Make make ;
-  private String code ;
-  private String name ;
-  private boolean isVerified ;
-  private int createdBy ;
-  private Timestamp createdOn ;
-  private int lastUpdatedBy ;
-  private Timestamp lastUpdatedOn ;
-  private int version ;
-  // private List<ModelDetail> modelDetails;
+    private int id;
+    private Make make;
+    private String code;
+    private String name;
+    private boolean isVerified;
+    private int createdBy;
+    private Timestamp createdOn;
+    private int lastUpdatedBy;
+    private Timestamp lastUpdatedOn;
+    private int version;
+    // private List<ModelDetail> modelDetails;
 
-  public Model()
-  {
-  }
+    public Model() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getCode()
-  {
-    return this.code ;
-  }
+        return this.id;
+    }
 
-  public void setCode( String code )
-  {
-    this.code = code ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getCode() {
 
-  public Timestamp getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.code;
+    }
 
-  public void setCreatedOn( Timestamp createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setCode(String code) {
 
-  public boolean getIsVerified()
-  {
-    return this.isVerified ;
-  }
+        this.code = code;
+    }
 
-  public void setIsVerified( boolean isVerified )
-  {
-    this.isVerified = isVerified ;
-  }
+    public int getCreatedBy() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Timestamp getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedOn( Timestamp lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public Timestamp getCreatedOn() {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        return this.createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public void setCreatedOn(Timestamp createdOn) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public boolean getIsVerified() {
 
-  public Make getMake()
-  {
-    return this.make ;
-  }
+        return this.isVerified;
+    }
 
-  public void setMake( Make make )
-  {
-    this.make = make ;
-  }
+    public void setIsVerified(boolean isVerified) {
+
+        this.isVerified = isVerified;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Timestamp getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Timestamp lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public Make getMake() {
+
+        return this.make;
+    }
+
+    public void setMake(Make make) {
+
+        this.make = make;
+    }
 
   /*
    * public List<ModelDetail> getModelDetails() { return this.modelDetails; }

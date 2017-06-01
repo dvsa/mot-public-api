@@ -1,128 +1,126 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the fuel_type database table.
- * 
  */
-public class FuelType implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class FuelType implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String code ;
-  private String name ;
-  private String dvlaPropulsionCode ;
-  private int displayOrder ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
+    private int id;
+    private String code;
+    private String name;
+    private String dvlaPropulsionCode;
+    private int displayOrder;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
 
-  public FuelType()
-  {
-  }
+    public FuelType() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getCode()
-  {
-    return this.code ;
-  }
+        return this.id;
+    }
 
-  public void setCode( String code )
-  {
-    this.code = code ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getCode() {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.code;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setCode(String code) {
 
-  public int getDisplayOrder()
-  {
-    return this.displayOrder ;
-  }
+        this.code = code;
+    }
 
-  public void setDisplayOrder( int displayOrder )
-  {
-    this.displayOrder = displayOrder ;
-  }
+    public int getCreatedBy() {
 
-  public String getDvlaPropulsionCode()
-  {
-    return this.dvlaPropulsionCode ;
-  }
+        return this.createdBy;
+    }
 
-  public void setDvlaPropulsionCode( String dvlaPropulsionCode )
-  {
-    this.dvlaPropulsionCode = dvlaPropulsionCode ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public Date getCreatedOn() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public int getDisplayOrder() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.displayOrder;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setDisplayOrder(int displayOrder) {
+
+        this.displayOrder = displayOrder;
+    }
+
+    public String getDvlaPropulsionCode() {
+
+        return this.dvlaPropulsionCode;
+    }
+
+    public void setDvlaPropulsionCode(String dvlaPropulsionCode) {
+
+        this.dvlaPropulsionCode = dvlaPropulsionCode;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
 }

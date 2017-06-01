@@ -1,139 +1,138 @@
-package uk.gov.dvsa.mot.trade.api ;
+package uk.gov.dvsa.mot.trade.api;
 
-import java.util.Date ;
+import java.util.Date;
 
-public class MotTestRequest
-{
-  private Long id ;
-  private Long number ;
-  private Integer vehicleId ;
-  private String registration ;
-  private String make ;
-  private Integer offset ;
-  private Integer limit ;
-  private Date date ;
-  private Integer page ;
-  private Integer pages ;
-  private Integer startVehicleId ;
-  private Integer endVehicleId ;
+public class MotTestRequest {
+    private Long id;
+    private Long number;
+    private Integer vehicleId;
+    private String registration;
+    private String make;
+    private Integer offset;
+    private Integer limit;
+    private Date date;
+    private Integer page;
+    private Integer pages;
+    private Integer startVehicleId;
+    private Integer endVehicleId;
 
-  public Long getId()
-  {
-    return id ;
-  }
+    public Long getId() {
 
-  public void setId( Long id )
-  {
-    this.id = id ;
-  }
+        return id;
+    }
 
-  public String getRegistration()
-  {
-    return registration ;
-  }
+    public void setId(Long id) {
 
-  public void setRegistration( String registration )
-  {
-    this.registration = registration ;
-  }
+        this.id = id;
+    }
 
-  public String getMake()
-  {
-    return make ;
-  }
+    public String getRegistration() {
 
-  public void setMake( String make )
-  {
-    this.make = make ;
-  }
+        return registration;
+    }
 
-  public Integer getVehicleId()
-  {
-    return vehicleId ;
-  }
+    public void setRegistration(String registration) {
 
-  public void setVehicleId( Integer vehicleId )
-  {
-    this.vehicleId = vehicleId ;
-  }
+        this.registration = registration;
+    }
 
-  public Long getNumber()
-  {
-    return number ;
-  }
+    public String getMake() {
 
-  public void setNumber( Long number )
-  {
-    this.number = number ;
-  }
+        return make;
+    }
 
-  public Integer getOffset()
-  {
-    return offset ;
-  }
+    public void setMake(String make) {
 
-  public void setOffset( Integer offset )
-  {
-    this.offset = offset ;
-  }
+        this.make = make;
+    }
 
-  public Integer getLimit()
-  {
-    return limit ;
-  }
+    public Integer getVehicleId() {
 
-  public void setLimit( Integer limit )
-  {
-    this.limit = limit ;
-  }
+        return vehicleId;
+    }
 
-  public Date getDate()
-  {
-    return date ;
-  }
+    public void setVehicleId(Integer vehicleId) {
 
-  public void setDate( Date date )
-  {
-    this.date = date ;
-  }
+        this.vehicleId = vehicleId;
+    }
 
-  public Integer getPages()
-  {
-    return pages ;
-  }
+    public Long getNumber() {
 
-  public void setPages( Integer pages )
-  {
-    this.pages = pages ;
-  }
-  
-  public Integer getPage()
-  {
-    return page ;
-  }
-  
-  public void setPage( Integer page )
-  {
-    this.page = page ;
-  }
+        return number;
+    }
 
-  public Integer getStartVehicleId()
-  {
-    return startVehicleId;
-  }
+    public void setNumber(Long number) {
 
-  public void setStartVehicleId( Integer startVehicleId )
-  {
-    this.startVehicleId = startVehicleId;
-  }
+        this.number = number;
+    }
 
-  public Integer getEndVehicleId()
-  {
-    return endVehicleId;
-  }
+    public Integer getOffset() {
 
-  public void setEndVehicleId( Integer endVehicleId )
-  {
-    this.endVehicleId = endVehicleId;
-  }
+        return offset;
+    }
+
+    public void setOffset(Integer offset) {
+
+        this.offset = offset;
+    }
+
+    public Integer getLimit() {
+
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+
+        this.limit = limit;
+    }
+
+    public Date getDate() {
+
+        return date;
+    }
+
+    public void setDate(Date date) {
+
+        this.date = date;
+    }
+
+    public Integer getPages() {
+
+        return pages;
+    }
+
+    public void setPages(Integer pages) {
+
+        this.pages = pages;
+    }
+
+    public Integer getPage() {
+
+        return page;
+    }
+
+    public void setPage(Integer page) {
+
+        this.page = page;
+    }
+
+    public Integer getStartVehicleId() {
+
+        return startVehicleId;
+    }
+
+    public void setStartVehicleId(Integer startVehicleId) {
+
+        this.startVehicleId = startVehicleId;
+    }
+
+    public Integer getEndVehicleId() {
+
+        return endVehicleId;
+    }
+
+    public void setEndVehicleId(Integer endVehicleId) {
+
+        this.endVehicleId = endVehicleId;
+    }
 }

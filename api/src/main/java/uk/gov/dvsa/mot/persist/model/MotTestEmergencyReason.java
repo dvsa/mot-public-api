@@ -1,140 +1,138 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.sql.Timestamp ;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * The persistent class for the mot_test_emergency_reason database table.
- * 
  */
-public class MotTestEmergencyReason implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class MotTestEmergencyReason implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private long id ;
-  private EmergencyLog emergencyLog ;
-  private Comment comment ;
-  private EmergencyReasonLookup emergencyReasonLookup ;
-  private int createdBy ;
-  private Timestamp createdOn ;
-  private int lastUpdatedBy ;
-  private Timestamp lastUpdatedOn ;
-  private int version ;
-  private MotTest motTestCurrent ;
-  private MotTestHistory motTestHistory ;
+    private long id;
+    private EmergencyLog emergencyLog;
+    private Comment comment;
+    private EmergencyReasonLookup emergencyReasonLookup;
+    private int createdBy;
+    private Timestamp createdOn;
+    private int lastUpdatedBy;
+    private Timestamp lastUpdatedOn;
+    private int version;
+    private MotTest motTestCurrent;
+    private MotTestHistory motTestHistory;
 
-  public MotTestEmergencyReason()
-  {
-  }
+    public MotTestEmergencyReason() {
 
-  public long getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( long id )
-  {
-    this.id = id ;
-  }
+    public long getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(long id) {
 
-  public Timestamp getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Timestamp createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Timestamp getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedOn( Timestamp lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public Timestamp getCreatedOn() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setCreatedOn(Timestamp createdOn) {
 
-  public EmergencyLog getEmergencyLog()
-  {
-    return this.emergencyLog ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setEmergencyLog( EmergencyLog emergencyLog )
-  {
-    this.emergencyLog = emergencyLog ;
-  }
+    public int getLastUpdatedBy() {
 
-  public Comment getComment()
-  {
-    return this.comment ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setComment( Comment comment )
-  {
-    this.comment = comment ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public EmergencyReasonLookup getEmergencyReasonLookup()
-  {
-    return this.emergencyReasonLookup ;
-  }
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-  public void setEmergencyReasonLookup( EmergencyReasonLookup emergencyReasonLookup )
-  {
-    this.emergencyReasonLookup = emergencyReasonLookup ;
-  }
+    public Timestamp getLastUpdatedOn() {
 
-  public MotTest getMotTestCurrent()
-  {
-    return this.motTestCurrent ;
-  }
+        return this.lastUpdatedOn;
+    }
 
-  public void setMotTestCurrent( MotTest motTestCurrent )
-  {
-    this.motTestCurrent = motTestCurrent ;
-  }
+    public void setLastUpdatedOn(Timestamp lastUpdatedOn) {
 
-  public MotTestHistory getMotTestHistory()
-  {
-    return this.motTestHistory ;
-  }
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
 
-  public void setMotTestHistory( MotTestHistory motTestHistory )
-  {
-    this.motTestHistory = motTestHistory ;
-  }
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public EmergencyLog getEmergencyLog() {
+
+        return this.emergencyLog;
+    }
+
+    public void setEmergencyLog(EmergencyLog emergencyLog) {
+
+        this.emergencyLog = emergencyLog;
+    }
+
+    public Comment getComment() {
+
+        return this.comment;
+    }
+
+    public void setComment(Comment comment) {
+
+        this.comment = comment;
+    }
+
+    public EmergencyReasonLookup getEmergencyReasonLookup() {
+
+        return this.emergencyReasonLookup;
+    }
+
+    public void setEmergencyReasonLookup(EmergencyReasonLookup emergencyReasonLookup) {
+
+        this.emergencyReasonLookup = emergencyReasonLookup;
+    }
+
+    public MotTest getMotTestCurrent() {
+
+        return this.motTestCurrent;
+    }
+
+    public void setMotTestCurrent(MotTest motTestCurrent) {
+
+        this.motTestCurrent = motTestCurrent;
+    }
+
+    public MotTestHistory getMotTestHistory() {
+
+        return this.motTestHistory;
+    }
+
+    public void setMotTestHistory(MotTestHistory motTestHistory) {
+
+        this.motTestHistory = motTestHistory;
+    }
 
 }

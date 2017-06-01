@@ -1,51 +1,50 @@
-package uk.gov.dvsa.mot.mottest.api ;
+package uk.gov.dvsa.mot.mottest.api;
 
-import javax.xml.bind.annotation.XmlAccessType ;
-import javax.xml.bind.annotation.XmlAccessorType ;
-import javax.xml.bind.annotation.XmlElement ;
-import javax.xml.bind.annotation.XmlType ;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Represents the location of an RFR
  */
-@XmlAccessorType( XmlAccessType.FIELD )
-@XmlType( name = "", propOrder = { "lateral", "longitudinal", "vertical" } )
-public class MotTestRfrLocation
-{
-  @XmlElement( name = "lateral", required = false )
-  private String lateral ;
-  @XmlElement( name = "longitudinal", required = false )
-  private String longitudinal ;
-  @XmlElement( name = "vertical", required = false )
-  private String vertical ;
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = {"lateral", "longitudinal", "vertical"})
+public class MotTestRfrLocation {
+    @XmlElement(name = "lateral", required = false)
+    private String lateral;
+    @XmlElement(name = "longitudinal", required = false)
+    private String longitudinal;
+    @XmlElement(name = "vertical", required = false)
+    private String vertical;
 
-  public String getLateral()
-  {
-    return lateral ;
-  }
+    public String getLateral() {
 
-  public void setLateral( String lateral )
-  {
-    this.lateral = lateral ;
-  }
+        return lateral;
+    }
 
-  public String getLongitudinal()
-  {
-    return longitudinal ;
-  }
+    public void setLateral(String lateral) {
 
-  public void setLongitudinal( String longitudinal )
-  {
-    this.longitudinal = longitudinal ;
-  }
+        this.lateral = lateral;
+    }
 
-  public String getVertical()
-  {
-    return vertical ;
-  }
+    public String getLongitudinal() {
 
-  public void setVertical( String vertical )
-  {
-    this.vertical = vertical ;
-  }
+        return longitudinal;
+    }
+
+    public void setLongitudinal(String longitudinal) {
+
+        this.longitudinal = longitudinal;
+    }
+
+    public String getVertical() {
+
+        return vertical;
+    }
+
+    public void setVertical(String vertical) {
+
+        this.vertical = vertical;
+    }
 }

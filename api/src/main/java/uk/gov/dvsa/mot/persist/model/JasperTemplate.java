@@ -1,168 +1,166 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
-import java.util.List ;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The persistent class for the jasper_template database table.
- * 
  */
-public class JasperTemplate implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class JasperTemplate implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private JasperTemplateType jasperTemplateType ;
-  private String jasperReportName ;
-  private boolean isActive ;
-  private Date activeFrom ;
-  private Date activeTo ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
-  private List<JasperTemplateVariation> jasperTemplateVariations ;
+    private int id;
+    private JasperTemplateType jasperTemplateType;
+    private String jasperReportName;
+    private boolean isActive;
+    private Date activeFrom;
+    private Date activeTo;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
+    private List<JasperTemplateVariation> jasperTemplateVariations;
 
-  public JasperTemplate()
-  {
-  }
+    public JasperTemplate() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public Date getActiveFrom()
-  {
-    return this.activeFrom ;
-  }
+        return this.id;
+    }
 
-  public void setActiveFrom( Date activeFrom )
-  {
-    this.activeFrom = activeFrom ;
-  }
+    public void setId(int id) {
 
-  public Date getActiveTo()
-  {
-    return this.activeTo ;
-  }
+        this.id = id;
+    }
 
-  public void setActiveTo( Date activeTo )
-  {
-    this.activeTo = activeTo ;
-  }
+    public Date getActiveFrom() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.activeFrom;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setActiveFrom(Date activeFrom) {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.activeFrom = activeFrom;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public Date getActiveTo() {
 
-  public boolean getIsActive()
-  {
-    return this.isActive ;
-  }
+        return this.activeTo;
+    }
 
-  public void setIsActive( boolean isActive )
-  {
-    this.isActive = isActive ;
-  }
+    public void setActiveTo(Date activeTo) {
 
-  public String getJasperReportName()
-  {
-    return this.jasperReportName ;
-  }
+        this.activeTo = activeTo;
+    }
 
-  public void setJasperReportName( String jasperReportName )
-  {
-    this.jasperReportName = jasperReportName ;
-  }
+    public int getCreatedBy() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public Date getCreatedOn() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public JasperTemplateType getJasperTemplateType()
-  {
-    return this.jasperTemplateType ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setJasperTemplateType( JasperTemplateType jasperTemplateType )
-  {
-    this.jasperTemplateType = jasperTemplateType ;
-  }
+    public boolean getIsActive() {
 
-  public List<JasperTemplateVariation> getJasperTemplateVariations()
-  {
-    return this.jasperTemplateVariations ;
-  }
+        return this.isActive;
+    }
 
-  public void setJasperTemplateVariations( List<JasperTemplateVariation> jasperTemplateVariations )
-  {
-    this.jasperTemplateVariations = jasperTemplateVariations ;
-  }
+    public void setIsActive(boolean isActive) {
 
-  public JasperTemplateVariation addJasperTemplateVariation( JasperTemplateVariation jasperTemplateVariation )
-  {
-    getJasperTemplateVariations().add( jasperTemplateVariation ) ;
-    jasperTemplateVariation.setJasperTemplate( this ) ;
+        this.isActive = isActive;
+    }
 
-    return jasperTemplateVariation ;
-  }
+    public String getJasperReportName() {
 
-  public JasperTemplateVariation removeJasperTemplateVariation( JasperTemplateVariation jasperTemplateVariation )
-  {
-    getJasperTemplateVariations().remove( jasperTemplateVariation ) ;
-    jasperTemplateVariation.setJasperTemplate( null ) ;
+        return this.jasperReportName;
+    }
 
-    return jasperTemplateVariation ;
-  }
+    public void setJasperReportName(String jasperReportName) {
+
+        this.jasperReportName = jasperReportName;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public JasperTemplateType getJasperTemplateType() {
+
+        return this.jasperTemplateType;
+    }
+
+    public void setJasperTemplateType(JasperTemplateType jasperTemplateType) {
+
+        this.jasperTemplateType = jasperTemplateType;
+    }
+
+    public List<JasperTemplateVariation> getJasperTemplateVariations() {
+
+        return this.jasperTemplateVariations;
+    }
+
+    public void setJasperTemplateVariations(List<JasperTemplateVariation> jasperTemplateVariations) {
+
+        this.jasperTemplateVariations = jasperTemplateVariations;
+    }
+
+    public JasperTemplateVariation addJasperTemplateVariation(JasperTemplateVariation jasperTemplateVariation) {
+
+        getJasperTemplateVariations().add(jasperTemplateVariation);
+        jasperTemplateVariation.setJasperTemplate(this);
+
+        return jasperTemplateVariation;
+    }
+
+    public JasperTemplateVariation removeJasperTemplateVariation(JasperTemplateVariation jasperTemplateVariation) {
+
+        getJasperTemplateVariations().remove(jasperTemplateVariation);
+        jasperTemplateVariation.setJasperTemplate(null);
+
+        return jasperTemplateVariation;
+    }
 
 }

@@ -1,25 +1,24 @@
-package uk.gov.dvsa.mot.vehicle.api ;
+package uk.gov.dvsa.mot.vehicle.api;
 
-public class ValidationError
-{
+public class ValidationError {
 
-  private final String fieldName ;
+    private final String fieldName;
 
-  private final String errorMessage ;
+    private final String errorMessage;
 
-  public ValidationError( String fieldName, String errorMessage )
-  {
-    this.fieldName = fieldName ;
-    this.errorMessage = errorMessage ;
-  }
+    public ValidationError(String fieldName, String errorMessage) {
 
-  public String getFieldName()
-  {
-    return fieldName ;
-  }
+        this.fieldName = fieldName;
+        this.errorMessage = errorMessage;
+    }
 
-  public String getErrorMessage()
-  {
-    return errorMessage ;
-  }
+    public String getFieldName() {
+
+        return fieldName;
+    }
+
+    public String getErrorMessage() {
+
+        return errorMessage;
+    }
 }

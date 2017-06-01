@@ -1,9 +1,16 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'checkstyle'
 
 def majorVersion = 0
 def minorVersion = 0
 def patchVersion
+
+checkstyle {
+    configFile = getRootProject().file("dvsa_java_checks.xml")
+    toolVersion = "6.15"
+}
 
 sourceSets {
     test {

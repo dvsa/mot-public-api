@@ -1,41 +1,41 @@
-package uk.gov.dvsa.mot.vehicle.api ;
+package uk.gov.dvsa.mot.vehicle.api;
 
 //import javax.validation.Valid;
-import javax.xml.bind.annotation.XmlAccessType ;
-import javax.xml.bind.annotation.XmlAccessorType ;
-import javax.xml.bind.annotation.XmlElement ;
-import javax.xml.bind.annotation.XmlType ;
 
-@XmlAccessorType( XmlAccessType.FIELD )
-@XmlType( name = "create_vehicle_request", propOrder = { "vehicle", "oneTimePassword" } )
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
-public class WriteVehicleRequest
-{
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "create_vehicle_request", propOrder = {"vehicle", "oneTimePassword"})
 
-  @XmlElement( name = "vehicle" )
-  private Vehicle vehicle ;
+public class WriteVehicleRequest {
 
-  // @Valid
-  @XmlElement( name = "one_time_password" )
-  private String oneTimePassword ;
+    @XmlElement(name = "vehicle")
+    private Vehicle vehicle;
 
-  public Vehicle getVehicle()
-  {
-    return vehicle ;
-  }
+    // @Valid
+    @XmlElement(name = "one_time_password")
+    private String oneTimePassword;
 
-  public void setVehicle( Vehicle vehicle )
-  {
-    this.vehicle = vehicle ;
-  }
+    public Vehicle getVehicle() {
 
-  public String getOneTimePassword()
-  {
-    return oneTimePassword ;
-  }
+        return vehicle;
+    }
 
-  public void setOneTimePassword( String oneTimePassword )
-  {
-    this.oneTimePassword = oneTimePassword ;
-  }
+    public void setVehicle(Vehicle vehicle) {
+
+        this.vehicle = vehicle;
+    }
+
+    public String getOneTimePassword() {
+
+        return oneTimePassword;
+    }
+
+    public void setOneTimePassword(String oneTimePassword) {
+
+        this.oneTimePassword = oneTimePassword;
+    }
 }

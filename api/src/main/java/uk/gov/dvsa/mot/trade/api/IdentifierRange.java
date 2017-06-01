@@ -1,28 +1,27 @@
-package uk.gov.dvsa.mot.trade.api ;
+package uk.gov.dvsa.mot.trade.api;
 
-public class IdentifierRange
-{
-  private Long startId ;
-  private Long endId ;
+public class IdentifierRange {
+    private Long startId;
+    private Long endId;
 
-  public Long getStartId()
-  {
-    return startId ;
-  }
+    public Long getStartId() {
 
-  public void setStartId( Long startId )
-  {
-    this.startId = startId ;
-  }
+        return startId;
+    }
 
-  public Long getEndId()
-  {
-    return endId ;
-  }
+    public void setStartId(Long startId) {
 
-  public void setEndId( Long endId )
-  {
-    this.endId = endId ;
-  }
+        this.startId = startId;
+    }
+
+    public Long getEndId() {
+
+        return endId;
+    }
+
+    public void setEndId(Long endId) {
+
+        this.endId = endId;
+    }
 
 }

@@ -1,148 +1,146 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
-import java.util.List ;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The persistent class for the test_item_category database table.
- * 
  */
-public class TestItemCategory implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class TestItemCategory implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int sectionTestItemCategoryId ;
-  private int version ;
-  private BusinessRule businessRule ;
-  private TestItemCategory parentTestItemCategory ;
-  private List<TiCategoryLanguageContentMap> tiCategoryLanguageContentMaps ;
+    private int id;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int sectionTestItemCategoryId;
+    private int version;
+    private BusinessRule businessRule;
+    private TestItemCategory parentTestItemCategory;
+    private List<TiCategoryLanguageContentMap> tiCategoryLanguageContentMaps;
 
-  public TestItemCategory()
-  {
-  }
+    public TestItemCategory() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(int id) {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public Date getCreatedOn() {
 
-  public int getSectionTestItemCategoryId()
-  {
-    return this.sectionTestItemCategoryId ;
-  }
+        return this.createdOn;
+    }
 
-  public void setSectionTestItemCategoryId( int sectionTestItemCategoryId )
-  {
-    this.sectionTestItemCategoryId = sectionTestItemCategoryId ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public int getLastUpdatedBy() {
 
-  public BusinessRule getBusinessRule()
-  {
-    return this.businessRule ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setBusinessRule( BusinessRule businessRule )
-  {
-    this.businessRule = businessRule ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public TestItemCategory getParentTestItemCategory()
-  {
-    return this.parentTestItemCategory ;
-  }
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-  public void setParentTestItemCategory( TestItemCategory testItemCategory )
-  {
-    this.parentTestItemCategory = testItemCategory ;
-  }
+    public Date getLastUpdatedOn() {
 
-  public List<TiCategoryLanguageContentMap> getTiCategoryLanguageContentMaps()
-  {
-    return this.tiCategoryLanguageContentMaps ;
-  }
+        return this.lastUpdatedOn;
+    }
 
-  public void setTiCategoryLanguageContentMaps( List<TiCategoryLanguageContentMap> tiCategoryLanguageContentMaps )
-  {
-    this.tiCategoryLanguageContentMaps = tiCategoryLanguageContentMaps ;
-  }
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
 
-  public TiCategoryLanguageContentMap addTiCategoryLanguageContentMap(
-      TiCategoryLanguageContentMap tiCategoryLanguageContentMap )
-  {
-    getTiCategoryLanguageContentMaps().add( tiCategoryLanguageContentMap ) ;
-    tiCategoryLanguageContentMap.setTestItemCategory( this ) ;
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
 
-    return tiCategoryLanguageContentMap ;
-  }
+    public int getSectionTestItemCategoryId() {
 
-  public TiCategoryLanguageContentMap removeTiCategoryLanguageContentMap(
-      TiCategoryLanguageContentMap tiCategoryLanguageContentMap )
-  {
-    getTiCategoryLanguageContentMaps().remove( tiCategoryLanguageContentMap ) ;
-    tiCategoryLanguageContentMap.setTestItemCategory( null ) ;
+        return this.sectionTestItemCategoryId;
+    }
 
-    return tiCategoryLanguageContentMap ;
-  }
+    public void setSectionTestItemCategoryId(int sectionTestItemCategoryId) {
+
+        this.sectionTestItemCategoryId = sectionTestItemCategoryId;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public BusinessRule getBusinessRule() {
+
+        return this.businessRule;
+    }
+
+    public void setBusinessRule(BusinessRule businessRule) {
+
+        this.businessRule = businessRule;
+    }
+
+    public TestItemCategory getParentTestItemCategory() {
+
+        return this.parentTestItemCategory;
+    }
+
+    public void setParentTestItemCategory(TestItemCategory testItemCategory) {
+
+        this.parentTestItemCategory = testItemCategory;
+    }
+
+    public List<TiCategoryLanguageContentMap> getTiCategoryLanguageContentMaps() {
+
+        return this.tiCategoryLanguageContentMaps;
+    }
+
+    public void setTiCategoryLanguageContentMaps(List<TiCategoryLanguageContentMap> tiCategoryLanguageContentMaps) {
+
+        this.tiCategoryLanguageContentMaps = tiCategoryLanguageContentMaps;
+    }
+
+    public TiCategoryLanguageContentMap addTiCategoryLanguageContentMap(
+            TiCategoryLanguageContentMap tiCategoryLanguageContentMap) {
+
+        getTiCategoryLanguageContentMaps().add(tiCategoryLanguageContentMap);
+        tiCategoryLanguageContentMap.setTestItemCategory(this);
+
+        return tiCategoryLanguageContentMap;
+    }
+
+    public TiCategoryLanguageContentMap removeTiCategoryLanguageContentMap(
+            TiCategoryLanguageContentMap tiCategoryLanguageContentMap) {
+
+        getTiCategoryLanguageContentMaps().remove(tiCategoryLanguageContentMap);
+        tiCategoryLanguageContentMap.setTestItemCategory(null);
+
+        return tiCategoryLanguageContentMap;
+    }
 
 }

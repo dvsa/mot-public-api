@@ -1,114 +1,104 @@
-package uk.gov.dvsa.mot.app ;
+package uk.gov.dvsa.mot.app;
 
-import org.apache.log4j.Level ;
-import org.apache.log4j.Logger ;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
-import com.google.inject.AbstractModule ;
-import com.google.inject.Guice ;
-import com.google.inject.Injector ;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
-public abstract class AbstractRequestHandler
-{
-  private static final Logger logger = Logger.getLogger( AbstractRequestHandler.class ) ;
-  public final Injector injector ;
+public abstract class AbstractRequestHandler {
+    private static final Logger logger = Logger.getLogger(AbstractRequestHandler.class);
+    public final Injector injector;
 
-  public AbstractRequestHandler()
-  {
-    this( true ) ;
-  }
+    public AbstractRequestHandler() {
 
-  /**
-   * Construct an AbstractRequestHandler, specifying whether it should inject
-   * dependencies into itself.
-   * 
-   * @param inject
-   *          If false, will not initiate dependency injection.
-   */
-  public AbstractRequestHandler( boolean inject )
-  {
-    this( inject ? new DependencyResolver() : null, inject ) ;
-  }
-
-  public AbstractRequestHandler( AbstractModule dependencyResolver, boolean injectSelf )
-  {
-    logger.trace( "Entered Abstract Request Handler" ) ;
-    overrideLogLevel() ;
-
-    if ( injectSelf )
-    {
-      this.injector = Guice.createInjector( dependencyResolver ) ;
-      this.injector.injectMembers( this ) ;
+        this(true);
     }
-    else
-    {
-      this.injector = null ;
+
+    /**
+     * Construct an AbstractRequestHandler, specifying whether it should inject
+     * dependencies into itself.
+     *
+     * @param inject If false, will not initiate dependency injection.
+     */
+    public AbstractRequestHandler(boolean inject) {
+
+        this(inject ? new DependencyResolver() : null, inject);
     }
-    logger.trace( "Exiting Abstract Request Handler" ) ;
-  }
 
-  /**
-   * Set the logging level from the configuration.
-   */
-  public void overrideLogLevel()
-  {
-    logger.trace( "Entering overrideLogLevel" ) ;
+    public AbstractRequestHandler(AbstractModule dependencyResolver, boolean injectSelf) {
 
-    try
-    {
-      String logLevel = ConfigManager.getEnvironmentVariable( ConfigKeys.LogLevel ) ;
+        logger.trace("Entered Abstract Request Handler");
+        overrideLogLevel();
 
-      if ( logLevel != null )
-      {
-        logger.info( "Changing log level to " + logLevel.toUpperCase() ) ;
+        if (injectSelf) {
+            this.injector = Guice.createInjector(dependencyResolver);
+            this.injector.injectMembers(this);
+        } else {
+            this.injector = null;
+        }
+        logger.trace("Exiting Abstract Request Handler");
+    }
 
-        switch ( logLevel.toUpperCase() )
-        {
-          case "OFF":
-            Logger.getRootLogger().setLevel( Level.OFF ) ;
-            break ;
+    /**
+     * Set the logging level from the configuration.
+     */
+    public void overrideLogLevel() {
 
-          case "ALL":
-            Logger.getRootLogger().setLevel( Level.ALL ) ;
-            break ;
+        logger.trace("Entering overrideLogLevel");
 
-          case "INFO":
-            Logger.getRootLogger().setLevel( Level.INFO ) ;
-            break ;
+        try {
+            String logLevel = ConfigManager.getEnvironmentVariable(ConfigKeys.LogLevel);
 
-          case "TRACE":
-            Logger.getRootLogger().setLevel( Level.TRACE ) ;
-            break ;
+            if (logLevel != null) {
+                logger.info("Changing log level to " + logLevel.toUpperCase());
 
-          case "DEBUG":
-            Logger.getRootLogger().setLevel( Level.DEBUG ) ;
-            break ;
+                switch (logLevel.toUpperCase()) {
+                    case "OFF":
+                        Logger.getRootLogger().setLevel(Level.OFF);
+                        break;
 
-          case "WARN":
-            Logger.getRootLogger().setLevel( Level.WARN ) ;
-            break ;
+                    case "ALL":
+                        Logger.getRootLogger().setLevel(Level.ALL);
+                        break;
 
-          case "ERROR":
-            Logger.getRootLogger().setLevel( Level.ERROR ) ;
-            break ;
+                    case "INFO":
+                        Logger.getRootLogger().setLevel(Level.INFO);
+                        break;
 
-          case "FATAL":
-            Logger.getRootLogger().setLevel( Level.FATAL ) ;
-            break ;
+                    case "TRACE":
+                        Logger.getRootLogger().setLevel(Level.TRACE);
+                        break;
 
-          /* log if environment variable found but not in valid list */
-          default:
-            logger.warn( "Unknown log level " + logLevel ) ;
-            break ;
+                    case "DEBUG":
+                        Logger.getRootLogger().setLevel(Level.DEBUG);
+                        break;
+
+                    case "WARN":
+                        Logger.getRootLogger().setLevel(Level.WARN);
+                        break;
+
+                    case "ERROR":
+                        Logger.getRootLogger().setLevel(Level.ERROR);
+                        break;
+
+                    case "FATAL":
+                        Logger.getRootLogger().setLevel(Level.FATAL);
+                        break;
+
+                    /* log if environment variable found but not in valid list */
+                    default:
+                        logger.warn("Unknown log level " + logLevel);
+                        break;
+                }
+
+                logger.info("Changed log level to " + logLevel.toUpperCase());
+            }
+        } catch (Exception e) {
+            logger.error("Unable to override log level", e);
         }
 
-        logger.info( "Changed log level to " + logLevel.toUpperCase() ) ;
-      }
+        logger.trace("Exiting overrideLogLevel");
     }
-    catch ( Exception e )
-    {
-      logger.error( "Unable to override log level", e ) ;
-    }
-
-    logger.trace( "Exiting overrideLogLevel" ) ;
-  }
 }
