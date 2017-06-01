@@ -1,131 +1,129 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.sql.Timestamp ;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * The persistent class for the make database table.
- * 
  */
-public class Make implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class Make implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String code ;
-  private String name ;
-  private boolean isVerified ;
-  private boolean isSelectable ;
-  private int createdBy ;
-  private Timestamp createdOn ;
-  private int lastUpdatedBy ;
-  private Timestamp lastUpdatedOn ;
-  private int version ;
-  // private List<Model> models;
+    private int id;
+    private String code;
+    private String name;
+    private boolean isVerified;
+    private boolean isSelectable;
+    private int createdBy;
+    private Timestamp createdOn;
+    private int lastUpdatedBy;
+    private Timestamp lastUpdatedOn;
+    private int version;
+    // private List<Model> models;
 
-  public Make()
-  {
-  }
+    public Make() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getCode()
-  {
-    return this.code ;
-  }
+        return this.id;
+    }
 
-  public void setCode( String code )
-  {
-    this.code = code ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getCode() {
 
-  public Timestamp getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.code;
+    }
 
-  public void setCreatedOn( Timestamp createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setCode(String code) {
 
-  public boolean getIsVerified()
-  {
-    return this.isVerified ;
-  }
+        this.code = code;
+    }
 
-  public void setIsVerified( boolean isVerified )
-  {
-    this.isVerified = isVerified ;
-  }
+    public int getCreatedBy() {
 
-  public boolean getIsSelectable()
-  {
-    return this.isSelectable ;
-  }
+        return this.createdBy;
+    }
 
-  public void setIsSelectable( boolean isSelectable )
-  {
-    this.isSelectable = isSelectable ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public Timestamp getCreatedOn() {
 
-  public Timestamp getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedOn( Timestamp lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedOn(Timestamp createdOn) {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public boolean getIsVerified() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.isVerified;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setIsVerified(boolean isVerified) {
+
+        this.isVerified = isVerified;
+    }
+
+    public boolean getIsSelectable() {
+
+        return this.isSelectable;
+    }
+
+    public void setIsSelectable(boolean isSelectable) {
+
+        this.isSelectable = isSelectable;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Timestamp getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Timestamp lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
 
   /*
    * public List<Model> getModels() { return this.models; }

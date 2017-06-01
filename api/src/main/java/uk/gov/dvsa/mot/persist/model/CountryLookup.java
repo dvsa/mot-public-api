@@ -1,189 +1,187 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
-import java.util.List ;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The persistent class for the country_lookup database table.
- * 
  */
-public class CountryLookup implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class CountryLookup implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String code ;
-  private String name ;
-  private int displayOrder ;
-  private String isoCode ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
-  private List<CountryOfRegistrationLookup> countryOfRegistrationLookups ;
-  private List<NonWorkingDayCountryLookup> nonWorkingDayCountryLookups ;
+    private int id;
+    private String code;
+    private String name;
+    private int displayOrder;
+    private String isoCode;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
+    private List<CountryOfRegistrationLookup> countryOfRegistrationLookups;
+    private List<NonWorkingDayCountryLookup> nonWorkingDayCountryLookups;
 
-  public CountryLookup()
-  {
-  }
+    public CountryLookup() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getCode()
-  {
-    return this.code ;
-  }
+        return this.id;
+    }
 
-  public void setCode( String code )
-  {
-    this.code = code ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getCode() {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.code;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setCode(String code) {
 
-  public int getDisplayOrder()
-  {
-    return this.displayOrder ;
-  }
+        this.code = code;
+    }
 
-  public void setDisplayOrder( int displayOrder )
-  {
-    this.displayOrder = displayOrder ;
-  }
+    public int getCreatedBy() {
 
-  public String getIsoCode()
-  {
-    return this.isoCode ;
-  }
+        return this.createdBy;
+    }
 
-  public void setIsoCode( String isoCode )
-  {
-    this.isoCode = isoCode ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public Date getCreatedOn() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public int getDisplayOrder() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.displayOrder;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setDisplayOrder(int displayOrder) {
 
-  public List<CountryOfRegistrationLookup> getCountryOfRegistrationLookups()
-  {
-    return this.countryOfRegistrationLookups ;
-  }
+        this.displayOrder = displayOrder;
+    }
 
-  public void setCountryOfRegistrationLookups( List<CountryOfRegistrationLookup> countryOfRegistrationLookups )
-  {
-    this.countryOfRegistrationLookups = countryOfRegistrationLookups ;
-  }
+    public String getIsoCode() {
 
-  public CountryOfRegistrationLookup addCountryOfRegistrationLookup(
-      CountryOfRegistrationLookup countryOfRegistrationLookup )
-  {
-    getCountryOfRegistrationLookups().add( countryOfRegistrationLookup ) ;
-    countryOfRegistrationLookup.setCountryLookup( this ) ;
+        return this.isoCode;
+    }
 
-    return countryOfRegistrationLookup ;
-  }
+    public void setIsoCode(String isoCode) {
 
-  public CountryOfRegistrationLookup removeCountryOfRegistrationLookup(
-      CountryOfRegistrationLookup countryOfRegistrationLookup )
-  {
-    getCountryOfRegistrationLookups().remove( countryOfRegistrationLookup ) ;
-    countryOfRegistrationLookup.setCountryLookup( null ) ;
+        this.isoCode = isoCode;
+    }
 
-    return countryOfRegistrationLookup ;
-  }
+    public int getLastUpdatedBy() {
 
-  public List<NonWorkingDayCountryLookup> getNonWorkingDayCountryLookups()
-  {
-    return this.nonWorkingDayCountryLookups ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setNonWorkingDayCountryLookups( List<NonWorkingDayCountryLookup> nonWorkingDayCountryLookups )
-  {
-    this.nonWorkingDayCountryLookups = nonWorkingDayCountryLookups ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public NonWorkingDayCountryLookup addNonWorkingDayCountryLookup(
-      NonWorkingDayCountryLookup nonWorkingDayCountryLookup )
-  {
-    getNonWorkingDayCountryLookups().add( nonWorkingDayCountryLookup ) ;
-    nonWorkingDayCountryLookup.setCountryLookup( this ) ;
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-    return nonWorkingDayCountryLookup ;
-  }
+    public Date getLastUpdatedOn() {
 
-  public NonWorkingDayCountryLookup removeNonWorkingDayCountryLookup(
-      NonWorkingDayCountryLookup nonWorkingDayCountryLookup )
-  {
-    getNonWorkingDayCountryLookups().remove( nonWorkingDayCountryLookup ) ;
-    nonWorkingDayCountryLookup.setCountryLookup( null ) ;
+        return this.lastUpdatedOn;
+    }
 
-    return nonWorkingDayCountryLookup ;
-  }
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public List<CountryOfRegistrationLookup> getCountryOfRegistrationLookups() {
+
+        return this.countryOfRegistrationLookups;
+    }
+
+    public void setCountryOfRegistrationLookups(List<CountryOfRegistrationLookup> countryOfRegistrationLookups) {
+
+        this.countryOfRegistrationLookups = countryOfRegistrationLookups;
+    }
+
+    public CountryOfRegistrationLookup addCountryOfRegistrationLookup(
+            CountryOfRegistrationLookup countryOfRegistrationLookup) {
+
+        getCountryOfRegistrationLookups().add(countryOfRegistrationLookup);
+        countryOfRegistrationLookup.setCountryLookup(this);
+
+        return countryOfRegistrationLookup;
+    }
+
+    public CountryOfRegistrationLookup removeCountryOfRegistrationLookup(
+            CountryOfRegistrationLookup countryOfRegistrationLookup) {
+
+        getCountryOfRegistrationLookups().remove(countryOfRegistrationLookup);
+        countryOfRegistrationLookup.setCountryLookup(null);
+
+        return countryOfRegistrationLookup;
+    }
+
+    public List<NonWorkingDayCountryLookup> getNonWorkingDayCountryLookups() {
+
+        return this.nonWorkingDayCountryLookups;
+    }
+
+    public void setNonWorkingDayCountryLookups(List<NonWorkingDayCountryLookup> nonWorkingDayCountryLookups) {
+
+        this.nonWorkingDayCountryLookups = nonWorkingDayCountryLookups;
+    }
+
+    public NonWorkingDayCountryLookup addNonWorkingDayCountryLookup(
+            NonWorkingDayCountryLookup nonWorkingDayCountryLookup) {
+
+        getNonWorkingDayCountryLookups().add(nonWorkingDayCountryLookup);
+        nonWorkingDayCountryLookup.setCountryLookup(this);
+
+        return nonWorkingDayCountryLookup;
+    }
+
+    public NonWorkingDayCountryLookup removeNonWorkingDayCountryLookup(
+            NonWorkingDayCountryLookup nonWorkingDayCountryLookup) {
+
+        getNonWorkingDayCountryLookups().remove(nonWorkingDayCountryLookup);
+        nonWorkingDayCountryLookup.setCountryLookup(null);
+
+        return nonWorkingDayCountryLookup;
+    }
 
   /*
    * public List<Qualification> getQualifications() { return

@@ -1,327 +1,325 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
-import java.sql.Timestamp ;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * The persistent class for the vehicle database table.
- * 
  */
-public class Vehicle implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class Vehicle implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private int dvlaVehicleId ;
-  private String registration ;
-  private String registrationCollapsed ;
-  private String vin ;
-  private String vinCollapsed ;
-  private EmptyReasonMap emptyReasonMap ;
-  private ModelDetail modelDetail ;
-  private Date year ;
-  private Date manufactureDate ;
-  private Date firstRegistrationDate ;
-  private Date firstUsedDate ;
-  private ColourLookup primaryColour ;
-  private ColourLookup secondaryColour ;
-  private int weight ;
-  private WeightSourceLookup weightSourceLookup ;
-  private CountryOfRegistrationLookup countryOfRegistrationLookup ;
-  private String engineNumber ;
-  private String chassisNumber ;
-  private boolean isNewAtFirstReg ;
-  private boolean isDamaged ;
-  private boolean isDestroyed ;
-  private boolean isIncognito ;
-  private int createdBy ;
-  private Timestamp createdOn ;
-  private int lastUpdatedBy ;
-  private Timestamp lastUpdatedOn ;
-  private int version ;
+    private int id;
+    private int dvlaVehicleId;
+    private String registration;
+    private String registrationCollapsed;
+    private String vin;
+    private String vinCollapsed;
+    private EmptyReasonMap emptyReasonMap;
+    private ModelDetail modelDetail;
+    private Date year;
+    private Date manufactureDate;
+    private Date firstRegistrationDate;
+    private Date firstUsedDate;
+    private ColourLookup primaryColour;
+    private ColourLookup secondaryColour;
+    private int weight;
+    private WeightSourceLookup weightSourceLookup;
+    private CountryOfRegistrationLookup countryOfRegistrationLookup;
+    private String engineNumber;
+    private String chassisNumber;
+    private boolean isNewAtFirstReg;
+    private boolean isDamaged;
+    private boolean isDestroyed;
+    private boolean isIncognito;
+    private int createdBy;
+    private Timestamp createdOn;
+    private int lastUpdatedBy;
+    private Timestamp lastUpdatedOn;
+    private int version;
 
-  public Vehicle()
-  {
-  }
+    public Vehicle() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getChassisNumber()
-  {
-    return this.chassisNumber ;
-  }
+        return this.id;
+    }
 
-  public void setChassisNumber( String chassisNumber )
-  {
-    this.chassisNumber = chassisNumber ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getChassisNumber() {
 
-  public Timestamp getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.chassisNumber;
+    }
 
-  public void setCreatedOn( Timestamp createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setChassisNumber(String chassisNumber) {
 
-  public int getDvlaVehicleId()
-  {
-    return this.dvlaVehicleId ;
-  }
+        this.chassisNumber = chassisNumber;
+    }
 
-  public void setDvlaVehicleId( int dvlaVehicleId )
-  {
-    this.dvlaVehicleId = dvlaVehicleId ;
-  }
+    public int getCreatedBy() {
 
-  public String getEngineNumber()
-  {
-    return this.engineNumber ;
-  }
+        return this.createdBy;
+    }
 
-  public void setEngineNumber( String engineNumber )
-  {
-    this.engineNumber = engineNumber ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Date getFirstRegistrationDate()
-  {
-    return this.firstRegistrationDate ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setFirstRegistrationDate( Date firstRegistrationDate )
-  {
-    this.firstRegistrationDate = firstRegistrationDate ;
-  }
+    public Timestamp getCreatedOn() {
 
-  public Date getFirstUsedDate()
-  {
-    return this.firstUsedDate ;
-  }
+        return this.createdOn;
+    }
 
-  public void setFirstUsedDate( Date firstUsedDate )
-  {
-    this.firstUsedDate = firstUsedDate ;
-  }
+    public void setCreatedOn(Timestamp createdOn) {
 
-  public boolean getIsDamaged()
-  {
-    return this.isDamaged ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setIsDamaged( boolean isDamaged )
-  {
-    this.isDamaged = isDamaged ;
-  }
+    public int getDvlaVehicleId() {
 
-  public boolean getIsDestroyed()
-  {
-    return this.isDestroyed ;
-  }
+        return this.dvlaVehicleId;
+    }
 
-  public void setIsDestroyed( boolean isDestroyed )
-  {
-    this.isDestroyed = isDestroyed ;
-  }
+    public void setDvlaVehicleId(int dvlaVehicleId) {
 
-  public boolean getIsIncognito()
-  {
-    return this.isIncognito ;
-  }
+        this.dvlaVehicleId = dvlaVehicleId;
+    }
 
-  public void setIsIncognito( boolean isIncognito )
-  {
-    this.isIncognito = isIncognito ;
-  }
+    public String getEngineNumber() {
 
-  public boolean getIsNewAtFirstReg()
-  {
-    return this.isNewAtFirstReg ;
-  }
+        return this.engineNumber;
+    }
 
-  public void setIsNewAtFirstReg( boolean isNewAtFirstReg )
-  {
-    this.isNewAtFirstReg = isNewAtFirstReg ;
-  }
+    public void setEngineNumber(String engineNumber) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.engineNumber = engineNumber;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public Date getFirstRegistrationDate() {
 
-  public Timestamp getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.firstRegistrationDate;
+    }
 
-  public void setLastUpdatedOn( Timestamp lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setFirstRegistrationDate(Date firstRegistrationDate) {
 
-  public Date getManufactureDate()
-  {
-    return this.manufactureDate ;
-  }
+        this.firstRegistrationDate = firstRegistrationDate;
+    }
 
-  public void setManufactureDate( Date manufactureDate )
-  {
-    this.manufactureDate = manufactureDate ;
-  }
+    public Date getFirstUsedDate() {
 
-  public String getRegistration()
-  {
-    return this.registration ;
-  }
+        return this.firstUsedDate;
+    }
 
-  public void setRegistration( String registration )
-  {
-    this.registration = registration ;
-  }
+    public void setFirstUsedDate(Date firstUsedDate) {
 
-  public String getRegistrationCollapsed()
-  {
-    return this.registrationCollapsed ;
-  }
+        this.firstUsedDate = firstUsedDate;
+    }
 
-  public void setRegistrationCollapsed( String registrationCollapsed )
-  {
-    this.registrationCollapsed = registrationCollapsed ;
-  }
+    public boolean getIsDamaged() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.isDamaged;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setIsDamaged(boolean isDamaged) {
 
-  public String getVin()
-  {
-    return this.vin ;
-  }
+        this.isDamaged = isDamaged;
+    }
 
-  public void setVin( String vin )
-  {
-    this.vin = vin ;
-  }
+    public boolean getIsDestroyed() {
 
-  public String getVinCollapsed()
-  {
-    return this.vinCollapsed ;
-  }
+        return this.isDestroyed;
+    }
 
-  public void setVinCollapsed( String vinCollapsed )
-  {
-    this.vinCollapsed = vinCollapsed ;
-  }
+    public void setIsDestroyed(boolean isDestroyed) {
 
-  public int getWeight()
-  {
-    return this.weight ;
-  }
+        this.isDestroyed = isDestroyed;
+    }
 
-  public void setWeight( int weight )
-  {
-    this.weight = weight ;
-  }
+    public boolean getIsIncognito() {
 
-  public Date getYear()
-  {
-    return this.year ;
-  }
+        return this.isIncognito;
+    }
 
-  public void setYear( Date year )
-  {
-    this.year = year ;
-  }
+    public void setIsIncognito(boolean isIncognito) {
 
-  public ColourLookup getPrimaryColour()
-  {
-    return this.primaryColour ;
-  }
+        this.isIncognito = isIncognito;
+    }
 
-  public void setPrimaryColour( ColourLookup colourLookup1 )
-  {
-    this.primaryColour = colourLookup1 ;
-  }
+    public boolean getIsNewAtFirstReg() {
 
-  public CountryOfRegistrationLookup getCountryOfRegistrationLookup()
-  {
-    return this.countryOfRegistrationLookup ;
-  }
+        return this.isNewAtFirstReg;
+    }
 
-  public void setCountryOfRegistrationLookup( CountryOfRegistrationLookup countryOfRegistrationLookup )
-  {
-    this.countryOfRegistrationLookup = countryOfRegistrationLookup ;
-  }
+    public void setIsNewAtFirstReg(boolean isNewAtFirstReg) {
 
-  public ModelDetail getModelDetail()
-  {
-    return this.modelDetail ;
-  }
+        this.isNewAtFirstReg = isNewAtFirstReg;
+    }
 
-  public void setModelDetail( ModelDetail modelDetail )
-  {
-    this.modelDetail = modelDetail ;
-  }
+    public int getLastUpdatedBy() {
 
-  public ColourLookup getSecondaryColour()
-  {
-    return this.secondaryColour ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setSecondaryColour( ColourLookup colourLookup2 )
-  {
-    this.secondaryColour = colourLookup2 ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public WeightSourceLookup getWeightSourceLookup()
-  {
-    return this.weightSourceLookup ;
-  }
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-  public void setWeightSourceLookup( WeightSourceLookup weightSourceLookup )
-  {
-    this.weightSourceLookup = weightSourceLookup ;
-  }
+    public Timestamp getLastUpdatedOn() {
 
-  public EmptyReasonMap getEmptyReasonMap()
-  {
-    return emptyReasonMap ;
-  }
+        return this.lastUpdatedOn;
+    }
 
-  public void setEmptyReasonMap( EmptyReasonMap emtpyReasonMap )
-  {
-    this.emptyReasonMap = emtpyReasonMap ;
-  }
+    public void setLastUpdatedOn(Timestamp lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public Date getManufactureDate() {
+
+        return this.manufactureDate;
+    }
+
+    public void setManufactureDate(Date manufactureDate) {
+
+        this.manufactureDate = manufactureDate;
+    }
+
+    public String getRegistration() {
+
+        return this.registration;
+    }
+
+    public void setRegistration(String registration) {
+
+        this.registration = registration;
+    }
+
+    public String getRegistrationCollapsed() {
+
+        return this.registrationCollapsed;
+    }
+
+    public void setRegistrationCollapsed(String registrationCollapsed) {
+
+        this.registrationCollapsed = registrationCollapsed;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public String getVin() {
+
+        return this.vin;
+    }
+
+    public void setVin(String vin) {
+
+        this.vin = vin;
+    }
+
+    public String getVinCollapsed() {
+
+        return this.vinCollapsed;
+    }
+
+    public void setVinCollapsed(String vinCollapsed) {
+
+        this.vinCollapsed = vinCollapsed;
+    }
+
+    public int getWeight() {
+
+        return this.weight;
+    }
+
+    public void setWeight(int weight) {
+
+        this.weight = weight;
+    }
+
+    public Date getYear() {
+
+        return this.year;
+    }
+
+    public void setYear(Date year) {
+
+        this.year = year;
+    }
+
+    public ColourLookup getPrimaryColour() {
+
+        return this.primaryColour;
+    }
+
+    public void setPrimaryColour(ColourLookup colourLookup1) {
+
+        this.primaryColour = colourLookup1;
+    }
+
+    public CountryOfRegistrationLookup getCountryOfRegistrationLookup() {
+
+        return this.countryOfRegistrationLookup;
+    }
+
+    public void setCountryOfRegistrationLookup(CountryOfRegistrationLookup countryOfRegistrationLookup) {
+
+        this.countryOfRegistrationLookup = countryOfRegistrationLookup;
+    }
+
+    public ModelDetail getModelDetail() {
+
+        return this.modelDetail;
+    }
+
+    public void setModelDetail(ModelDetail modelDetail) {
+
+        this.modelDetail = modelDetail;
+    }
+
+    public ColourLookup getSecondaryColour() {
+
+        return this.secondaryColour;
+    }
+
+    public void setSecondaryColour(ColourLookup colourLookup2) {
+
+        this.secondaryColour = colourLookup2;
+    }
+
+    public WeightSourceLookup getWeightSourceLookup() {
+
+        return this.weightSourceLookup;
+    }
+
+    public void setWeightSourceLookup(WeightSourceLookup weightSourceLookup) {
+
+        this.weightSourceLookup = weightSourceLookup;
+    }
+
+    public EmptyReasonMap getEmptyReasonMap() {
+
+        return emptyReasonMap;
+    }
+
+    public void setEmptyReasonMap(EmptyReasonMap emtpyReasonMap) {
+
+        this.emptyReasonMap = emtpyReasonMap;
+    }
 }

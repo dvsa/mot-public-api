@@ -5,5 +5,6 @@
 // Generated on: 2016.07.09 at 08:46:59 PM BST 
 //
 
-@javax.xml.bind.annotation.XmlSchema( namespace = "http://dvsa.gov.uk/mot/vehicle/api", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED )
-package uk.gov.dvsa.mot.vehicle.api ;
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://dvsa.gov.uk/mot/vehicle/api", elementFormDefault = javax.xml.bind.annotation
+        .XmlNsForm.QUALIFIED)
+package uk.gov.dvsa.mot.vehicle.api;

@@ -1,95 +1,93 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the mot1_vts_device_status database table.
- * 
  */
-public class Mot1VtsDeviceStatus implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class Mot1VtsDeviceStatus implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String name ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
+    private int id;
+    private String name;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
 
-  public Mot1VtsDeviceStatus()
-  {
-  }
+    public Mot1VtsDeviceStatus() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(int id) {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public Date getCreatedOn() {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        return this.createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
 }

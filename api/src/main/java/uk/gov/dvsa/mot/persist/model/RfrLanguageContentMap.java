@@ -1,151 +1,149 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the rfr_language_content_map database table.
- * 
  */
-public class RfrLanguageContentMap implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class RfrLanguageContentMap implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String name ;
-  private String testItemSelectorName ;
-  private String inspectionManualDescription ;
-  private String advisoryText ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
-  private LanguageType languageType ;
-  private ReasonForRejection reasonForRejection ;
+    private int id;
+    private String name;
+    private String testItemSelectorName;
+    private String inspectionManualDescription;
+    private String advisoryText;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
+    private LanguageType languageType;
+    private ReasonForRejection reasonForRejection;
 
-  public RfrLanguageContentMap()
-  {
-  }
+    public RfrLanguageContentMap() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getAdvisoryText()
-  {
-    return this.advisoryText ;
-  }
+        return this.id;
+    }
 
-  public void setAdvisoryText( String advisoryText )
-  {
-    this.advisoryText = advisoryText ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getAdvisoryText() {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.advisoryText;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setAdvisoryText(String advisoryText) {
 
-  public String getInspectionManualDescription()
-  {
-    return this.inspectionManualDescription ;
-  }
+        this.advisoryText = advisoryText;
+    }
 
-  public void setInspectionManualDescription( String inspectionManualDescription )
-  {
-    this.inspectionManualDescription = inspectionManualDescription ;
-  }
+    public int getCreatedBy() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public Date getCreatedOn() {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        return this.createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public String getTestItemSelectorName()
-  {
-    return this.testItemSelectorName ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setTestItemSelectorName( String testItemSelectorName )
-  {
-    this.testItemSelectorName = testItemSelectorName ;
-  }
+    public String getInspectionManualDescription() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.inspectionManualDescription;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setInspectionManualDescription(String inspectionManualDescription) {
 
-  public LanguageType getLanguageType()
-  {
-    return this.languageType ;
-  }
+        this.inspectionManualDescription = inspectionManualDescription;
+    }
 
-  public void setLanguageType( LanguageType languageType )
-  {
-    this.languageType = languageType ;
-  }
+    public int getLastUpdatedBy() {
 
-  public ReasonForRejection getReasonForRejection()
-  {
-    return this.reasonForRejection ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setReasonForRejection( ReasonForRejection reasonForRejection )
-  {
-    this.reasonForRejection = reasonForRejection ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public String getTestItemSelectorName() {
+
+        return this.testItemSelectorName;
+    }
+
+    public void setTestItemSelectorName(String testItemSelectorName) {
+
+        this.testItemSelectorName = testItemSelectorName;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public LanguageType getLanguageType() {
+
+        return this.languageType;
+    }
+
+    public void setLanguageType(LanguageType languageType) {
+
+        this.languageType = languageType;
+    }
+
+    public ReasonForRejection getReasonForRejection() {
+
+        return this.reasonForRejection;
+    }
+
+    public void setReasonForRejection(ReasonForRejection reasonForRejection) {
+
+        this.reasonForRejection = reasonForRejection;
+    }
 
 }

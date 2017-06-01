@@ -1,194 +1,192 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.sql.Timestamp ;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * The persistent class for the model_detail database table.
- * 
  */
-public class ModelDetail implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class ModelDetail implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private Model model ;
-  private BodyType bodyType ;
-  private FuelType fuelType ;
-  private TransmissionType transmissionType ;
-  private int cylinderCapacity ;
-  private VehicleClass vehicleClass ;
-  private String euClassification ;
-  private WheelplanType wheelplanType ;
-  private boolean isVerified ;
-  private String sha1ConcatWsChksum ;
-  private int createdBy ;
-  private Timestamp createdOn ;
-  private int lastUpdatedBy ;
-  private Timestamp lastUpdatedOn ;
-  private int version ;
+    private int id;
+    private Model model;
+    private BodyType bodyType;
+    private FuelType fuelType;
+    private TransmissionType transmissionType;
+    private int cylinderCapacity;
+    private VehicleClass vehicleClass;
+    private String euClassification;
+    private WheelplanType wheelplanType;
+    private boolean isVerified;
+    private String sha1ConcatWsChksum;
+    private int createdBy;
+    private Timestamp createdOn;
+    private int lastUpdatedBy;
+    private Timestamp lastUpdatedOn;
+    private int version;
 
-  public ModelDetail()
-  {
-  }
+    public ModelDetail() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(int id) {
 
-  public Timestamp getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Timestamp createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public int getCylinderCapacity()
-  {
-    return this.cylinderCapacity ;
-  }
+        return this.createdBy;
+    }
 
-  public void setCylinderCapacity( int cylinderCapacity )
-  {
-    this.cylinderCapacity = cylinderCapacity ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public String getEuClassification()
-  {
-    return this.euClassification ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setEuClassification( String euClassification )
-  {
-    this.euClassification = euClassification ;
-  }
+    public Timestamp getCreatedOn() {
 
-  public boolean getIsVerified()
-  {
-    return this.isVerified ;
-  }
+        return this.createdOn;
+    }
 
-  public void setIsVerified( boolean isVerified )
-  {
-    this.isVerified = isVerified ;
-  }
+    public void setCreatedOn(Timestamp createdOn) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public int getCylinderCapacity() {
 
-  public Timestamp getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.cylinderCapacity;
+    }
 
-  public void setLastUpdatedOn( Timestamp lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCylinderCapacity(int cylinderCapacity) {
 
-  public String getSha1ConcatWsChksum()
-  {
-    return this.sha1ConcatWsChksum ;
-  }
+        this.cylinderCapacity = cylinderCapacity;
+    }
 
-  public void setSha1ConcatWsChksum( String sha1ConcatWsChksum )
-  {
-    this.sha1ConcatWsChksum = sha1ConcatWsChksum ;
-  }
+    public String getEuClassification() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.euClassification;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setEuClassification(String euClassification) {
 
-  public WheelplanType getWheelplanType()
-  {
-    return this.wheelplanType ;
-  }
+        this.euClassification = euClassification;
+    }
 
-  public void setWheelplanType( WheelplanType wheelplanType )
-  {
-    this.wheelplanType = wheelplanType ;
-  }
+    public boolean getIsVerified() {
 
-  public BodyType getBodyType()
-  {
-    return this.bodyType ;
-  }
+        return this.isVerified;
+    }
 
-  public void setBodyType( BodyType bodyType )
-  {
-    this.bodyType = bodyType ;
-  }
+    public void setIsVerified(boolean isVerified) {
 
-  public FuelType getFuelType()
-  {
-    return this.fuelType ;
-  }
+        this.isVerified = isVerified;
+    }
 
-  public void setFuelType( FuelType fuelType )
-  {
-    this.fuelType = fuelType ;
-  }
+    public int getLastUpdatedBy() {
 
-  public Model getModel()
-  {
-    return this.model ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setModel( Model model )
-  {
-    this.model = model ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public TransmissionType getTransmissionType()
-  {
-    return this.transmissionType ;
-  }
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-  public void setTransmissionType( TransmissionType transmissionType )
-  {
-    this.transmissionType = transmissionType ;
-  }
+    public Timestamp getLastUpdatedOn() {
 
-  public VehicleClass getVehicleClass()
-  {
-    return this.vehicleClass ;
-  }
+        return this.lastUpdatedOn;
+    }
 
-  public void setVehicleClass( VehicleClass vehicleClass )
-  {
-    this.vehicleClass = vehicleClass ;
-  }
+    public void setLastUpdatedOn(Timestamp lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getSha1ConcatWsChksum() {
+
+        return this.sha1ConcatWsChksum;
+    }
+
+    public void setSha1ConcatWsChksum(String sha1ConcatWsChksum) {
+
+        this.sha1ConcatWsChksum = sha1ConcatWsChksum;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public WheelplanType getWheelplanType() {
+
+        return this.wheelplanType;
+    }
+
+    public void setWheelplanType(WheelplanType wheelplanType) {
+
+        this.wheelplanType = wheelplanType;
+    }
+
+    public BodyType getBodyType() {
+
+        return this.bodyType;
+    }
+
+    public void setBodyType(BodyType bodyType) {
+
+        this.bodyType = bodyType;
+    }
+
+    public FuelType getFuelType() {
+
+        return this.fuelType;
+    }
+
+    public void setFuelType(FuelType fuelType) {
+
+        this.fuelType = fuelType;
+    }
+
+    public Model getModel() {
+
+        return this.model;
+    }
+
+    public void setModel(Model model) {
+
+        this.model = model;
+    }
+
+    public TransmissionType getTransmissionType() {
+
+        return this.transmissionType;
+    }
+
+    public void setTransmissionType(TransmissionType transmissionType) {
+
+        this.transmissionType = transmissionType;
+    }
+
+    public VehicleClass getVehicleClass() {
+
+        return this.vehicleClass;
+    }
+
+    public void setVehicleClass(VehicleClass vehicleClass) {
+
+        this.vehicleClass = vehicleClass;
+    }
 }

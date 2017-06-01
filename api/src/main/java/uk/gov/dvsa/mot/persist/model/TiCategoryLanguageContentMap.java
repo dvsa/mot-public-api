@@ -1,140 +1,138 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the ti_category_language_content_map database table.
- * 
  */
-public class TiCategoryLanguageContentMap implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class TiCategoryLanguageContentMap implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String name ;
-  private String description ;
-  private int displayOrder ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
-  private LanguageType languageType ;
-  private TestItemCategory testItemCategory ;
+    private int id;
+    private String name;
+    private String description;
+    private int displayOrder;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
+    private LanguageType languageType;
+    private TestItemCategory testItemCategory;
 
-  public TiCategoryLanguageContentMap()
-  {
-  }
+    public TiCategoryLanguageContentMap() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(int id) {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public String getDescription()
-  {
-    return this.description ;
-  }
+        return this.createdBy;
+    }
 
-  public void setDescription( String description )
-  {
-    this.description = description ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getDisplayOrder()
-  {
-    return this.displayOrder ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setDisplayOrder( int displayOrder )
-  {
-    this.displayOrder = displayOrder ;
-  }
+    public Date getCreatedOn() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public String getDescription() {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        return this.description;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public void setDescription(String description) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.description = description;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public int getDisplayOrder() {
 
-  public LanguageType getLanguageType()
-  {
-    return this.languageType ;
-  }
+        return this.displayOrder;
+    }
 
-  public void setLanguageType( LanguageType languageType )
-  {
-    this.languageType = languageType ;
-  }
+    public void setDisplayOrder(int displayOrder) {
 
-  public TestItemCategory getTestItemCategory()
-  {
-    return this.testItemCategory ;
-  }
+        this.displayOrder = displayOrder;
+    }
 
-  public void setTestItemCategory( TestItemCategory testItemCategory )
-  {
-    this.testItemCategory = testItemCategory ;
-  }
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public LanguageType getLanguageType() {
+
+        return this.languageType;
+    }
+
+    public void setLanguageType(LanguageType languageType) {
+
+        this.languageType = languageType;
+    }
+
+    public TestItemCategory getTestItemCategory() {
+
+        return this.testItemCategory;
+    }
+
+    public void setTestItemCategory(TestItemCategory testItemCategory) {
+
+        this.testItemCategory = testItemCategory;
+    }
 
 }

@@ -1,139 +1,137 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the business_rule database table.
- * 
  */
-public class BusinessRule implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class BusinessRule implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String name ;
-  private String definition ;
-  private String comparison ;
-  private Date dateValue ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
-  private BusinessRuleType businessRuleType ;
+    private int id;
+    private String name;
+    private String definition;
+    private String comparison;
+    private Date dateValue;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
+    private BusinessRuleType businessRuleType;
 
-  public BusinessRule()
-  {
-  }
+    public BusinessRule() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getComparison()
-  {
-    return this.comparison ;
-  }
+        return this.id;
+    }
 
-  public void setComparison( String comparison )
-  {
-    this.comparison = comparison ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getComparison() {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.comparison;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setComparison(String comparison) {
 
-  public Date getDateValue()
-  {
-    return this.dateValue ;
-  }
+        this.comparison = comparison;
+    }
 
-  public void setDateValue( Date dateValue )
-  {
-    this.dateValue = dateValue ;
-  }
+    public int getCreatedBy() {
 
-  public String getDefinition()
-  {
-    return this.definition ;
-  }
+        return this.createdBy;
+    }
 
-  public void setDefinition( String definition )
-  {
-    this.definition = definition ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public Date getCreatedOn() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public Date getDateValue() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.dateValue;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setDateValue(Date dateValue) {
 
-  public BusinessRuleType getBusinessRuleType()
-  {
-    return this.businessRuleType ;
-  }
+        this.dateValue = dateValue;
+    }
 
-  public void setBusinessRuleType( BusinessRuleType businessRuleType )
-  {
-    this.businessRuleType = businessRuleType ;
-  }
+    public String getDefinition() {
+
+        return this.definition;
+    }
+
+    public void setDefinition(String definition) {
+
+        this.definition = definition;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public BusinessRuleType getBusinessRuleType() {
+
+        return this.businessRuleType;
+    }
+
+    public void setBusinessRuleType(BusinessRuleType businessRuleType) {
+
+        this.businessRuleType = businessRuleType;
+    }
 }

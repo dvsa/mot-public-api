@@ -1,118 +1,116 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the jasper_template_variation database table.
- * 
  */
-public class JasperTemplateVariation implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class JasperTemplateVariation implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String name ;
-  private String jasperReportName ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
-  private JasperTemplate jasperTemplate ;
+    private int id;
+    private String name;
+    private String jasperReportName;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
+    private JasperTemplate jasperTemplate;
 
-  public JasperTemplateVariation()
-  {
-  }
+    public JasperTemplateVariation() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(int id) {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public String getJasperReportName()
-  {
-    return this.jasperReportName ;
-  }
+        return this.createdBy;
+    }
 
-  public void setJasperReportName( String jasperReportName )
-  {
-    this.jasperReportName = jasperReportName ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public Date getCreatedOn() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public String getJasperReportName() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.jasperReportName;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setJasperReportName(String jasperReportName) {
 
-  public JasperTemplate getJasperTemplate()
-  {
-    return this.jasperTemplate ;
-  }
+        this.jasperReportName = jasperReportName;
+    }
 
-  public void setJasperTemplate( JasperTemplate jasperTemplate )
-  {
-    this.jasperTemplate = jasperTemplate ;
-  }
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public JasperTemplate getJasperTemplate() {
+
+        return this.jasperTemplate;
+    }
+
+    public void setJasperTemplate(JasperTemplate jasperTemplate) {
+
+        this.jasperTemplate = jasperTemplate;
+    }
 
 }
