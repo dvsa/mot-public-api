@@ -1,292 +1,252 @@
-package uk.gov.dvsa.mot.mottest.read.core ;
+package uk.gov.dvsa.mot.mottest.read.core;
 
-import java.util.ArrayList ;
-import java.util.Date ;
-import java.util.List ;
+import com.google.inject.Inject;
 
-import javax.annotation.Resource ;
+import uk.gov.dvsa.mot.persist.Database;
+import uk.gov.dvsa.mot.persist.MotTestReadDao;
+import uk.gov.dvsa.mot.persist.model.MotTest;
+import uk.gov.dvsa.mot.persist.model.MotTestRfrMap;
+import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
+import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 
-import com.google.inject.Inject ;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import uk.gov.dvsa.mot.persist.Database ;
-import uk.gov.dvsa.mot.persist.MotTestReadDao ;
-import uk.gov.dvsa.mot.persist.model.MotTest ;
-import uk.gov.dvsa.mot.persist.model.MotTestRfrMap ;
-import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem ;
-import uk.gov.dvsa.mot.vehicle.api.Vehicle ;
+import javax.annotation.Resource;
 
 @Resource
-public class MotTestReadServiceDatabase implements MotTestReadService
-{
-  private final MotTestReadDao motTestReadDao ;
+public class MotTestReadServiceDatabase implements MotTestReadService {
+    private final MotTestReadDao motTestReadDao;
 
-  @Inject
-  public MotTestReadServiceDatabase( Database database )
-  {
-    motTestReadDao = database.getMotTestReadDao() ;
-  }
+    @Inject
+    public MotTestReadServiceDatabase(Database database) {
 
-  @Override
-  public uk.gov.dvsa.mot.mottest.api.MotTest getMotTestById( long id )
-  {
-    MotTest motTest = motTestReadDao.getMotTestById( id ) ;
-
-    if ( motTest != null )
-    {
-      return mapMotTestSQLtoJSON( motTest ) ;
-    }
-    else
-    {
-      return null ;
-    }
-  }
-
-  @Override
-  public List<DisplayMotTestItem> getMotHistoryByDateRange( Date startDate, Date endDate )
-  {
-    return motTestReadDao.getMotHistoryByDateRange( startDate, endDate ) ;
-  }
-
-  @Override
-  public uk.gov.dvsa.mot.mottest.api.MotTest getMotTestByNumber( long number )
-  {
-    MotTest motTest = motTestReadDao.getMotTestByNumber( number ) ;
-
-    if ( motTest != null )
-    {
-      return mapMotTestSQLtoJSON( motTest ) ;
-    }
-    else
-    {
-      return null ;
-    }
-  }
-
-  @Override
-  public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByVehicleId( int vehicleId )
-  {
-    List<MotTest> lMotTest = motTestReadDao.getMotTestsByVehicleId( vehicleId ) ;
-
-    List<uk.gov.dvsa.mot.mottest.api.MotTest> lResult = new ArrayList<>() ;
-
-    if ( lMotTest != null )
-    {
-      for ( MotTest mottest : lMotTest )
-      {
-        lResult.add( mapMotTestSQLtoJSON( mottest ) ) ;
-      }
+        motTestReadDao = database.getMotTestReadDao();
     }
 
-    return lResult ;
-  }
+    @Override
+    public uk.gov.dvsa.mot.mottest.api.MotTest getMotTestById(long id) {
 
-  public uk.gov.dvsa.mot.mottest.api.MotTest getLatestMotTestPassByVehicle( Vehicle vehicle )
-  {
-    List<MotTest> lMotTest = motTestReadDao.getMotTestsByVehicleId( vehicle.getId() ) ;
+        MotTest motTest = motTestReadDao.getMotTestById(id);
 
-    if ( lMotTest != null )
-    {
-      for ( MotTest motTest : lMotTest )
-      {
-        String name = motTest.getMotTestStatus().getName() ;
-        if ( "PASSED".equalsIgnoreCase( name ) )
-        {
-          return mapMotTestSQLtoJSON( motTest ) ;
+        if (motTest != null) {
+            return mapMotTestSqltoJson(motTest);
+        } else {
+            return null;
         }
-      }
     }
 
-    return null ;
-  }
+    @Override
+    public List<DisplayMotTestItem> getMotHistoryByDateRange(Date startDate, Date endDate) {
 
-  @Override
-  public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByDateRange( Date startDate, Date endDate )
-  {
-    List<MotTest> lMotTest = motTestReadDao.getMotTestsByDateRange( startDate, endDate ) ;
-
-    List<uk.gov.dvsa.mot.mottest.api.MotTest> lResult = new ArrayList<>() ;
-
-    for ( MotTest mottest : lMotTest )
-    {
-      lResult.add( mapMotTestSQLtoJSON( mottest ) ) ;
+        return motTestReadDao.getMotHistoryByDateRange(startDate, endDate);
     }
 
-    return lResult ;
-  }
+    @Override
+    public uk.gov.dvsa.mot.mottest.api.MotTest getMotTestByNumber(long number) {
 
-  @Override
-  public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByPage( Long offset, Long limit )
-  {
-    if ( offset == null )
-    {
-      offset = 0L ;
+        MotTest motTest = motTestReadDao.getMotTestByNumber(number);
+
+        if (motTest != null) {
+            return mapMotTestSqltoJson(motTest);
+        } else {
+            return null;
+        }
     }
 
-    if ( ( limit == null ) || ( limit > 100L ) )
-    {
-      limit = 100L ;
+    @Override
+    public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByVehicleId(int vehicleId) {
+
+        List<MotTest> motTests = motTestReadDao.getMotTestsByVehicleId(vehicleId);
+
+        List<uk.gov.dvsa.mot.mottest.api.MotTest> result = new ArrayList<>();
+
+        if (motTests != null) {
+            for (MotTest mottest : motTests) {
+                result.add(mapMotTestSqltoJson(mottest));
+            }
+        }
+
+        return result;
     }
 
-    List<MotTest> lMotTest = motTestReadDao.getMotTestCurrentsByPage( offset, limit ) ;
+    public uk.gov.dvsa.mot.mottest.api.MotTest getLatestMotTestPassByVehicle(Vehicle vehicle) {
 
-    List<uk.gov.dvsa.mot.mottest.api.MotTest> lResult = new ArrayList<>() ;
+        List<MotTest> motTests = motTestReadDao.getMotTestsByVehicleId(vehicle.getId());
 
-    for ( MotTest mottest : lMotTest )
-    {
-      lResult.add( mapMotTestSQLtoJSON( mottest ) ) ;
+        if (motTests != null) {
+            for (MotTest motTest : motTests) {
+                String name = motTest.getMotTestStatus().getName();
+                if ("PASSED".equalsIgnoreCase(name)) {
+                    return mapMotTestSqltoJson(motTest);
+                }
+            }
+        }
+
+        return null;
     }
 
-    return lResult ;
-  }
+    @Override
+    public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByDateRange(Date startDate, Date endDate) {
 
-  @Override
-  public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByDatePage( Date date, Integer page )
-  {
-    if ( date == null )
-    {
-      date = new Date() ;
-    }
-    if ( page == null )
-    {
-      page = 0 ;
-    }
-    else if ( page > 1440 )
-    {
-      page = 1440 ;
+        List<MotTest> motTests = motTestReadDao.getMotTestsByDateRange(startDate, endDate);
+
+        List<uk.gov.dvsa.mot.mottest.api.MotTest> result = new ArrayList<>();
+
+        for (MotTest mottest : motTests) {
+            result.add(mapMotTestSqltoJson(mottest));
+        }
+
+        return result;
     }
 
-    Date startDate = date ;
-    Date endDate = date ;
+    @Override
+    public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByPage(Long offset, Long limit) {
 
-    List<MotTest> lMotTest = motTestReadDao.getMotTestsByDateRange( startDate, endDate ) ;
+        if (offset == null) {
+            offset = 0L;
+        }
 
-    List<uk.gov.dvsa.mot.mottest.api.MotTest> lResult = new ArrayList<>() ;
+        if ((limit == null) || (limit > 100L)) {
+            limit = 100L;
+        }
 
-    for ( MotTest mottest : lMotTest )
-    {
-      lResult.add( mapMotTestSQLtoJSON( mottest ) ) ;
+        List<MotTest> motTests = motTestReadDao.getMotTestCurrentsByPage(offset, limit);
+
+        List<uk.gov.dvsa.mot.mottest.api.MotTest> result = new ArrayList<>();
+
+        for (MotTest mottest : motTests) {
+            result.add(mapMotTestSqltoJson(mottest));
+        }
+
+        return result;
     }
 
-    return lResult ;
-  }
+    @Override
+    public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByDatePage(Date date, Integer page) {
 
-  protected uk.gov.dvsa.mot.mottest.api.MotTest mapMotTestSQLtoJSON( MotTest storedMotTest )
-  {
-    uk.gov.dvsa.mot.mottest.api.MotTest jsonMotTest = new uk.gov.dvsa.mot.mottest.api.MotTest() ;
+        if (date == null) {
+            date = new Date();
+        }
+        if (page == null) {
+            page = 0;
+        } else if (page > 1440) {
+            page = 1440;
+        }
 
-    jsonMotTest.setId( storedMotTest.getId() ) ;
+        Date startDate = date;
+        Date endDate = date;
 
-    jsonMotTest.setVehicleId( storedMotTest.getVehicleId() ) ;
-    jsonMotTest.setVehicleVersion( storedMotTest.getVehicleVersion() ) ;
+        List<MotTest> motTests = motTestReadDao.getMotTestsByDateRange(startDate, endDate);
 
-    jsonMotTest.setStatus( storedMotTest.getMotTestStatus().getName() ) ;
-    jsonMotTest.setMotTestType( storedMotTest.getMotTestType().getDescription() ) ;
+        List<uk.gov.dvsa.mot.mottest.api.MotTest> result = new ArrayList<>();
 
-    if ( storedMotTest.getNumber() != null )
-    {
-      jsonMotTest.setNumber( storedMotTest.getNumber().longValue() ) ;
+        for (MotTest mottest : motTests) {
+            result.add(mapMotTestSqltoJson(mottest));
+        }
+
+        return result;
     }
 
-    jsonMotTest.setStartedDate( storedMotTest.getStartedDate() ) ;
-    jsonMotTest.setCompletedDate( storedMotTest.getCompletedDate() ) ;
-    jsonMotTest.setIssuedDate( storedMotTest.getIssuedDate() ) ;
-    jsonMotTest.setExpiryDate( storedMotTest.getExpiryDate() ) ;
+    protected uk.gov.dvsa.mot.mottest.api.MotTest mapMotTestSqltoJson(MotTest storedMotTest) {
 
-    jsonMotTest.setVehicleWeight( storedMotTest.getVehicleWeight() ) ;
-    if ( storedMotTest.getWeightSourceLookup() != null )
-    {
-      jsonMotTest.setWeightSourceLookup( storedMotTest.getWeightSourceLookup().getName() ) ;
+        uk.gov.dvsa.mot.mottest.api.MotTest jsonMotTest = new uk.gov.dvsa.mot.mottest.api.MotTest();
+
+        jsonMotTest.setId(storedMotTest.getId());
+
+        jsonMotTest.setVehicleId(storedMotTest.getVehicleId());
+        jsonMotTest.setVehicleVersion(storedMotTest.getVehicleVersion());
+
+        jsonMotTest.setStatus(storedMotTest.getMotTestStatus().getName());
+        jsonMotTest.setMotTestType(storedMotTest.getMotTestType().getDescription());
+
+        if (storedMotTest.getNumber() != null) {
+            jsonMotTest.setNumber(storedMotTest.getNumber().longValue());
+        }
+
+        jsonMotTest.setStartedDate(storedMotTest.getStartedDate());
+        jsonMotTest.setCompletedDate(storedMotTest.getCompletedDate());
+        jsonMotTest.setIssuedDate(storedMotTest.getIssuedDate());
+        jsonMotTest.setExpiryDate(storedMotTest.getExpiryDate());
+
+        jsonMotTest.setVehicleWeight(storedMotTest.getVehicleWeight());
+        if (storedMotTest.getWeightSourceLookup() != null) {
+            jsonMotTest.setWeightSourceLookup(storedMotTest.getWeightSourceLookup().getName());
+        }
+
+        if (storedMotTest.getMotTestAddressComment() != null) {
+            jsonMotTest.setAddressComment(storedMotTest.getMotTestAddressComment().getComment().getComment());
+        }
+        if (storedMotTest.getMotTestComplaintRef() != null) {
+            jsonMotTest.setComplaintRef(storedMotTest.getMotTestComplaintRef().getComplaintRef());
+        }
+
+        jsonMotTest.setHasRegistration(storedMotTest.getHasRegistration());
+        if (storedMotTest.getDocument() != null) {
+            jsonMotTest.setDocumentId(storedMotTest.getDocument().getId());
+        }
+
+        if (storedMotTest.getMotTestCancelled() != null) {
+            if (storedMotTest.getMotTestCancelled().getMotTestReasonForCancelLookup() != null) {
+                jsonMotTest
+                        .setReasonForCancel(storedMotTest.getMotTestCancelled().getMotTestReasonForCancelLookup().getReason());
+            }
+            if (storedMotTest.getMotTestCancelled().getComment() != null) {
+                jsonMotTest.setReasonForCancelComment(storedMotTest.getMotTestCancelled().getComment().getComment());
+            }
+        }
+
+        if (storedMotTest.getMotTestEmergencyReason() != null) {
+            if (storedMotTest.getMotTestEmergencyReason().getEmergencyLog() != null) {
+                jsonMotTest.setEmergencyReasonLogId(storedMotTest.getMotTestEmergencyReason().getEmergencyLog().getId());
+            }
+            if (storedMotTest.getMotTestEmergencyReason().getEmergencyReasonLookup() != null) {
+                jsonMotTest.setEmergencyReason(
+                        storedMotTest.getMotTestEmergencyReason().getEmergencyReasonLookup().getDescription());
+            }
+            if (storedMotTest.getMotTestEmergencyReason().getComment() != null) {
+                jsonMotTest.setEmergencyReason(storedMotTest.getMotTestEmergencyReason().getComment().getComment());
+            }
+        }
+
+        jsonMotTest.setOdometerReadingValue(storedMotTest.getOdometerReadingValue());
+        if (storedMotTest.getOdometerReadingUnit() != null) {
+            jsonMotTest.setOdometerReadingUnit(storedMotTest.getOdometerReadingUnit());
+        }
+        if (storedMotTest.getOdometerReadingType() != null) {
+            jsonMotTest.setOdometerReadingType(storedMotTest.getOdometerReadingType());
+        }
+
+        if (storedMotTest.getMotTestOriginal() != null) {
+            jsonMotTest.setMotTestIdOriginal(storedMotTest.getMotTestOriginal().getId());
+        }
+
+        if (storedMotTest.getMotTestPrs() != null) {
+            jsonMotTest.setPrsMotTestId(storedMotTest.getMotTestPrs().getId());
+        }
+
+        if (storedMotTest.getPerson() != null) {
+            jsonMotTest.setPersonId(storedMotTest.getPerson().getId());
+        }
+
+        if (storedMotTest.getSite() != null) {
+            jsonMotTest.setSiteId(storedMotTest.getSite().getId());
+        }
+
+        /* need to lookup person */
+        jsonMotTest.setCreatedBy(String.valueOf(storedMotTest.getCreatedBy()));
+        jsonMotTest.setLastUpdatedBy(String.valueOf(storedMotTest.getLastUpdatedBy()));
+        jsonMotTest.setCreatedOn(storedMotTest.getCreatedOn());
+        jsonMotTest.setLastUpdatedOn(storedMotTest.getLastUpdatedOn());
+        jsonMotTest.setVersion(storedMotTest.getVersion());
+
+        jsonMotTest.setClientIp(storedMotTest.getClientIp());
+
+        for (MotTestRfrMap storedMotTestRfrMap : storedMotTest.getMotTestCurrentRfrMaps()) {
+            jsonMotTest.getMotTestRfrMaps().add(MotTestToJsonMapper.mapMotTestRfrMapSqlToJson(storedMotTestRfrMap));
+        }
+
+        return jsonMotTest;
     }
-
-    if ( storedMotTest.getMotTestAddressComment() != null )
-    {
-      jsonMotTest.setAddressComment( storedMotTest.getMotTestAddressComment().getComment().getComment() ) ;
-    }
-    if ( storedMotTest.getMotTestComplaintRef() != null )
-    {
-      jsonMotTest.setComplaintRef( storedMotTest.getMotTestComplaintRef().getComplaintRef() ) ;
-    }
-
-    jsonMotTest.setHasRegistration( storedMotTest.getHasRegistration() ) ;
-    if ( storedMotTest.getDocument() != null )
-    {
-      jsonMotTest.setDocumentId( storedMotTest.getDocument().getId() ) ;
-    }
-
-    if ( storedMotTest.getMotTestCancelled() != null )
-    {
-      if ( storedMotTest.getMotTestCancelled().getMotTestReasonForCancelLookup() != null )
-      {
-        jsonMotTest
-            .setReasonForCancel( storedMotTest.getMotTestCancelled().getMotTestReasonForCancelLookup().getReason() ) ;
-      }
-      if ( storedMotTest.getMotTestCancelled().getComment() != null )
-      {
-        jsonMotTest.setReasonForCancelComment( storedMotTest.getMotTestCancelled().getComment().getComment() ) ;
-      }
-    }
-
-    if ( storedMotTest.getMotTestEmergencyReason() != null )
-    {
-      if ( storedMotTest.getMotTestEmergencyReason().getEmergencyLog() != null )
-      {
-        jsonMotTest.setEmergencyReasonLogId( storedMotTest.getMotTestEmergencyReason().getEmergencyLog().getId() ) ;
-      }
-      if ( storedMotTest.getMotTestEmergencyReason().getEmergencyReasonLookup() != null )
-      {
-        jsonMotTest.setEmergencyReason(
-            storedMotTest.getMotTestEmergencyReason().getEmergencyReasonLookup().getDescription() ) ;
-      }
-      if ( storedMotTest.getMotTestEmergencyReason().getComment() != null )
-      {
-        jsonMotTest.setEmergencyReason( storedMotTest.getMotTestEmergencyReason().getComment().getComment() ) ;
-      }
-    }
-
-    jsonMotTest.setOdometerReadingValue( storedMotTest.getOdometerReadingValue() ) ;
-    if ( storedMotTest.getOdometerReadingUnit() != null )
-    {
-      jsonMotTest.setOdometerReadingUnit( storedMotTest.getOdometerReadingUnit() ) ;
-    }
-    if ( storedMotTest.getOdometerReadingType() != null )
-    {
-      jsonMotTest.setOdometerReadingType( storedMotTest.getOdometerReadingType() ) ;
-    }
-
-    if ( storedMotTest.getMotTestOriginal() != null )
-    {
-      jsonMotTest.setMotTestIdOriginal( storedMotTest.getMotTestOriginal().getId() ) ;
-    }
-
-    if ( storedMotTest.getMotTestPrs() != null )
-    {
-      jsonMotTest.setPrsMotTestId( storedMotTest.getMotTestPrs().getId() ) ;
-    }
-
-    if ( storedMotTest.getPerson() != null )
-    {
-      jsonMotTest.setPersonId( storedMotTest.getPerson().getId() ) ;
-    }
-
-    if ( storedMotTest.getSite() != null )
-    {
-      jsonMotTest.setSiteId( storedMotTest.getSite().getId() ) ;
-    }
-
-    /* need to lookup person */
-    jsonMotTest.setCreatedBy( String.valueOf( storedMotTest.getCreatedBy() ) ) ;
-    jsonMotTest.setLastUpdatedBy( String.valueOf( storedMotTest.getLastUpdatedBy() ) ) ;
-    jsonMotTest.setCreatedOn( storedMotTest.getCreatedOn() ) ;
-    jsonMotTest.setLastUpdatedOn( storedMotTest.getLastUpdatedOn() ) ;
-    jsonMotTest.setVersion( storedMotTest.getVersion() ) ;
-
-    jsonMotTest.setClientIp( storedMotTest.getClientIp() ) ;
-
-    for ( MotTestRfrMap storedMotTestRfrMap : storedMotTest.getMotTestCurrentRfrMaps() )
-    {
-      jsonMotTest.getMotTestRfrMaps().add( MotTestToJSONMapper.mapMotTestRfrMapSQLtoJSON( storedMotTestRfrMap ) ) ;
-    }
-
-    return jsonMotTest ;
-  }
 }

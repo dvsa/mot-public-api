@@ -1,151 +1,149 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the mot_test_reason_for_cancel_lookup database
  * table.
- * 
  */
-public class MotTestReasonForCancelLookup implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class MotTestReasonForCancelLookup implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String code ;
-  private String reason ;
-  private String reasonCy ;
-  private boolean isAbandoned ;
-  private boolean isDisplayable ;
-  private boolean isSystemGenerated ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
+    private int id;
+    private String code;
+    private String reason;
+    private String reasonCy;
+    private boolean isAbandoned;
+    private boolean isDisplayable;
+    private boolean isSystemGenerated;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
 
-  public MotTestReasonForCancelLookup()
-  {
-  }
+    public MotTestReasonForCancelLookup() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getCode()
-  {
-    return this.code ;
-  }
+        return this.id;
+    }
 
-  public void setCode( String code )
-  {
-    this.code = code ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getCode() {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.code;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setCode(String code) {
 
-  public boolean getIsAbandoned()
-  {
-    return this.isAbandoned ;
-  }
+        this.code = code;
+    }
 
-  public void setIsAbandoned( boolean isAbandoned )
-  {
-    this.isAbandoned = isAbandoned ;
-  }
+    public int getCreatedBy() {
 
-  public boolean getIsDisplayable()
-  {
-    return this.isDisplayable ;
-  }
+        return this.createdBy;
+    }
 
-  public void setIsDisplayable( boolean isDisplayable )
-  {
-    this.isDisplayable = isDisplayable ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public boolean getIsSystemGenerated()
-  {
-    return this.isSystemGenerated ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setIsSystemGenerated( boolean isSystemGenerated )
-  {
-    this.isSystemGenerated = isSystemGenerated ;
-  }
+    public Date getCreatedOn() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public boolean getIsAbandoned() {
 
-  public String getReason()
-  {
-    return this.reason ;
-  }
+        return this.isAbandoned;
+    }
 
-  public void setReason( String reason )
-  {
-    this.reason = reason ;
-  }
+    public void setIsAbandoned(boolean isAbandoned) {
 
-  public String getReasonCy()
-  {
-    return this.reasonCy ;
-  }
+        this.isAbandoned = isAbandoned;
+    }
 
-  public void setReasonCy( String reasonCy )
-  {
-    this.reasonCy = reasonCy ;
-  }
+    public boolean getIsDisplayable() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.isDisplayable;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setIsDisplayable(boolean isDisplayable) {
+
+        this.isDisplayable = isDisplayable;
+    }
+
+    public boolean getIsSystemGenerated() {
+
+        return this.isSystemGenerated;
+    }
+
+    public void setIsSystemGenerated(boolean isSystemGenerated) {
+
+        this.isSystemGenerated = isSystemGenerated;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getReason() {
+
+        return this.reason;
+    }
+
+    public void setReason(String reason) {
+
+        this.reason = reason;
+    }
+
+    public String getReasonCy() {
+
+        return this.reasonCy;
+    }
+
+    public void setReasonCy(String reasonCy) {
+
+        this.reasonCy = reasonCy;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
 }

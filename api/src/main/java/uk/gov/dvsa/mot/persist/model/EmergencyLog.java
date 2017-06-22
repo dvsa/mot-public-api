@@ -1,128 +1,126 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the emergency_log database table.
- * 
  */
-public class EmergencyLog implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class EmergencyLog implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String number ;
-  private String description ;
-  private Date startDate ;
-  private Date endDate ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
+    private int id;
+    private String number;
+    private String description;
+    private Date startDate;
+    private Date endDate;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
 
-  public EmergencyLog()
-  {
-  }
+    public EmergencyLog() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(int id) {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public String getDescription()
-  {
-    return this.description ;
-  }
+        return this.createdBy;
+    }
 
-  public void setDescription( String description )
-  {
-    this.description = description ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Date getEndDate()
-  {
-    return this.endDate ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setEndDate( Date endDate )
-  {
-    this.endDate = endDate ;
-  }
+    public Date getCreatedOn() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public String getDescription() {
 
-  public String getNumber()
-  {
-    return this.number ;
-  }
+        return this.description;
+    }
 
-  public void setNumber( String number )
-  {
-    this.number = number ;
-  }
+    public void setDescription(String description) {
 
-  public Date getStartDate()
-  {
-    return this.startDate ;
-  }
+        this.description = description;
+    }
 
-  public void setStartDate( Date startDate )
-  {
-    this.startDate = startDate ;
-  }
+    public Date getEndDate() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.endDate;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setEndDate(Date endDate) {
+
+        this.endDate = endDate;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getNumber() {
+
+        return this.number;
+    }
+
+    public void setNumber(String number) {
+
+        this.number = number;
+    }
+
+    public Date getStartDate() {
+
+        return this.startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+
+        this.startDate = startDate;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
 }

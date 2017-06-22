@@ -1,118 +1,116 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.sql.Timestamp ;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * The persistent class for the mot_test_address_comment database table.
- * 
  */
-public class MotTestAddressComment implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class MotTestAddressComment implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private long id ;
-  private MotTest motTestCurrent ;
-  private MotTestHistory motTestHistory ;
-  private Comment comment ;
-  private int createdBy ;
-  private Timestamp createdOn ;
-  private int lastUpdatedBy ;
-  private Timestamp lastUpdatedOn ;
-  private int version ;
+    private long id;
+    private MotTest motTestCurrent;
+    private MotTestHistory motTestHistory;
+    private Comment comment;
+    private int createdBy;
+    private Timestamp createdOn;
+    private int lastUpdatedBy;
+    private Timestamp lastUpdatedOn;
+    private int version;
 
-  public MotTestAddressComment()
-  {
-  }
+    public MotTestAddressComment() {
 
-  public long getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( long id )
-  {
-    this.id = id ;
-  }
+    public long getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(long id) {
 
-  public Timestamp getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Timestamp createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Timestamp getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedOn( Timestamp lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public Timestamp getCreatedOn() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setCreatedOn(Timestamp createdOn) {
 
-  public Comment getComment()
-  {
-    return this.comment ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setComment( Comment comment )
-  {
-    this.comment = comment ;
-  }
+    public int getLastUpdatedBy() {
 
-  public MotTest getMotTestCurrent()
-  {
-    return this.motTestCurrent ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setMotTestCurrent( MotTest motTestCurrent )
-  {
-    this.motTestCurrent = motTestCurrent ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public MotTestHistory getMotTestHistory()
-  {
-    return this.motTestHistory ;
-  }
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-  public void setMotTestHistory( MotTestHistory motTestHistory )
-  {
-    this.motTestHistory = motTestHistory ;
-  }
+    public Timestamp getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Timestamp lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public Comment getComment() {
+
+        return this.comment;
+    }
+
+    public void setComment(Comment comment) {
+
+        this.comment = comment;
+    }
+
+    public MotTest getMotTestCurrent() {
+
+        return this.motTestCurrent;
+    }
+
+    public void setMotTestCurrent(MotTest motTestCurrent) {
+
+        this.motTestCurrent = motTestCurrent;
+    }
+
+    public MotTestHistory getMotTestHistory() {
+
+        return this.motTestHistory;
+    }
+
+    public void setMotTestHistory(MotTestHistory motTestHistory) {
+
+        this.motTestHistory = motTestHistory;
+    }
 
 }

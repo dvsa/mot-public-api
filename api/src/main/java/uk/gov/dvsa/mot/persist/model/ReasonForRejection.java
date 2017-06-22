@@ -1,293 +1,291 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
-import java.util.List ;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The persistent class for the reason_for_rejection database table.
- * 
  */
-public class ReasonForRejection implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class ReasonForRejection implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private TestItemCategory testItemCategory ;
-  private TestItemCategory sectionTestItemCategory ;
-  private String testItemSelectorName ;
-  private String testItemSelectorNameCy ;
-  private Date dateFirstUsed ;
-  private Date endDate ;
-  private String manual ;
-  private String inspectionManualReference ;
-  private boolean isAdvisory ;
-  private boolean isPrsFail ;
-  private String audience ;
-  private boolean canBeDangerous ;
-  private boolean locationMarker ;
-  private boolean minorItem ;
-  private boolean note ;
-  private boolean qtMarker ;
-  private boolean specProc ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
-  private List<RfrLanguageContentMap> rfrLanguageContentMaps ;
+    private int id;
+    private TestItemCategory testItemCategory;
+    private TestItemCategory sectionTestItemCategory;
+    private String testItemSelectorName;
+    private String testItemSelectorNameCy;
+    private Date dateFirstUsed;
+    private Date endDate;
+    private String manual;
+    private String inspectionManualReference;
+    private boolean isAdvisory;
+    private boolean isPrsFail;
+    private String audience;
+    private boolean canBeDangerous;
+    private boolean locationMarker;
+    private boolean minorItem;
+    private boolean note;
+    private boolean qtMarker;
+    private boolean specProc;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
+    private List<RfrLanguageContentMap> rfrLanguageContentMaps;
 
-  public ReasonForRejection()
-  {
-  }
+    public ReasonForRejection() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getAudience()
-  {
-    return this.audience ;
-  }
+        return this.id;
+    }
 
-  public void setAudience( String audience )
-  {
-    this.audience = audience ;
-  }
+    public void setId(int id) {
 
-  public boolean getCanBeDangerous()
-  {
-    return this.canBeDangerous ;
-  }
+        this.id = id;
+    }
 
-  public void setCanBeDangerous( boolean canBeDangerous )
-  {
-    this.canBeDangerous = canBeDangerous ;
-  }
+    public String getAudience() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.audience;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setAudience(String audience) {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.audience = audience;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public boolean getCanBeDangerous() {
 
-  public Date getDateFirstUsed()
-  {
-    return this.dateFirstUsed ;
-  }
+        return this.canBeDangerous;
+    }
 
-  public void setDateFirstUsed( Date dateFirstUsed )
-  {
-    this.dateFirstUsed = dateFirstUsed ;
-  }
+    public void setCanBeDangerous(boolean canBeDangerous) {
 
-  public Date getEndDate()
-  {
-    return this.endDate ;
-  }
+        this.canBeDangerous = canBeDangerous;
+    }
 
-  public void setEndDate( Date endDate )
-  {
-    this.endDate = endDate ;
-  }
+    public int getCreatedBy() {
 
-  public String getInspectionManualReference()
-  {
-    return this.inspectionManualReference ;
-  }
+        return this.createdBy;
+    }
 
-  public void setInspectionManualReference( String inspectionManualReference )
-  {
-    this.inspectionManualReference = inspectionManualReference ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public boolean getIsAdvisory()
-  {
-    return this.isAdvisory ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setIsAdvisory( boolean isAdvisory )
-  {
-    this.isAdvisory = isAdvisory ;
-  }
+    public Date getCreatedOn() {
 
-  public boolean getIsPrsFail()
-  {
-    return this.isPrsFail ;
-  }
+        return this.createdOn;
+    }
 
-  public void setIsPrsFail( boolean isPrsFail )
-  {
-    this.isPrsFail = isPrsFail ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public Date getDateFirstUsed() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.dateFirstUsed;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setDateFirstUsed(Date dateFirstUsed) {
 
-  public boolean getLocationMarker()
-  {
-    return this.locationMarker ;
-  }
+        this.dateFirstUsed = dateFirstUsed;
+    }
 
-  public void setLocationMarker( boolean locationMarker )
-  {
-    this.locationMarker = locationMarker ;
-  }
+    public Date getEndDate() {
 
-  public String getManual()
-  {
-    return this.manual ;
-  }
+        return this.endDate;
+    }
 
-  public void setManual( String manual )
-  {
-    this.manual = manual ;
-  }
+    public void setEndDate(Date endDate) {
 
-  public boolean getMinorItem()
-  {
-    return this.minorItem ;
-  }
+        this.endDate = endDate;
+    }
 
-  public void setMinorItem( boolean minorItem )
-  {
-    this.minorItem = minorItem ;
-  }
+    public String getInspectionManualReference() {
 
-  public boolean getNote()
-  {
-    return this.note ;
-  }
+        return this.inspectionManualReference;
+    }
 
-  public void setNote( boolean note )
-  {
-    this.note = note ;
-  }
+    public void setInspectionManualReference(String inspectionManualReference) {
 
-  public boolean getQtMarker()
-  {
-    return this.qtMarker ;
-  }
+        this.inspectionManualReference = inspectionManualReference;
+    }
 
-  public void setQtMarker( boolean qtMarker )
-  {
-    this.qtMarker = qtMarker ;
-  }
+    public boolean getIsAdvisory() {
 
-  public boolean getSpecProc()
-  {
-    return this.specProc ;
-  }
+        return this.isAdvisory;
+    }
 
-  public void setSpecProc( boolean specProc )
-  {
-    this.specProc = specProc ;
-  }
+    public void setIsAdvisory(boolean isAdvisory) {
 
-  public String getTestItemSelectorName()
-  {
-    return this.testItemSelectorName ;
-  }
+        this.isAdvisory = isAdvisory;
+    }
 
-  public void setTestItemSelectorName( String testItemSelectorName )
-  {
-    this.testItemSelectorName = testItemSelectorName ;
-  }
+    public boolean getIsPrsFail() {
 
-  public String getTestItemSelectorNameCy()
-  {
-    return this.testItemSelectorNameCy ;
-  }
+        return this.isPrsFail;
+    }
 
-  public void setTestItemSelectorNameCy( String testItemSelectorNameCy )
-  {
-    this.testItemSelectorNameCy = testItemSelectorNameCy ;
-  }
+    public void setIsPrsFail(boolean isPrsFail) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.isPrsFail = isPrsFail;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public int getLastUpdatedBy() {
 
-  public TestItemCategory getSectionTestItemCategory()
-  {
-    return this.sectionTestItemCategory ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setSectionTestItemCategory( TestItemCategory sectionTestItemCategory )
-  {
-    this.sectionTestItemCategory = sectionTestItemCategory ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public TestItemCategory getTestItemCategory()
-  {
-    return this.testItemCategory ;
-  }
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-  public void setTestItemCategory( TestItemCategory testItemCategory )
-  {
-    this.testItemCategory = testItemCategory ;
-  }
+    public Date getLastUpdatedOn() {
 
-  public List<RfrLanguageContentMap> getRfrLanguageContentMaps()
-  {
-    return rfrLanguageContentMaps ;
-  }
+        return this.lastUpdatedOn;
+    }
 
-  public void setTiRfrLanguageContentMaps( List<RfrLanguageContentMap> tiRfrLanguageContentMaps )
-  {
-    this.rfrLanguageContentMaps = tiRfrLanguageContentMaps ;
-  }
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
 
-  public void setAdvisory( boolean isAdvisory )
-  {
-    this.isAdvisory = isAdvisory ;
-  }
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
 
-  public void setPrsFail( boolean isPrsFail )
-  {
-    this.isPrsFail = isPrsFail ;
-  }
+    public boolean getLocationMarker() {
+
+        return this.locationMarker;
+    }
+
+    public void setLocationMarker(boolean locationMarker) {
+
+        this.locationMarker = locationMarker;
+    }
+
+    public String getManual() {
+
+        return this.manual;
+    }
+
+    public void setManual(String manual) {
+
+        this.manual = manual;
+    }
+
+    public boolean getMinorItem() {
+
+        return this.minorItem;
+    }
+
+    public void setMinorItem(boolean minorItem) {
+
+        this.minorItem = minorItem;
+    }
+
+    public boolean getNote() {
+
+        return this.note;
+    }
+
+    public void setNote(boolean note) {
+
+        this.note = note;
+    }
+
+    public boolean getQtMarker() {
+
+        return this.qtMarker;
+    }
+
+    public void setQtMarker(boolean qtMarker) {
+
+        this.qtMarker = qtMarker;
+    }
+
+    public boolean getSpecProc() {
+
+        return this.specProc;
+    }
+
+    public void setSpecProc(boolean specProc) {
+
+        this.specProc = specProc;
+    }
+
+    public String getTestItemSelectorName() {
+
+        return this.testItemSelectorName;
+    }
+
+    public void setTestItemSelectorName(String testItemSelectorName) {
+
+        this.testItemSelectorName = testItemSelectorName;
+    }
+
+    public String getTestItemSelectorNameCy() {
+
+        return this.testItemSelectorNameCy;
+    }
+
+    public void setTestItemSelectorNameCy(String testItemSelectorNameCy) {
+
+        this.testItemSelectorNameCy = testItemSelectorNameCy;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public TestItemCategory getSectionTestItemCategory() {
+
+        return this.sectionTestItemCategory;
+    }
+
+    public void setSectionTestItemCategory(TestItemCategory sectionTestItemCategory) {
+
+        this.sectionTestItemCategory = sectionTestItemCategory;
+    }
+
+    public TestItemCategory getTestItemCategory() {
+
+        return this.testItemCategory;
+    }
+
+    public void setTestItemCategory(TestItemCategory testItemCategory) {
+
+        this.testItemCategory = testItemCategory;
+    }
+
+    public List<RfrLanguageContentMap> getRfrLanguageContentMaps() {
+
+        return rfrLanguageContentMaps;
+    }
+
+    public void setTiRfrLanguageContentMaps(List<RfrLanguageContentMap> tiRfrLanguageContentMaps) {
+
+        this.rfrLanguageContentMaps = tiRfrLanguageContentMaps;
+    }
+
+    public void setAdvisory(boolean isAdvisory) {
+
+        this.isAdvisory = isAdvisory;
+    }
+
+    public void setPrsFail(boolean isPrsFail) {
+
+        this.isPrsFail = isPrsFail;
+    }
 }

@@ -1,129 +1,127 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the wheelplan_type database table.
- * 
  */
-public class WheelplanType implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class WheelplanType implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private String code ;
-  private String name ;
-  private String description ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int displayOrder ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
+    private int id;
+    private String code;
+    private String name;
+    private String description;
+    private int createdBy;
+    private Date createdOn;
+    private int displayOrder;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
 
-  public WheelplanType()
-  {
-  }
+    public WheelplanType() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public String getCode()
-  {
-    return this.code ;
-  }
+        return this.id;
+    }
 
-  public void setCode( String code )
-  {
-    this.code = code ;
-  }
+    public void setId(int id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getCode() {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.code;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setCode(String code) {
 
-  public String getDescription()
-  {
-    return this.description ;
-  }
+        this.code = code;
+    }
 
-  public void setDescription( String description )
-  {
-    this.description = description ;
-  }
+    public int getCreatedBy() {
 
-  public int getDisplayOrder()
-  {
-    return this.displayOrder ;
-  }
+        return this.createdBy;
+    }
 
-  public void setDisplayOrder( int displayOrder )
-  {
-    this.displayOrder = displayOrder ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public Date getCreatedOn() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public String getDescription() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.description;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setDescription(String description) {
+
+        this.description = description;
+    }
+
+    public int getDisplayOrder() {
+
+        return this.displayOrder;
+    }
+
+    public void setDisplayOrder(int displayOrder) {
+
+        this.displayOrder = displayOrder;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
 
 }

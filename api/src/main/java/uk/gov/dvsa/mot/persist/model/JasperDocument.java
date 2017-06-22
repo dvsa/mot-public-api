@@ -1,136 +1,134 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
-import java.util.List ;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The persistent class for the jasper_document database table.
- * 
  */
-public class JasperDocument implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class JasperDocument implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private Long id ;
-  private String documentContent ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
-  private JasperTemplate jasperTemplate ;
-  private List<JasperHardCopy> jasperHardCopies ;
+    private Long id;
+    private String documentContent;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
+    private JasperTemplate jasperTemplate;
+    private List<JasperHardCopy> jasperHardCopies;
 
-  public JasperDocument()
-  {
-  }
+    public JasperDocument() {
 
-  public Long getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( Long id )
-  {
-    this.id = id ;
-  }
+    public Long getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(Long id) {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public String getDocumentContent()
-  {
-    return this.documentContent ;
-  }
+        return this.createdBy;
+    }
 
-  public void setDocumentContent( String documentContent )
-  {
-    this.documentContent = documentContent ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public Date getCreatedOn() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdOn;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public String getDocumentContent() {
 
-  public void setJasperTemplate( JasperTemplate jasperTemplate )
-  {
-    this.jasperTemplate = jasperTemplate ;
-  }
+        return this.documentContent;
+    }
 
-  public JasperTemplate getJasperTemplate()
-  {
-    return this.jasperTemplate ;
-  }
+    public void setDocumentContent(String documentContent) {
 
-  public List<JasperHardCopy> getJasperHardCopies()
-  {
-    return this.jasperHardCopies ;
-  }
+        this.documentContent = documentContent;
+    }
 
-  public void setJasperHardCopies( List<JasperHardCopy> jasperHardCopies )
-  {
-    this.jasperHardCopies = jasperHardCopies ;
-  }
+    public int getLastUpdatedBy() {
 
-  public JasperHardCopy addJasperHardCopy( JasperHardCopy jasperHardCopy )
-  {
-    getJasperHardCopies().add( jasperHardCopy ) ;
-    jasperHardCopy.setJasperDocument( this ) ;
+        return this.lastUpdatedBy;
+    }
 
-    return jasperHardCopy ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public JasperHardCopy removeJasperHardCopy( JasperHardCopy jasperHardCopy )
-  {
-    getJasperHardCopies().remove( jasperHardCopy ) ;
-    jasperHardCopy.setJasperDocument( null ) ;
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-    return jasperHardCopy ;
-  }
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public JasperTemplate getJasperTemplate() {
+
+        return this.jasperTemplate;
+    }
+
+    public void setJasperTemplate(JasperTemplate jasperTemplate) {
+
+        this.jasperTemplate = jasperTemplate;
+    }
+
+    public List<JasperHardCopy> getJasperHardCopies() {
+
+        return this.jasperHardCopies;
+    }
+
+    public void setJasperHardCopies(List<JasperHardCopy> jasperHardCopies) {
+
+        this.jasperHardCopies = jasperHardCopies;
+    }
+
+    public JasperHardCopy addJasperHardCopy(JasperHardCopy jasperHardCopy) {
+
+        getJasperHardCopies().add(jasperHardCopy);
+        jasperHardCopy.setJasperDocument(this);
+
+        return jasperHardCopy;
+    }
+
+    public JasperHardCopy removeJasperHardCopy(JasperHardCopy jasperHardCopy) {
+
+        getJasperHardCopies().remove(jasperHardCopy);
+        jasperHardCopy.setJasperDocument(null);
+
+        return jasperHardCopy;
+    }
 
   /*
    * public List<CertificateReplacement> getCertificateReplacements() { return

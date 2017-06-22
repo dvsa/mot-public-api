@@ -1,125 +1,123 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
-import java.util.List ;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The persistent class for the non_working_day_country_lookup database table.
- * 
  */
-public class NonWorkingDayCountryLookup implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class NonWorkingDayCountryLookup implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private int id ;
-  private CountryLookup countryLookup ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
-  private List<NonWorkingDayLookup> nonWorkingDayLookups ;
+    private int id;
+    private CountryLookup countryLookup;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
+    private List<NonWorkingDayLookup> nonWorkingDayLookups;
 
-  public NonWorkingDayCountryLookup()
-  {
-  }
+    public NonWorkingDayCountryLookup() {
 
-  public int getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( int id )
-  {
-    this.id = id ;
-  }
+    public int getId() {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        return this.id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public void setId(int id) {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public int getCreatedBy() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public Date getCreatedOn() {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        return this.createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public void setCreatedOn(Date createdOn) {
 
-  public CountryLookup getCountryLookup()
-  {
-    return this.countryLookup ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setCountryLookup( CountryLookup countryLookup )
-  {
-    this.countryLookup = countryLookup ;
-  }
+    public int getLastUpdatedBy() {
 
-  public List<NonWorkingDayLookup> getNonWorkingDayLookups()
-  {
-    return this.nonWorkingDayLookups ;
-  }
+        return this.lastUpdatedBy;
+    }
 
-  public void setNonWorkingDayLookups( List<NonWorkingDayLookup> nonWorkingDayLookups )
-  {
-    this.nonWorkingDayLookups = nonWorkingDayLookups ;
-  }
+    public void setLastUpdatedBy(int lastUpdatedBy) {
 
-  public NonWorkingDayLookup addNonWorkingDayLookup( NonWorkingDayLookup nonWorkingDayLookup )
-  {
-    getNonWorkingDayLookups().add( nonWorkingDayLookup ) ;
-    nonWorkingDayLookup.setNonWorkingDayCountryLookup( this ) ;
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
-    return nonWorkingDayLookup ;
-  }
+    public Date getLastUpdatedOn() {
 
-  public NonWorkingDayLookup removeNonWorkingDayLookup( NonWorkingDayLookup nonWorkingDayLookup )
-  {
-    getNonWorkingDayLookups().remove( nonWorkingDayLookup ) ;
-    nonWorkingDayLookup.setNonWorkingDayCountryLookup( null ) ;
+        return this.lastUpdatedOn;
+    }
 
-    return nonWorkingDayLookup ;
-  }
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public CountryLookup getCountryLookup() {
+
+        return this.countryLookup;
+    }
+
+    public void setCountryLookup(CountryLookup countryLookup) {
+
+        this.countryLookup = countryLookup;
+    }
+
+    public List<NonWorkingDayLookup> getNonWorkingDayLookups() {
+
+        return this.nonWorkingDayLookups;
+    }
+
+    public void setNonWorkingDayLookups(List<NonWorkingDayLookup> nonWorkingDayLookups) {
+
+        this.nonWorkingDayLookups = nonWorkingDayLookups;
+    }
+
+    public NonWorkingDayLookup addNonWorkingDayLookup(NonWorkingDayLookup nonWorkingDayLookup) {
+
+        getNonWorkingDayLookups().add(nonWorkingDayLookup);
+        nonWorkingDayLookup.setNonWorkingDayCountryLookup(this);
+
+        return nonWorkingDayLookup;
+    }
+
+    public NonWorkingDayLookup removeNonWorkingDayLookup(NonWorkingDayLookup nonWorkingDayLookup) {
+
+        getNonWorkingDayLookups().remove(nonWorkingDayLookup);
+        nonWorkingDayLookup.setNonWorkingDayCountryLookup(null);
+
+        return nonWorkingDayLookup;
+    }
 
   /*
    * public List<Site> getSites() { return this.sites; }

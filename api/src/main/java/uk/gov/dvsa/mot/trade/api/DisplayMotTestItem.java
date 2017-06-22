@@ -1,167 +1,166 @@
-package uk.gov.dvsa.mot.trade.api ;
+package uk.gov.dvsa.mot.trade.api;
 
-import java.util.List ;
+import java.util.List;
 
-public class DisplayMotTestItem
-{
-  private String registration ;
-  private String make_name ;
-  private String model_name ;
-  private String first_used_date ;
-  private String fuel_type ;
-  private String primary_colour ;
-  private String completed_date ;
-  private String test_result ;
-  private String expiry_date ;
-  private String odometer_value ;
-  private String odometer_unit ;
-  private String mot_test_number ;
-  private List<RfrAndAdvisoryItem> rfrAndComments ;
+public class DisplayMotTestItem {
+    private String registration;
+    private String makeName;
+    private String modelName;
+    private String firstUsedDate;
+    private String fuelType;
+    private String primaryColour;
+    private String completedDate;
+    private String testResult;
+    private String expiryDate;
+    private String odometerValue;
+    private String odometerUnit;
+    private String motTestNumber;
+    private List<RfrAndAdvisoryItem> rfrAndComments;
 
-  public DisplayMotTestItem()
-  {
-  }
+    public DisplayMotTestItem() {
 
-  public List<RfrAndAdvisoryItem> getRfrAndComments()
-  {
-    return rfrAndComments ;
-  }
+    }
 
-  public DisplayMotTestItem setRfrAndComments( List<RfrAndAdvisoryItem> rfrAndComments )
-  {
-    this.rfrAndComments = rfrAndComments ;
-    return this ;
-  }
+    public List<RfrAndAdvisoryItem> getRfrAndComments() {
 
-  public String getRegistration()
-  {
-    return registration ;
-  }
+        return rfrAndComments;
+    }
 
-  public DisplayMotTestItem setRegistration( String registration )
-  {
-    this.registration = registration ;
-    return this ;
-  }
+    public DisplayMotTestItem setRfrAndComments(List<RfrAndAdvisoryItem> rfrAndComments) {
 
-  public String getMake_name()
-  {
-    return make_name ;
-  }
+        this.rfrAndComments = rfrAndComments;
+        return this;
+    }
 
-  public DisplayMotTestItem setMake_name( String make_name )
-  {
-    this.make_name = make_name ;
-    return this ;
-  }
+    public String getRegistration() {
 
-  public String getModel_name()
-  {
-    return model_name ;
-  }
+        return registration;
+    }
 
-  public DisplayMotTestItem setModel_name( String model_name )
-  {
-    this.model_name = model_name ;
-    return this ;
-  }
+    public DisplayMotTestItem setRegistration(String registration) {
 
-  public String getFirst_used_date()
-  {
-    return first_used_date ;
-  }
+        this.registration = registration;
+        return this;
+    }
 
-  public DisplayMotTestItem setFirst_used_date( String first_used_date )
-  {
-    this.first_used_date = first_used_date ;
-    return this ;
-  }
+    public String getMakeName() {
 
-  public String getFuel_type()
-  {
-    return fuel_type ;
-  }
+        return makeName;
+    }
 
-  public DisplayMotTestItem setFuel_type( String fuel_type )
-  {
-    this.fuel_type = fuel_type ;
-    return this ;
-  }
+    public DisplayMotTestItem setMakeName(String makeName) {
 
-  public String getPrimary_colour()
-  {
-    return primary_colour ;
-  }
+        this.makeName = makeName;
+        return this;
+    }
 
-  public DisplayMotTestItem setPrimary_colour( String primary_colour )
-  {
-    this.primary_colour = primary_colour ;
-    return this ;
-  }
+    public String getModelName() {
 
-  public String getCompleted_date()
-  {
-    return completed_date ;
-  }
+        return modelName;
+    }
 
-  public DisplayMotTestItem setCompleted_date( String completed_date )
-  {
-    this.completed_date = completed_date ;
-    return this ;
-  }
+    public DisplayMotTestItem setModelName(String modelName) {
 
-  public String getTest_result()
-  {
-    return test_result ;
-  }
+        this.modelName = modelName;
+        return this;
+    }
 
-  public DisplayMotTestItem setTest_result( String test_result )
-  {
-    this.test_result = test_result ;
-    return this ;
-  }
+    public String getFirstUsedDate() {
 
-  public String getExpiry_date()
-  {
-    return expiry_date ;
-  }
+        return firstUsedDate;
+    }
 
-  public DisplayMotTestItem setExpiry_date( String expiry_date )
-  {
-    this.expiry_date = expiry_date ;
-    return this ;
-  }
+    public DisplayMotTestItem setFirstUsedDate(String firstUsedDate) {
 
-  public String getOdometer_value()
-  {
-    return odometer_value ;
-  }
+        this.firstUsedDate = firstUsedDate;
+        return this;
+    }
 
-  public DisplayMotTestItem setOdometer_value( String odometer_value )
-  {
-    this.odometer_value = odometer_value ;
-    return this ;
-  }
+    public String getFuelType() {
 
-  public String getMot_test_number()
-  {
-    return mot_test_number ;
-  }
+        return fuelType;
+    }
 
-  public DisplayMotTestItem setMot_test_number( String mot_test_number )
-  {
-    this.mot_test_number = mot_test_number ;
-    return this ;
-  }
+    public DisplayMotTestItem setFuelType(String fuelType) {
 
-  public String getOdometer_unit()
-  {
-    return odometer_unit ;
-  }
+        this.fuelType = fuelType;
+        return this;
+    }
 
-  public DisplayMotTestItem setOdometer_unit( String odometer_unit )
-  {
-    this.odometer_unit = odometer_unit ;
-    return this ;
-  }
+    public String getPrimaryColour() {
+
+        return primaryColour;
+    }
+
+    public DisplayMotTestItem setPrimaryColour(String primaryColour) {
+
+        this.primaryColour = primaryColour;
+        return this;
+    }
+
+    public String getCompletedDate() {
+
+        return completedDate;
+    }
+
+    public DisplayMotTestItem setCompletedDate(String completedDate) {
+
+        this.completedDate = completedDate;
+        return this;
+    }
+
+    public String getTestResult() {
+
+        return testResult;
+    }
+
+    public DisplayMotTestItem setTestResult(String testResult) {
+
+        this.testResult = testResult;
+        return this;
+    }
+
+    public String getExpiryDate() {
+
+        return expiryDate;
+    }
+
+    public DisplayMotTestItem setExpiryDate(String expiryDate) {
+
+        this.expiryDate = expiryDate;
+        return this;
+    }
+
+    public String getOdometerValue() {
+
+        return odometerValue;
+    }
+
+    public DisplayMotTestItem setOdometerValue(String odometerValue) {
+
+        this.odometerValue = odometerValue;
+        return this;
+    }
+
+    public String getMotTestNumber() {
+
+        return motTestNumber;
+    }
+
+    public DisplayMotTestItem setMotTestNumber(String motTestNumber) {
+
+        this.motTestNumber = motTestNumber;
+        return this;
+    }
+
+    public String getOdometerUnit() {
+
+        return odometerUnit;
+    }
+
+    public DisplayMotTestItem setOdometerUnit(String odometerUnit) {
+
+        this.odometerUnit = odometerUnit;
+        return this;
+    }
 }

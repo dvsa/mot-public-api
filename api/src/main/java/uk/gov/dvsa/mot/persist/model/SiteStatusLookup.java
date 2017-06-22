@@ -1,117 +1,115 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.sql.Timestamp ;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * The persistent class for the site_status_lookup database table.
- * 
  */
-public class SiteStatusLookup implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class SiteStatusLookup implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private String id ;
-  private String code ;
-  private String name ;
-  private int displayOrder ;
-  private int createdBy ;
-  private Timestamp createdOn ;
-  private int lastUpdatedBy ;
-  private Timestamp lastUpdatedOn ;
-  private int version ;
+    private String id;
+    private String code;
+    private String name;
+    private int displayOrder;
+    private int createdBy;
+    private Timestamp createdOn;
+    private int lastUpdatedBy;
+    private Timestamp lastUpdatedOn;
+    private int version;
 
-  public SiteStatusLookup()
-  {
-  }
+    public SiteStatusLookup() {
 
-  public String getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( String id )
-  {
-    this.id = id ;
-  }
+    public String getId() {
 
-  public String getCode()
-  {
-    return this.code ;
-  }
+        return this.id;
+    }
 
-  public void setCode( String code )
-  {
-    this.code = code ;
-  }
+    public void setId(String id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getCode() {
 
-  public Timestamp getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.code;
+    }
 
-  public void setCreatedOn( Timestamp createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setCode(String code) {
 
-  public int getDisplayOrder()
-  {
-    return this.displayOrder ;
-  }
+        this.code = code;
+    }
 
-  public void setDisplayOrder( int displayOrder )
-  {
-    this.displayOrder = displayOrder ;
-  }
+    public int getCreatedBy() {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public Timestamp getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setLastUpdatedOn( Timestamp lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public Timestamp getCreatedOn() {
 
-  public String getName()
-  {
-    return this.name ;
-  }
+        return this.createdOn;
+    }
 
-  public void setName( String name )
-  {
-    this.name = name ;
-  }
+    public void setCreatedOn(Timestamp createdOn) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.createdOn = createdOn;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public int getDisplayOrder() {
+
+        return this.displayOrder;
+    }
+
+    public void setDisplayOrder(int displayOrder) {
+
+        this.displayOrder = displayOrder;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Timestamp getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Timestamp lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public String getName() {
+
+        return this.name;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
 }

@@ -1,107 +1,105 @@
-package uk.gov.dvsa.mot.persist.model ;
+package uk.gov.dvsa.mot.persist.model;
 
-import java.io.Serializable ;
-import java.util.Date ;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * The persistent class for the comment database table.
- * 
  */
-public class Comment implements Serializable
-{
-  private static final long serialVersionUID = 1L ;
+public class Comment implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-  private long id ;
-  private Person person ;
-  private String comment ;
-  private int createdBy ;
-  private Date createdOn ;
-  private int lastUpdatedBy ;
-  private Date lastUpdatedOn ;
-  private int version ;
+    private long id;
+    private Person person;
+    private String comment;
+    private int createdBy;
+    private Date createdOn;
+    private int lastUpdatedBy;
+    private Date lastUpdatedOn;
+    private int version;
 
-  public Comment()
-  {
-  }
+    public Comment() {
 
-  public long getId()
-  {
-    return this.id ;
-  }
+    }
 
-  public void setId( long id )
-  {
-    this.id = id ;
-  }
+    public long getId() {
 
-  public String getComment()
-  {
-    return this.comment ;
-  }
+        return this.id;
+    }
 
-  public void setComment( String comment )
-  {
-    this.comment = comment ;
-  }
+    public void setId(long id) {
 
-  public int getCreatedBy()
-  {
-    return this.createdBy ;
-  }
+        this.id = id;
+    }
 
-  public void setCreatedBy( int createdBy )
-  {
-    this.createdBy = createdBy ;
-  }
+    public String getComment() {
 
-  public Date getCreatedOn()
-  {
-    return this.createdOn ;
-  }
+        return this.comment;
+    }
 
-  public void setCreatedOn( Date createdOn )
-  {
-    this.createdOn = createdOn ;
-  }
+    public void setComment(String comment) {
 
-  public int getLastUpdatedBy()
-  {
-    return this.lastUpdatedBy ;
-  }
+        this.comment = comment;
+    }
 
-  public void setLastUpdatedBy( int lastUpdatedBy )
-  {
-    this.lastUpdatedBy = lastUpdatedBy ;
-  }
+    public int getCreatedBy() {
 
-  public Date getLastUpdatedOn()
-  {
-    return this.lastUpdatedOn ;
-  }
+        return this.createdBy;
+    }
 
-  public void setLastUpdatedOn( Date lastUpdatedOn )
-  {
-    this.lastUpdatedOn = lastUpdatedOn ;
-  }
+    public void setCreatedBy(int createdBy) {
 
-  public int getVersion()
-  {
-    return this.version ;
-  }
+        this.createdBy = createdBy;
+    }
 
-  public void setVersion( int version )
-  {
-    this.version = version ;
-  }
+    public Date getCreatedOn() {
 
-  public Person getPerson()
-  {
-    return this.person ;
-  }
+        return this.createdOn;
+    }
 
-  public void setPerson( Person person )
-  {
-    this.person = person ;
-  }
+    public void setCreatedOn(Date createdOn) {
+
+        this.createdOn = createdOn;
+    }
+
+    public int getLastUpdatedBy() {
+
+        return this.lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(int lastUpdatedBy) {
+
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public Date getLastUpdatedOn() {
+
+        return this.lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(Date lastUpdatedOn) {
+
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
+
+    public int getVersion() {
+
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+
+        this.version = version;
+    }
+
+    public Person getPerson() {
+
+        return this.person;
+    }
+
+    public void setPerson(Person person) {
+
+        this.person = person;
+    }
 
 }

@@ -1,108 +1,103 @@
-package uk.gov.dvsa.mot.app ;
+package uk.gov.dvsa.mot.app;
 
-import static org.junit.Assert.assertSame ;
-import static org.mockito.Mockito.when ;
+import com.amazonaws.services.lambda.runtime.Context;
+import com.google.inject.ProvisionException;
 
-import org.junit.Test ;
-import org.mockito.Mock ;
-import org.mockito.MockitoAnnotations ;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import com.amazonaws.services.lambda.runtime.Context ;
-import com.google.inject.ProvisionException ;
+import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
+import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
+import uk.gov.dvsa.mot.trade.api.TradeException;
+import uk.gov.dvsa.mot.vehicle.api.Vehicle;
+import uk.gov.dvsa.mot.vehicle.read.core.VehicleReadService;
 
-import uk.gov.dvsa.mot.trade.api.InternalServerErrorException ;
-import uk.gov.dvsa.mot.trade.api.InvalidResourceException ;
-import uk.gov.dvsa.mot.trade.api.TradeException ;
-import uk.gov.dvsa.mot.vehicle.api.Vehicle ;
-import uk.gov.dvsa.mot.vehicle.read.core.VehicleReadService ;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.when;
 
-public class VehicleServiceRequestHandlerTest
-{
-  @Mock
-  VehicleReadService vehicleReadService ;
+public class VehicleServiceRequestHandlerTest {
+    @Mock
+    VehicleReadService vehicleReadService;
 
-  @Mock
-  Context lambdaContext ;
+    @Mock
+    Context lambdaContext;
 
-  public VehicleServiceRequestHandlerTest()
-  {
-    MockitoAnnotations.initMocks( this ) ;
-  }
+    public VehicleServiceRequestHandlerTest() {
 
-  /**
-   * When no vehicle is returned from the database, getVehicleById should return
-   * null.
-   */
-  @Test( expected = InvalidResourceException.class )
-  public void getVehicleById_VehicleDoesNotExist() throws TradeException
-  {
-    final int vehicleId = 19 ;
+        MockitoAnnotations.initMocks(this);
+    }
 
-    when( vehicleReadService.getVehicleById( vehicleId ) ).thenReturn( null ) ;
+    /**
+     * When no vehicle is returned from the database, getVehicleById should return
+     * null.
+     */
+    @Test(expected = InvalidResourceException.class)
+    public void getVehicleById_VehicleDoesNotExist() throws TradeException {
 
-    when( lambdaContext.getAwsRequestId() ).thenReturn( "4" ) ;
+        final int vehicleId = 19;
 
-    VehicleServiceRequestHandler sut = new VehicleServiceRequestHandler( false ) ;
-    sut.setVehicleReadService( vehicleReadService ) ;
+        when(vehicleReadService.getVehicleById(vehicleId)).thenReturn(null);
 
-    sut.getVehicleById( vehicleId, lambdaContext ) ;
-  }
+        when(lambdaContext.getAwsRequestId()).thenReturn("4");
 
-  @Test
-  public void getVehicleById_VehicleExists() throws TradeException
-  {
-    final int vehicleId = 22 ;
+        VehicleServiceRequestHandler sut = new VehicleServiceRequestHandler(false);
+        sut.setVehicleReadService(vehicleReadService);
 
-    // this vehicle will be returned by the read service
-    Vehicle vehicle = new Vehicle() ;
+        sut.getVehicleById(vehicleId, lambdaContext);
+    }
 
-    // configure mocks
-    when( vehicleReadService.getVehicleById( vehicleId ) ).thenReturn( vehicle ) ;
-    when( lambdaContext.getAwsRequestId() ).thenReturn( "4" ) ;
+    @Test
+    public void getVehicleById_VehicleExists() throws TradeException {
 
-    // create test subject
-    VehicleServiceRequestHandler sut = new VehicleServiceRequestHandler( false ) ;
-    sut.setVehicleReadService( vehicleReadService ) ;
+        final int vehicleId = 22;
 
-    // call method under test
-    Vehicle returnedVehicle = sut.getVehicleById( vehicleId, lambdaContext ) ;
+        // this vehicle will be returned by the read service
+        Vehicle vehicle = new Vehicle();
 
-    // check that the vehicle we received is the same vehicle we got from the
-    // read service
-    assertSame( vehicle, returnedVehicle ) ;
-  }
+        // configure mocks
+        when(vehicleReadService.getVehicleById(vehicleId)).thenReturn(vehicle);
+        when(lambdaContext.getAwsRequestId()).thenReturn("4");
 
-  /**
-   * Any unexpected exception types should result in an
-   * InternalServerErrorException
-   * 
-   * @throws TradeException
-   */
-  @Test( expected = InternalServerErrorException.class )
-  public void getVehicleById_HandlesUnexpectedExceptions() throws TradeException
-  {
-    final int vehicleId = 22 ;
+        // create test subject
+        VehicleServiceRequestHandler sut = new VehicleServiceRequestHandler(false);
+        sut.setVehicleReadService(vehicleReadService);
 
-    // configure mocks
-    when( vehicleReadService.getVehicleById( vehicleId ) ).thenThrow( new IndexOutOfBoundsException() ) ;
+        // call method under test
+        Vehicle returnedVehicle = sut.getVehicleById(vehicleId, lambdaContext);
 
-    // create test subject
-    VehicleServiceRequestHandler sut = new VehicleServiceRequestHandler( false ) ;
-    sut.setVehicleReadService( vehicleReadService ) ;
+        // check that the vehicle we received is the same vehicle we got from the
+        // read service
+        assertSame(vehicle, returnedVehicle);
+    }
 
-    // call method, which should throw
-    sut.getVehicleById( vehicleId, lambdaContext ) ;
-  }
+    /**
+     * Any unexpected exception types should result in an
+     * InternalServerErrorException
+     */
+    @Test(expected = InternalServerErrorException.class)
+    public void getVehicleById_HandlesUnexpectedExceptions() throws TradeException {
 
-  /**
-   * We expect the default constructor to throw when it tries to talk to a MySQL
-   * server which doesn't exist
-   * 
-   * @throws Exception
-   */
-  @Test( expected = ProvisionException.class )
-  public void defaultConstructor_Throws() throws Exception
-  {
-    new VehicleServiceRequestHandler() ;
-  }
+        final int vehicleId = 22;
+
+        // configure mocks
+        when(vehicleReadService.getVehicleById(vehicleId)).thenThrow(new IndexOutOfBoundsException());
+
+        // create test subject
+        VehicleServiceRequestHandler sut = new VehicleServiceRequestHandler(false);
+        sut.setVehicleReadService(vehicleReadService);
+
+        // call method, which should throw
+        sut.getVehicleById(vehicleId, lambdaContext);
+    }
+
+    /**
+     * We expect the default constructor to throw when it tries to talk to a MySQL
+     * server which doesn't exist
+     */
+    @Test(expected = ProvisionException.class)
+    public void defaultConstructor_Throws() throws Exception {
+
+        new VehicleServiceRequestHandler();
+    }
 }
