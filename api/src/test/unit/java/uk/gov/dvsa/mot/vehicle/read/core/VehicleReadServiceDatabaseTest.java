@@ -333,4 +333,54 @@ public class VehicleReadServiceDatabaseTest {
         assertThat(actual, notNullValue());
         assertThat(actual, isEmpty());
     }
+
+    @Test
+    public void findByMotTestNumberWithSameRegistrationAndVin_ValidVehicles_ReturnsMappedVehicles() {
+
+        final String registration = "HJ89UIK";
+        final String colour = "POMEGRANATE";
+        final long motTestNumber = 123456;
+
+        final uk.gov.dvsa.mot.persist.model.Vehicle vehicle = makeTestVehicle(registration, colour);
+
+        final List<uk.gov.dvsa.mot.persist.model.Vehicle> vehiclesList = Arrays.asList(vehicle);
+
+        when(vehicleReadDaoMock.getVehiclesByMotTestNumberWithSameRegistrationAndVin(motTestNumber)).thenReturn(vehiclesList);
+
+        List<Vehicle> actual = vehicleReadServiceDatabase.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
+
+        assertThat(actual, notNullValue());
+        assertThat(actual, hasSize(1));
+        assertThat(actual.get(0), notNullValue());
+        assertThat(actual.get(0).getPrimaryColour(), equalTo(colour));
+        assertThat(actual.get(0).getRegistration(), equalTo(registration));
+    }
+
+    @Test
+    public void findByMotTestNumberWithSameRegistrationAndVin_NoVehicles_ReturnsEmptyList() {
+
+        final long motTestNumber = 123456;
+
+        final List<uk.gov.dvsa.mot.persist.model.Vehicle> vehiclesList = Arrays.asList();
+
+        when(vehicleReadDaoMock.getVehiclesByMotTestNumberWithSameRegistrationAndVin(motTestNumber)).thenReturn(vehiclesList);
+
+        List<Vehicle> actual = vehicleReadServiceDatabase.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
+
+        assertThat(actual, notNullValue());
+        assertThat(actual, isEmpty());
+    }
+
+    @Test
+    public void findByMotTestNumberWithSameRegistrationAndVin_NullVehicles_ReturnsEmptyList() {
+
+        final long motTestNumber = 123456;
+
+        when(vehicleReadDaoMock.getVehiclesByMotTestNumberWithSameRegistrationAndVin(motTestNumber)).thenReturn(null);
+
+        List<Vehicle> actual = vehicleReadServiceDatabase.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
+
+        assertThat(actual, notNullValue());
+        assertThat(actual, isEmpty());
+    }
 }

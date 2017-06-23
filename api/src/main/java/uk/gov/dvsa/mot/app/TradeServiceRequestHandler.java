@@ -87,7 +87,6 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 return vehicles;
             } else if (request.getQueryParams().getNumber() != null) {
                 logger.info("Trade API request for mot test number = " + request.getQueryParams().getNumber());
-
                 List<Vehicle> vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(request.getQueryParams().getNumber());
 
                 if (vehicles.isEmpty()) {
@@ -285,15 +284,8 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             if (request.getPathParams().getNumber() != null) {
                 logger.info("Trade API MOTR request for mot test number = " + request.getPathParams().getNumber());
 
-                List<Vehicle> vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(request.getPathParams().getNumber());
-
-                if (vehicles.isEmpty()) {
-                    logger.debug("getLatestMotTestByMotTestNumber for number = " + request.getPathParams().getNumber() + " found 0");
-                    throw new InvalidResourceException("No MOT Tests found with number : " + request.getPathParams().getNumber(),
-                            context.getAwsRequestId());
-                }
-
-                Vehicle vehicle = tradeReadService.getLatestMotTestByRegistration(vehicles.get(0).getRegistration());
+                Vehicle vehicle =
+                        tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(request.getPathParams().getNumber());
 
                 if (vehicle == null) {
                     logger.debug("getLatestMotTestByMotTestNumber for number = " + request.getPathParams().getNumber() + " found 0");
@@ -310,12 +302,12 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             }
         } catch (TradeException e) {
             // no need to log these errors, just throw them back
-            logger.trace("Exiting getLatestMotTestByNumber");
+            logger.trace("Exiting getLatestMotTestByMotTestNumber");
             throw e;
         } catch (Exception e) {
             // log all unhandled exceptions and throw an internal server error
             logger.error(e);
-            logger.trace("Exiting getLatestMotTestByNumber");
+            logger.trace("Exiting getLatestMotTestByMotTestNumber");
             throw new InternalServerErrorException(e, context.getAwsRequestId());
         }
     }

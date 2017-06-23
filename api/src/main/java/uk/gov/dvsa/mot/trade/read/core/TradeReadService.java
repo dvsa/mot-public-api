@@ -31,5 +31,7 @@ public interface TradeReadService {
 
     Vehicle getLatestMotTestByRegistration(String registration);
 
+    Vehicle getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber);
+
     //  List<Vehicle> getVehiclesByDatePageTest( Date date, Integer page, Integer pages ) ;
 }
