@@ -618,8 +618,7 @@ public class TradeServiceRequestHandlerTest {
         final Vehicle vehicle = new Vehicle();
         vehicle.setRegistration(registration);
 
-        when(tradeReadService.getVehiclesMotTestsByMotTestNumber(motNumber)).thenReturn(Arrays.asList(vehicle));
-        when(tradeReadService.getLatestMotTestByRegistration(registration)).thenReturn(vehicle);
+        when(tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motNumber)).thenReturn(vehicle);
 
         Vehicle receivedVehicle = createHandlerAndGetLatestMotTestByMotTestNumber(request);
 

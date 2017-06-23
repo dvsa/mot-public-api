@@ -159,8 +159,25 @@ class VehicleReadSql {
                     + "JOIN  `mot2`.`make` on `make`.`id` = `model`.`make_id` " + "WHERE `vehicle`.`registration` = ? "
                     + "AND   `make`.`name` LIKE ? ";
 
+    static final String whereByFullRegistrationAndVinEqualVehicleWithMotTestNumber = "WHERE `mot2`.`vehicle`.`vin` = "
+            + "      ("
+            + "        SELECT `original_vehicle`.`vin`"
+            + "        FROM `mot2`.`vehicle` `original_vehicle`"
+            + "          JOIN `mot2`.`mot_test_current` `original_test` ON `original_vehicle`.`id` = `original_test`.`vehicle_id`"
+            + "        WHERE `original_test`.`number` = ?"
+            + "      )"
+            + " AND `mot2`.`vehicle`.`registration` ="
+            + "          ("
+            + "            SELECT `original_vehicle`.`registration`"
+            + "            FROM `mot2`.`vehicle` `original_vehicle`"
+            + "              JOIN `mot2`.`mot_test_current` `original_test` ON `original_vehicle`.`id` = `original_test`.`vehicle_id`"
+            + "            WHERE `original_test`.`number` = ?"
+            + "          )";
+
     static final String queryGetVehicleByFullRegistration = selectGetVehicle + whereByFullRegistration;
     static final String queryGetVehicleByFullRegAndMake = selectGetVehicle + whereByFullRegAndMake;
+    static final String queryGetVehiclesByMotTestNumberWithSameRegistrationAndVin =
+            selectGetVehicle + whereByFullRegistrationAndVinEqualVehicleWithMotTestNumber;
 
     static final String queryGetVehicleByIdAndVersion = "SELECT `vehicle`.`id` " + ", `vehicle`.`registration` "
             + ", `vehicle`.`registration_collapsed` " + ", `vehicle`.`vin` " + ", `vehicle`.`vin_collapsed` "
