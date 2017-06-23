@@ -159,8 +159,17 @@ class VehicleReadSql {
                     + "JOIN  `mot2`.`make` on `make`.`id` = `model`.`make_id` " + "WHERE `vehicle`.`registration` = ? "
                     + "AND   `make`.`name` LIKE ? ";
 
+    static final String whereByFullRegistrationAndVinEqualVehicleWithMotTestNumber = " JOIN (SELECT `v`.`registration`, `v`.`vin`" +
+            "      FROM `vehicle` `v`" +
+            "      JOIN `mot_test_current` `c` ON `c`.`vehicle_id` = `v`.`id`" +
+            "      WHERE `c`.`number` = ? ) " +
+            "      candidate_vehicles ON `vehicle`.`registration` = candidate_vehicles.registration AND" +
+            "                             `vehicle`.`vin` = candidate_vehicles.vin";
+
     static final String queryGetVehicleByFullRegistration = selectGetVehicle + whereByFullRegistration;
     static final String queryGetVehicleByFullRegAndMake = selectGetVehicle + whereByFullRegAndMake;
+    static final String queryGetVehiclesByMotTestNumberWithSameRegistrationAndVin =
+            selectGetVehicle + whereByFullRegistrationAndVinEqualVehicleWithMotTestNumber;
 
     static final String queryGetVehicleByIdAndVersion = "SELECT `vehicle`.`id` " + ", `vehicle`.`registration` "
             + ", `vehicle`.`registration_collapsed` " + ", `vehicle`.`vin` " + ", `vehicle`.`vin_collapsed` "

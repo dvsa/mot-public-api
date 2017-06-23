@@ -78,6 +78,14 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     }
 
     @Override
+    public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber) {
+
+        List<Vehicle> vehicles = vehicleReadDao.getVehiclesByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
+
+        return mapVehiclesSqltoJson(vehicles);
+    }
+
+    @Override
     public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> getVehiclesByPage(int offset, int limit) {
 
         List<Vehicle> vehicles = vehicleReadDao.getVehiclesByPage(offset, limit);

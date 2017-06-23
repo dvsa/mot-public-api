@@ -36,6 +36,8 @@ public interface VehicleReadDao {
 
     List<Vehicle> getVehicleByFullRegistration(String registration);
 
+    List<Vehicle> getVehiclesByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber);
+
     List<Vehicle> getVehiclesByRegistrationOrVin(String registration, String vin);
 
     List<Vehicle> getVehiclesByFullRegAndFullVin(String registration, String vin, boolean includeDvla);
