@@ -251,6 +251,30 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     }
 
     @Override
+    public List<Vehicle> getVehiclesByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber) {
+
+        List<Vehicle> vehicles = new ArrayList<>();
+
+        try (PreparedStatement stmt =
+                     connection.prepareStatement(VehicleReadSql.queryGetVehiclesByMotTestNumberWithSameRegistrationAndVin)) {
+            stmt.setLong(1, motTestNumber);
+            stmt.setLong(2, motTestNumber);
+
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                while (resultSet.next()) {
+                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                    vehicles.add(vehicle);
+                }
+            }
+        } catch (SQLException e) {
+
+            throw new InternalException(e);
+        }
+
+        return vehicles;
+    }
+
+    @Override
     public List<Vehicle> getVehiclesByFullRegAndFullVin(String registration, String vin, boolean includeDvla) {
 
         List<Vehicle> vehicles = new ArrayList<>();

@@ -93,49 +93,26 @@ public class TradeReadServiceDatabase implements TradeReadService {
     @Override
     public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByRegistration(String registration) {
 
-        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = null;
-
         List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
 
-        if (!(vehicles == null) && !vehicles.isEmpty()) {
-            Vehicle vehicle = null;
-            MotTest motTest = null;
+        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = getLatestMotTestPassAndMapToTradeVehicle(vehicles);
 
-            for (Vehicle v : vehicles) {
-                MotTest mt = motTestReadService.getLatestMotTestPassByVehicle(v);
+        return tradeVehicle;
+    }
 
-                // if vehicle has not been set yet (i.e. first vehicle) or latest
-                // expiryDate is later than current expiryDate
-                if (vehicle == null || (mt.getExpiryDate() != null
-                        && (motTest.getExpiryDate() == null || mt.getExpiryDate().after(motTest.getExpiryDate())))) {
-                    vehicle = v;
-                    motTest = mt;
-                }
-            }
 
-            tradeVehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
+    /*
+ * (non-Javadoc)
+ *
+ * @see uk.gov.dvsa.mot.trade.read.core.TradeReadServiceInterface#
+ * getVehiclesByRegistartionAndMake(String,String)
+ */
+    @Override
+    public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber) {
 
-            tradeVehicle.setRegistration(vehicle.getRegistration());
-            tradeVehicle.setMake(vehicle.getMake());
-            tradeVehicle.setModel(vehicle.getModel());
-            tradeVehicle.setPrimaryColour(vehicle.getPrimaryColour());
-            if (!"Not Stated".equalsIgnoreCase(vehicle.getSecondaryColour())) {
-                tradeVehicle.setSecondaryColour(vehicle.getSecondaryColour());
-            }
+        List<Vehicle> vehicles = vehicleReadService.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
 
-            if (vehicle.getManufactureDate() != null) {
-                tradeVehicle.setManufactureYear(sdfYear.format(vehicle.getManufactureDate()));
-            }
-
-            if (motTest != null) {
-                if (motTest.getExpiryDate() != null) {
-                    tradeVehicle.setMotTestExpiryDate(sdfDateIso8601.format(motTest.getExpiryDate()));
-                }
-                if (motTest.getNumber() != null) {
-                    tradeVehicle.setMotTestNumber(motTest.getNumber().toString());
-                }
-            }
-        }
+        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = getLatestMotTestPassAndMapToTradeVehicle(vehicles);
 
         return tradeVehicle;
     }
@@ -275,5 +252,53 @@ public class TradeReadServiceDatabase implements TradeReadService {
         displayMotTestItem.setRfrAndComments(rfrAndAdvisoryItemList);
 
         return displayMotTestItem;
+    }
+
+    private uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestPassAndMapToTradeVehicle(List<Vehicle> vehicles) {
+
+        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = null;
+
+        if (!(vehicles == null) && !vehicles.isEmpty()) {
+            Vehicle vehicle = null;
+            MotTest motTest = null;
+
+            for (Vehicle v : vehicles) {
+                MotTest mt = motTestReadService.getLatestMotTestPassByVehicle(v);
+
+                // if vehicle has not been set yet (i.e. first vehicle) or latest
+                // expiryDate is later than current expiryDate
+                if (vehicle == null || (mt.getExpiryDate() != null
+                        && (motTest.getExpiryDate() == null || mt.getExpiryDate().after(motTest.getExpiryDate())))) {
+                    vehicle = v;
+                    motTest = mt;
+                }
+            }
+
+            tradeVehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
+
+            tradeVehicle.setRegistration(vehicle.getRegistration());
+            tradeVehicle.setMake(vehicle.getMake());
+            tradeVehicle.setModel(vehicle.getModel());
+            tradeVehicle.setPrimaryColour(vehicle.getPrimaryColour());
+
+            if (!"Not Stated".equalsIgnoreCase(vehicle.getSecondaryColour())) {
+                tradeVehicle.setSecondaryColour(vehicle.getSecondaryColour());
+            }
+
+            if (vehicle.getManufactureDate() != null) {
+                tradeVehicle.setManufactureYear(sdfYear.format(vehicle.getManufactureDate()));
+            }
+
+            if (motTest != null) {
+                if (motTest.getExpiryDate() != null) {
+                    tradeVehicle.setMotTestExpiryDate(sdfDateIso8601.format(motTest.getExpiryDate()));
+                }
+                if (motTest.getNumber() != null) {
+                    tradeVehicle.setMotTestNumber(motTest.getNumber().toString());
+                }
+            }
+        }
+
+        return tradeVehicle;
     }
 }
