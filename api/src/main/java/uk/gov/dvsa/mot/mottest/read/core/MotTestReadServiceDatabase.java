@@ -58,7 +58,7 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
     @Override
     public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByVehicleId(int vehicleId) {
 
-        List<MotTest> motTests = motTestReadDao.getMotTestsByVehicleId(vehicleId);
+        List<MotTest> motTests = motTestReadDao.getMotTestsByVehicleId(vehicleId, false);
 
         List<uk.gov.dvsa.mot.mottest.api.MotTest> result = new ArrayList<>();
 
@@ -73,7 +73,7 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
 
     public uk.gov.dvsa.mot.mottest.api.MotTest getLatestMotTestPassByVehicle(Vehicle vehicle) {
 
-        List<MotTest> motTests = motTestReadDao.getMotTestsByVehicleId(vehicle.getId());
+        List<MotTest> motTests = motTestReadDao.getMotTestsByVehicleId(vehicle.getId(), true);
 
         if (motTests != null) {
             for (MotTest motTest : motTests) {

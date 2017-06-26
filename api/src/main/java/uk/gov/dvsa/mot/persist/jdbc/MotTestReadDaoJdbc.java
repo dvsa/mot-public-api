@@ -189,63 +189,101 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
     }
 
     @Override
-    public List<MotTest> getMotTestsByVehicleId(int vehicleId) {
+    public List<MotTest> getMotTestsByVehicleId(int vehicleId, boolean includeAppealedTests) {
 
         logger.debug("Entry getMotTestsByVehicleId : " + vehicleId);
-        List<MotTest> motTest = getMotTestCurrentsByVehicleId(vehicleId);
-        motTest.addAll(getMotTestHistorysByVehicleId(vehicleId));
+        List<MotTest> motTest = getMotTestCurrentsByVehicleId(vehicleId, includeAppealedTests);
+        motTest.addAll(getMotTestHistorysByVehicleId(vehicleId, includeAppealedTests));
 
         logger.debug("Exit getMotTestsByVehicleId : " + vehicleId + " found " + motTest.size());
         return motTest;
     }
 
     @Override
-    public List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId) {
+    public List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId, boolean includeAppealedTests) {
 
         logger.debug("Entry getMotTestCurrentsByVehicleId : " + vehicleId);
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByVehicleId)) {
-            stmt.setInt(1, vehicleId);
+        
+        if (includeAppealedTests) {
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByVehicleIdIncludeAppeals)) {
+                stmt.setInt(1, vehicleId);
 
-            logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
-                    MotTest motTest = mapResultSetToMotTestCurrent(resultSet);
-                    motTests.add(motTest);
+                logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
+                        MotTest motTest = mapResultSetToMotTestCurrent(resultSet);
+                        motTests.add(motTest);
+                    }
                 }
+            } catch (SQLException e) {
+                logger.error("Map getMotTestCurrentsByVehicleId : " + vehicleId, e);
+                throw new InternalException(e);
             }
-        } catch (SQLException e) {
-            logger.error("Map getMotTestCurrentsByVehicleId : " + vehicleId, e);
-            throw new InternalException(e);
+        } else {
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByVehicleId)) {
+                stmt.setInt(1, vehicleId);
+
+                logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
+                        MotTest motTest = mapResultSetToMotTestCurrent(resultSet);
+                        motTests.add(motTest);
+                    }
+                }
+            } catch (SQLException e) {
+                logger.error("Map getMotTestCurrentsByVehicleId : " + vehicleId, e);
+                throw new InternalException(e);
+            }
         }
 
         return motTests;
     }
 
     @Override
-    public List<MotTest> getMotTestHistorysByVehicleId(int vehicleId) {
+    public List<MotTest> getMotTestHistorysByVehicleId(int vehicleId, boolean includeAppealedTests) {
 
         logger.debug("Entry getMotTestHistorysByVehicleId : " + vehicleId);
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestHistorysByVehicleId : " + vehicleId);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByVehicleId)) {
-            stmt.setInt(1, vehicleId);
 
-            logger.debug("Resultset getMotTestHistorysByVehicleId : " + vehicleId);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    logger.debug("Map getMotTestHistorysByVehicleId : " + vehicleId);
-                    MotTest motTest = mapResultSetToMotTestHistory(resultSet);
-                    motTests.add(motTest);
+        if (includeAppealedTests) {
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByVehicleIdIncludeAppeals)) {
+                stmt.setInt(1, vehicleId);
+
+                logger.debug("Resultset getMotTestHistorysByVehicleId : " + vehicleId);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        logger.debug("Map getMotTestHistorysByVehicleId : " + vehicleId);
+                        MotTest motTest = mapResultSetToMotTestHistory(resultSet);
+                        motTests.add(motTest);
+                    }
                 }
+            } catch (SQLException e) {
+                logger.error("Error getMotTestHistorysByVehicleId : " + vehicleId, e);
+                throw new InternalException(e);
             }
-        } catch (SQLException e) {
-            logger.error("Error getMotTestHistorysByVehicleId : " + vehicleId, e);
-            throw new InternalException(e);
+        } else {
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByVehicleId)) {
+                stmt.setInt(1, vehicleId);
+
+                logger.debug("Resultset getMotTestHistorysByVehicleId : " + vehicleId);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        logger.debug("Map getMotTestHistorysByVehicleId : " + vehicleId);
+                        MotTest motTest = mapResultSetToMotTestHistory(resultSet);
+                        motTests.add(motTest);
+                    }
+                }
+            } catch (SQLException e) {
+                logger.error("Error getMotTestHistorysByVehicleId : " + vehicleId, e);
+                throw new InternalException(e);
+            }
         }
 
         return motTests;
