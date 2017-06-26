@@ -47,11 +47,11 @@ public interface MotTestReadDao {
 
     MotTest getMotTestHistoryByNumber(long number);
 
-    List<MotTest> getMotTestsByVehicleId(int vehicleId);
+    List<MotTest> getMotTestsByVehicleId(int vehicleId, boolean includeAppealedTests);
 
-    List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId);
+    List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId, boolean includeAppealedTests);
 
-    List<MotTest> getMotTestHistorysByVehicleId(int vehicleId);
+    List<MotTest> getMotTestHistorysByVehicleId(int vehicleId, boolean includeAppealedTests);
 
     List<MotTest> getMotTestsByDateRange(Date startDate, Date endDate);
 

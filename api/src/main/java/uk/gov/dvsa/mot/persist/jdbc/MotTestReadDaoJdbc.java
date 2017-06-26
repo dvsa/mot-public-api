@@ -3,6 +3,8 @@ package uk.gov.dvsa.mot.persist.jdbc;
 import org.apache.log4j.Logger;
 
 import uk.gov.dvsa.mot.persist.MotTestReadDao;
+import uk.gov.dvsa.mot.persist.jdbc.queries.GetMotTestCurrentByVehicleId;
+import uk.gov.dvsa.mot.persist.jdbc.queries.GetMotTestHistoryByVehicleId;
 import uk.gov.dvsa.mot.persist.model.BusinessRule;
 import uk.gov.dvsa.mot.persist.model.BusinessRuleType;
 import uk.gov.dvsa.mot.persist.model.Comment;
@@ -189,24 +191,25 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
     }
 
     @Override
-    public List<MotTest> getMotTestsByVehicleId(int vehicleId) {
+    public List<MotTest> getMotTestsByVehicleId(int vehicleId, boolean includeAppealedTests) {
 
         logger.debug("Entry getMotTestsByVehicleId : " + vehicleId);
-        List<MotTest> motTest = getMotTestCurrentsByVehicleId(vehicleId);
-        motTest.addAll(getMotTestHistorysByVehicleId(vehicleId));
+        List<MotTest> motTest = getMotTestCurrentsByVehicleId(vehicleId, includeAppealedTests);
+        motTest.addAll(getMotTestHistorysByVehicleId(vehicleId, includeAppealedTests));
 
         logger.debug("Exit getMotTestsByVehicleId : " + vehicleId + " found " + motTest.size());
         return motTest;
     }
 
     @Override
-    public List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId) {
+    public List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId, boolean includeAppealedTests) {
 
         logger.debug("Entry getMotTestCurrentsByVehicleId : " + vehicleId);
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByVehicleId)) {
+
+        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestCurrentByVehicleId().buildQuery(includeAppealedTests))) {
             stmt.setInt(1, vehicleId);
 
             logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
@@ -226,13 +229,14 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
     }
 
     @Override
-    public List<MotTest> getMotTestHistorysByVehicleId(int vehicleId) {
+    public List<MotTest> getMotTestHistorysByVehicleId(int vehicleId, boolean includeAppealedTests) {
 
         logger.debug("Entry getMotTestHistorysByVehicleId : " + vehicleId);
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestHistorysByVehicleId : " + vehicleId);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByVehicleId)) {
+
+        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestHistoryByVehicleId().buildQuery(includeAppealedTests))) {
             stmt.setInt(1, vehicleId);
 
             logger.debug("Resultset getMotTestHistorysByVehicleId : " + vehicleId);
