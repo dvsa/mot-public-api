@@ -13,9 +13,7 @@ public interface VehicleReadService {
 
     Vehicle findByRegistrationAndMake(String registration, String make);
 
-    List<Vehicle>  findByRegistration(String registration);
-
-    List<Vehicle>  findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber);
+    List<Vehicle> findByRegistration(String registration);
 
     List<Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber);
 
