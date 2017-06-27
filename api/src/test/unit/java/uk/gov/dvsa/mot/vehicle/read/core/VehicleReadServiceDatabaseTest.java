@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import uk.gov.dvsa.mot.persist.Database;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
 import uk.gov.dvsa.mot.persist.model.ColourLookup;
 import uk.gov.dvsa.mot.persist.model.Make;
@@ -40,18 +39,12 @@ public class VehicleReadServiceDatabaseTest {
     uk.gov.dvsa.mot.persist.model.Vehicle testVehicle;
 
     @Mock
-    Database databaseMock;
-
-    @Mock
     VehicleReadDao vehicleReadDaoMock;
 
     @Before
     public void beforeTest() {
-        // Arrange - Set-up the mocks
-        when(databaseMock.getVehicleReadDao()).thenReturn(vehicleReadDaoMock);
-
         // Arrange - Create class under test
-        vehicleReadServiceDatabase = new VehicleReadServiceDatabase(databaseMock);
+        vehicleReadServiceDatabase = new VehicleReadServiceDatabase(vehicleReadDaoMock);
     }
 
     @After

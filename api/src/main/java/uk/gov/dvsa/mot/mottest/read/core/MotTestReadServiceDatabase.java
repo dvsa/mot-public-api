@@ -2,8 +2,8 @@ package uk.gov.dvsa.mot.mottest.read.core;
 
 import com.google.inject.Inject;
 
-import uk.gov.dvsa.mot.persist.Database;
 import uk.gov.dvsa.mot.persist.MotTestReadDao;
+import uk.gov.dvsa.mot.persist.ProvideDbConnection;
 import uk.gov.dvsa.mot.persist.model.MotTest;
 import uk.gov.dvsa.mot.persist.model.MotTestRfrMap;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
@@ -20,12 +20,13 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
     private final MotTestReadDao motTestReadDao;
 
     @Inject
-    public MotTestReadServiceDatabase(Database database) {
+    public MotTestReadServiceDatabase(MotTestReadDao motTestReadDao) {
 
-        motTestReadDao = database.getMotTestReadDao();
+        this.motTestReadDao = motTestReadDao;
     }
 
     @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.mottest.api.MotTest getMotTestById(long id) {
 
         MotTest motTest = motTestReadDao.getMotTestById(id);
@@ -38,12 +39,14 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<DisplayMotTestItem> getMotHistoryByDateRange(Date startDate, Date endDate) {
 
         return motTestReadDao.getMotHistoryByDateRange(startDate, endDate);
     }
 
     @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.mottest.api.MotTest getMotTestByNumber(long number) {
 
         MotTest motTest = motTestReadDao.getMotTestByNumber(number);
@@ -56,6 +59,7 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByVehicleId(int vehicleId) {
 
         List<MotTest> motTests = motTestReadDao.getMotTestsByVehicleId(vehicleId);
@@ -71,6 +75,8 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
         return result;
     }
 
+    @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.mottest.api.MotTest getLatestMotTestPassByVehicle(Vehicle vehicle) {
 
         MotTest motTest = motTestReadDao.getLatestMotTestByVehicleId(vehicle.getId());
@@ -83,6 +89,7 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByDateRange(Date startDate, Date endDate) {
 
         List<MotTest> motTests = motTestReadDao.getMotTestsByDateRange(startDate, endDate);
@@ -97,6 +104,7 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByPage(Long offset, Long limit) {
 
         if (offset == null) {
@@ -119,6 +127,7 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.mottest.api.MotTest> getMotTestsByDatePage(Date date, Integer page) {
 
         if (date == null) {

@@ -2,7 +2,7 @@ package uk.gov.dvsa.mot.vehicle.read.core;
 
 import com.google.inject.Inject;
 
-import uk.gov.dvsa.mot.persist.Database;
+import uk.gov.dvsa.mot.persist.ProvideDbConnection;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
 import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.persist.model.Model;
@@ -20,12 +20,13 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     private final VehicleReadDao vehicleReadDao;
 
     @Inject
-    public VehicleReadServiceDatabase(Database database) {
+    public VehicleReadServiceDatabase(VehicleReadDao vehicleReadDao) {
 
-        this.vehicleReadDao = database.getVehicleReadDao();
+        this.vehicleReadDao = vehicleReadDao;
     }
 
     @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.vehicle.api.Vehicle getVehicleById(int id) {
 
         Vehicle vehicle = vehicleReadDao.getVehicleById(id);
@@ -34,6 +35,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.vehicle.api.Vehicle getVehicleByIdAndVersion(int id, int version) {
 
         Vehicle vehicle = vehicleReadDao.getVehicleByIdAndVersion(id, version);
@@ -42,6 +44,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> getVehiclesById(int startId, int endId) {
 
         List<Vehicle> vehicles = vehicleReadDao.getVehiclesById(startId, endId);
@@ -50,6 +53,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.vehicle.api.Vehicle getVehicleFromDvlaById(int id) {
 
         DvlaVehicle dvlaVehicle = vehicleReadDao.getDvlaVehicleById(id);
@@ -62,6 +66,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.vehicle.api.Vehicle findByRegistrationAndMake(String registration, String make) {
 
         Vehicle vehicle = vehicleReadDao.getVehicleByFullRegAndMake(registration, make);
@@ -70,6 +75,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByRegistration(String registration) {
 
         List<Vehicle> vehicles = vehicleReadDao.getVehicleByFullRegistration(registration);
@@ -78,6 +84,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber) {
 
         List<Vehicle> vehicles = vehicleReadDao.getVehiclesByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
@@ -86,6 +93,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> getVehiclesByPage(int offset, int limit) {
 
         List<Vehicle> vehicles = vehicleReadDao.getVehiclesByPage(offset, limit);
@@ -94,6 +102,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<String> getMakes() {
 
         return vehicleReadDao.getMakes().stream().map(m -> m.getName()).collect(Collectors.toList());
