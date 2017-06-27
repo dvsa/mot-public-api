@@ -8,6 +8,7 @@ import uk.gov.dvsa.mot.mottest.api.MotTest;
 import uk.gov.dvsa.mot.mottest.api.MotTestRfrLocation;
 import uk.gov.dvsa.mot.mottest.api.MotTestRfrMap;
 import uk.gov.dvsa.mot.mottest.read.core.MotTestReadService;
+import uk.gov.dvsa.mot.persist.ProvideDbConnection;
 import uk.gov.dvsa.mot.persist.TradeReadDao;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.RfrAndAdvisoryItem;
@@ -43,6 +44,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<String> getMakes() {
 
         return vehicleReadService.getMakes();
@@ -55,6 +57,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * getMotTestsByVehicleId1(int)
      */
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByVehicleId(int id) {
 
         return tradeReadDao.getVehiclesMotTestsByVehicleId(id);
@@ -67,6 +70,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * getMotTestsByVehicleId1(int)
      */
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesMotTestsByMotTestNumber(long number) {
 
         return tradeReadDao.getVehiclesMotTestsByMotTestNumber(number);
@@ -79,6 +83,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * getVehiclesByRegistartionAndMake(String,String)
      */
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByRegistrationAndMake(String registration, String make) {
 
         return tradeReadDao.getVehiclesMotTestsByRegistrationAndMake(registration, make);
@@ -91,6 +96,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * getVehiclesByRegistartionAndMake(String,String)
      */
     @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByRegistration(String registration) {
 
         List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
@@ -125,6 +131,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * (java.lang.Integer, java.lang.Integer)
      */
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByPage(int page) {
 
         int startVehicleId = page * VEHICLE_PAGE_SIZE;
@@ -133,6 +140,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
         return tradeReadDao.getVehiclesMotTestsByRange(startVehicleId, endVehicleId);
     }
 
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByDatePage(Date date, Integer page) {
 
         int pages = 1440;
@@ -166,6 +174,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<DisplayMotTestItem> getMotTestsByRegistrationAndMake(String registration, String make) {
 
         List<DisplayMotTestItem> displayMotTestItems = new ArrayList<>();
