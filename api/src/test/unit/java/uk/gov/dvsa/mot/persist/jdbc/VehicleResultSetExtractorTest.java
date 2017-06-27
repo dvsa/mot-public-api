@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 import static uk.gov.dvsa.mot.test.utility.Matchers.hasSize;
 
-public class ResultSetToVehicleMapperTest {
+public class VehicleResultSetExtractorTest {
     private final int vehicleIdIndex = 1;
     private final int motTestIdIndex = 2;
     private final int motTestRfrMapIdIndex = 3;
@@ -111,7 +111,7 @@ public class ResultSetToVehicleMapperTest {
 
         ResultSet rs = createMockResultSetForFullPath();
 
-        List<Vehicle> actual = ResultSetToVehicleMapper.mapResultSetToVehicle(rs);
+        List<Vehicle> actual = new VehicleResultSetExtractor().extractData(rs);
 
         assertThat(actual, notNullValue());
         assertThat(actual, hasSize(2));
@@ -127,7 +127,7 @@ public class ResultSetToVehicleMapperTest {
 
         ResultSet rs = createMockResultSetForMinimalPath();
 
-        List<Vehicle> actual = ResultSetToVehicleMapper.mapResultSetToVehicle(rs);
+        List<Vehicle> actual = new VehicleResultSetExtractor().extractData(rs);
 
         assertThat(actual, notNullValue());
         assertThat(actual, hasSize(2));
@@ -144,7 +144,7 @@ public class ResultSetToVehicleMapperTest {
         ResultSet rs = mock(ResultSet.class);
         when(rs.next()).thenThrow(new SQLException(""));
 
-        ResultSetToVehicleMapper.mapResultSetToVehicle(rs);
+        new VehicleResultSetExtractor().extractData(rs);
     }
 
     private void assertVehicleIsCorrect(Vehicle vehicle) {

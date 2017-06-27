@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
+import uk.gov.dvsa.mot.mottest.read.core.ConnectionManager;
 import uk.gov.dvsa.mot.persist.model.Vehicle;
 import uk.gov.dvsa.mot.test.utility.ResultSetMockHelper;
 import uk.gov.dvsa.mot.trade.api.InternalException;
@@ -29,13 +29,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
-
 import static uk.gov.dvsa.mot.test.utility.Matchers.isEmpty;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VehicleReadDaoTest {
 
     private VehicleReadDaoJdbc vehicleReadReadDao;
+
+    @Mock
+    ConnectionManager connectionManager;
 
     @Mock
     private Connection mockConnection;
@@ -55,7 +57,10 @@ public class VehicleReadDaoTest {
         when(mockStatement.executeQuery()).thenReturn(mockResultSet);
 
         // Arrange - Create object under test
-        vehicleReadReadDao = new VehicleReadDaoJdbc(mockConnection);
+        vehicleReadReadDao = new VehicleReadDaoJdbc();
+        vehicleReadReadDao.setConnectionManager(connectionManager);
+
+        when(connectionManager.getConnection()).thenReturn(mockConnection);
     }
 
     @After
@@ -98,6 +103,7 @@ public class VehicleReadDaoTest {
 
         when(mockStatement.executeQuery()).thenThrow(new SQLException(""));
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
+        when(connectionManager.getConnection()).thenReturn(mockConnection);
 
         vehicleReadReadDao.getVehicleById(1);
     }
@@ -119,10 +125,10 @@ public class VehicleReadDaoTest {
 
         Vehicle actual = vehicleReadReadDao.getVehicleByIdAndVersion(vehicleId, version);
 
-        verify(mockStatement).setInt(1, vehicleId);
-        verify(mockStatement).setInt(2, version);
-        verify(mockStatement2).setInt(1, vehicleId);
-        verify(mockStatement2).setInt(2, version);
+        verify(mockStatement).setObject(1, vehicleId);
+        verify(mockStatement).setObject(2, version);
+        verify(mockStatement2).setObject(1, vehicleId);
+        verify(mockStatement2).setObject(2, version);
         assertThat(actual, nullValue());
     }
 
@@ -148,10 +154,10 @@ public class VehicleReadDaoTest {
 
         Vehicle actual = vehicleReadReadDao.getVehicleByIdAndVersion(vehicleId, version);
 
-        verify(mockStatement).setInt(1, vehicleId);
-        verify(mockStatement).setInt(2, version);
-        verify(mockStatement2).setInt(1, vehicleId);
-        verify(mockStatement2).setInt(2, version);
+        verify(mockStatement).setObject(1, vehicleId);
+        verify(mockStatement).setObject(2, version);
+        verify(mockStatement2).setObject(1, vehicleId);
+        verify(mockStatement2).setObject(2, version);
         assertThat(actual, notNullValue());
     }
 
@@ -175,8 +181,8 @@ public class VehicleReadDaoTest {
 
         Vehicle actual = vehicleReadReadDao.getVehicleByIdAndVersion(vehicleId, version);
 
-        verify(mockStatement2).setInt(1, vehicleId);
-        verify(mockStatement2).setInt(2, version);
+        verify(mockStatement2).setObject(1, vehicleId);
+        verify(mockStatement2).setObject(2, version);
         assertThat(actual, notNullValue());
     }
 
@@ -231,42 +237,6 @@ public class VehicleReadDaoTest {
     }
 
     @Test
-    public void getDvlaVehicleById_HappyPath() throws SQLException {
-
-        final int dvlaVehicleId = 89047;
-
-        when(mockConnection.prepareStatement(VehicleReadSql.queryGetDvlaVehicleById)).thenReturn(mockStatement);
-        when(mockResultSet.next()).thenReturn(true);
-
-        DvlaVehicle actual = vehicleReadReadDao.getDvlaVehicleById(dvlaVehicleId);
-
-        assertThat(actual, notNullValue());
-    }
-
-    @Test
-    public void getDvlaVehicleById_NoVehicle_ReturnsNull() throws SQLException {
-
-        final int dvlaVehicleId = 89047;
-
-        when(mockConnection.prepareStatement(VehicleReadSql.queryGetDvlaVehicleById)).thenReturn(mockStatement);
-
-        DvlaVehicle actual = vehicleReadReadDao.getDvlaVehicleById(dvlaVehicleId);
-
-        assertThat(actual, nullValue());
-    }
-
-    @Test(expected = InternalException.class)
-    public void getDvlaVehicleById_DbThrows_ThrowsInternalException() throws SQLException, InternalException {
-
-        final int dvlaVehicleId = 89047;
-
-        when(mockConnection.prepareStatement(VehicleReadSql.queryGetDvlaVehicleById))
-                .thenThrow(new SQLException(""));
-
-        vehicleReadReadDao.getDvlaVehicleById(dvlaVehicleId);
-    }
-
-    @Test
     public void getVehiclesById_NoVehicles_ReturnsEmptyList() throws SQLException {
 
         final int startId = 1;
@@ -279,5 +249,4 @@ public class VehicleReadDaoTest {
         assertThat(actual, notNullValue());
         assertThat(actual, isEmpty());
     }
-
 }

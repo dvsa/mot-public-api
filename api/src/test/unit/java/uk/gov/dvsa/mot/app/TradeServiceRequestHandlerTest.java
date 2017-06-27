@@ -31,8 +31,10 @@ import static org.mockito.Mockito.when;
 public class TradeServiceRequestHandlerTest {
     @Mock
     private TradeReadService tradeReadService;
+
     @Mock
     private Context lambdaContext;
+
     private TradeServiceRequest request;
 
     public TradeServiceRequestHandlerTest() {
@@ -496,7 +498,7 @@ public class TradeServiceRequestHandlerTest {
 
         request.setPage(page);
 
-        when(tradeReadService.getVehiclesByPage(page)).thenReturn(Arrays.asList());
+        when(tradeReadService.getVehiclesByPage(page)).thenReturn(null);
 
         createHandlerAndGetTradeMotTests(request);
     }

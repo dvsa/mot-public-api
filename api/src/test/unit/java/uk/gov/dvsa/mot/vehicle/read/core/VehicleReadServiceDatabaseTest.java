@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import uk.gov.dvsa.mot.persist.Database;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
 import uk.gov.dvsa.mot.persist.model.ColourLookup;
 import uk.gov.dvsa.mot.persist.model.Make;
@@ -24,7 +23,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -40,18 +38,12 @@ public class VehicleReadServiceDatabaseTest {
     uk.gov.dvsa.mot.persist.model.Vehicle testVehicle;
 
     @Mock
-    Database databaseMock;
-
-    @Mock
     VehicleReadDao vehicleReadDaoMock;
 
     @Before
     public void beforeTest() {
-        // Arrange - Set-up the mocks
-        when(databaseMock.getVehicleReadDao()).thenReturn(vehicleReadDaoMock);
-
         // Arrange - Create class under test
-        vehicleReadServiceDatabase = new VehicleReadServiceDatabase(databaseMock);
+        vehicleReadServiceDatabase = new VehicleReadServiceDatabase(vehicleReadDaoMock);
     }
 
     @After
@@ -145,32 +137,6 @@ public class VehicleReadServiceDatabaseTest {
         Vehicle actualItem = actual.get(0);
 
         assertThat(actualItem, notNullValue());
-    }
-
-    @Test
-    public void getVehicleFromDvlaById_WithNoMatches_ReturnsNull() {
-
-        when(vehicleReadDaoMock.getDvlaVehicleById(anyInt())).thenReturn(null);
-
-        Vehicle actual = vehicleReadServiceDatabase.getVehicleFromDvlaById(1);
-
-        assertThat(actual, nullValue());
-    }
-
-    @Test
-    public void getVehicleFromDvlaById_WithMatch_ReturnsVehicle() {
-
-        uk.gov.dvsa.mot.persist.model.DvlaVehicle vehicle = mock(uk.gov.dvsa.mot.persist.model.DvlaVehicle.class,
-                RETURNS_DEEP_STUBS);
-        when(vehicleReadDaoMock.getDvlaVehicleById(anyInt())).thenReturn(vehicle);
-
-        uk.gov.dvsa.mot.persist.model.Model model = mock(uk.gov.dvsa.mot.persist.model.Model.class, RETURNS_DEEP_STUBS);
-        when(vehicleReadDaoMock.getModelFromDvlaVehicle(any(uk.gov.dvsa.mot.persist.model.DvlaVehicle.class)))
-                .thenReturn(model);
-
-        Vehicle actual = vehicleReadServiceDatabase.getVehicleFromDvlaById(1);
-
-        assertThat(actual, notNullValue());
     }
 
     @Test

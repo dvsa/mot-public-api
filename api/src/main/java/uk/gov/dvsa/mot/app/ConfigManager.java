@@ -1,5 +1,7 @@
 package uk.gov.dvsa.mot.app;
 
+import com.google.common.base.Strings;
+
 import uk.gov.dvsa.mot.security.Decrypt;
 
 import java.io.IOException;
@@ -33,12 +35,30 @@ public class ConfigManager {
      */
     public static String getEnvironmentVariable(String name) throws IOException {
 
+        return getEnvironmentVariable(name, true);
+    }
+
+    /**
+     * Retrieve the value of the environment variable with the given name.
+     *
+     * If the code is not running inside a Lambda container, retrieve the same key
+     * from config.properties instead.
+     *
+     * @param name The name of the environment variable to get the value of.
+     * @return The value of the environment variable.
+     * @throws IOException if an error occured getting local config settings
+     */
+    public static String getEnvironmentVariable(String name, boolean decrypt) throws IOException {
+
         if (isRunningInLambda()) {
             String value = System.getenv(name);
 
-            if ((name.contains("ENCRYPTED")) && (value != null)) {
-                Decrypt decrypt = new Decrypt();
-                return decrypt.decrypt(value);
+            if (Strings.isNullOrEmpty(value)) {
+                return value;
+            }
+
+            if (isValueDecryptionRequired(name, decrypt)) {
+                return new Decrypt().decrypt(value);
             } else {
                 return value;
             }
@@ -81,5 +101,14 @@ public class ConfigManager {
     private static boolean isRunningInLambda() {
 
         return System.getenv("AWS_LAMBDA_FUNCTION_NAME") != null;
+    }
+
+    private static boolean isValueDecryptionRequired(String name, boolean decrypt) {
+
+        if (decrypt) {
+            return name.contains("ENCRYPTED");
+        }
+
+        return false;
     }
 }

@@ -7,6 +7,7 @@ import uk.gov.dvsa.mot.app.ConfigManager;
 import uk.gov.dvsa.mot.persist.ConnectionFactory;
 import uk.gov.dvsa.mot.trade.api.InternalException;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -17,24 +18,31 @@ import java.sql.DriverManager;
 public class MySqlConnectionFactory implements ConnectionFactory {
     private static final Logger logger = Logger.getLogger(MySqlConnectionFactory.class);
 
+    private static final DatabasePasswordLoader DB_PASSWORD_LOADER = new DatabasePasswordLoader();
+
     @Override
     public Connection getConnection() {
 
         try {
-            String url = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseConnection);
-            String username = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseUsername);
-
-            String password = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseEncryptedPassword);
-
-            if (password == null) {
-                password = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabasePassword);
-            }
-
-            return DriverManager.getConnection(url, username, password);
+            return DriverManager.getConnection(getDbUrl(), getDbUsername(), getDbPassword());
         } catch (Exception e) {
             logger.error("Unable to connect to database", e);
             throw new InternalException(e);
         }
     }
 
+    private String getDbUrl() throws IOException {
+
+        return ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseConnection);
+    }
+
+    private String getDbUsername() throws IOException {
+
+        return ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseUsername);
+    }
+
+    private String getDbPassword() throws IOException {
+
+        return DB_PASSWORD_LOADER.getDbPassword();
+    }
 }

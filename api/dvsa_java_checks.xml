@@ -144,7 +144,7 @@
                      value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
         </module>
         <module name="Indentation">
-            <property name="forceStrictCondition" value="true"/>
+            <property name="forceStrictCondition" value="false"/>
             <property name="lineWrappingIndentation" value="8"/>
         </module>
         <module name="AbbreviationAsWordInName">

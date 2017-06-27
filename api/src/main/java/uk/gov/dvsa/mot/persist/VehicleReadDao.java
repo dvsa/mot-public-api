@@ -4,7 +4,6 @@ import uk.gov.dvsa.mot.persist.model.BodyType;
 import uk.gov.dvsa.mot.persist.model.ColourLookup;
 import uk.gov.dvsa.mot.persist.model.CountryLookup;
 import uk.gov.dvsa.mot.persist.model.CountryOfRegistrationLookup;
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.persist.model.EmptyReasonMap;
 import uk.gov.dvsa.mot.persist.model.EmptyVinReasonLookup;
 import uk.gov.dvsa.mot.persist.model.EmptyVrmReasonLookup;
@@ -22,11 +21,10 @@ import uk.gov.dvsa.mot.persist.model.WheelplanType;
 import java.util.List;
 
 public interface VehicleReadDao {
+
     Vehicle getVehicleById(int id);
 
     Vehicle getVehicleByIdAndVersion(int id, int version);
-
-    DvlaVehicle getDvlaVehicleById(int id);
 
     List<Vehicle> getVehiclesById(int startid, int endid);
 
@@ -37,18 +35,6 @@ public interface VehicleReadDao {
     List<Vehicle> getVehicleByFullRegistration(String registration);
 
     List<Vehicle> getVehiclesByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber);
-
-    List<Vehicle> getVehiclesByRegistrationOrVin(String registration, String vin);
-
-    List<Vehicle> getVehiclesByFullRegAndFullVin(String registration, String vin, boolean includeDvla);
-
-    List<Vehicle> getVehiclesByFullRegAndPartialVin(String registration, String vin, boolean includeDvla);
-
-    List<Vehicle> getVehiclesByFullRegAndNullVin(String registration, boolean includeDvla);
-
-    List<Vehicle> getVehiclesByNullRegAndFullVin(String vin, boolean includeDvla);
-
-    Model getModelFromDvlaVehicle(DvlaVehicle vehicle);
 
     List<Make> getMakes();
 

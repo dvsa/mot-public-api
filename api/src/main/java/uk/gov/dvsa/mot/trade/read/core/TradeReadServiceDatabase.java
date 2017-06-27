@@ -4,10 +4,12 @@ import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
 
+import uk.gov.dvsa.mot.app.util.CollectionUtils;
 import uk.gov.dvsa.mot.mottest.api.MotTest;
 import uk.gov.dvsa.mot.mottest.api.MotTestRfrLocation;
 import uk.gov.dvsa.mot.mottest.api.MotTestRfrMap;
 import uk.gov.dvsa.mot.mottest.read.core.MotTestReadService;
+import uk.gov.dvsa.mot.persist.ProvideDbConnection;
 import uk.gov.dvsa.mot.persist.TradeReadDao;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.RfrAndAdvisoryItem;
@@ -26,12 +28,14 @@ import javax.annotation.Resource;
 public class TradeReadServiceDatabase implements TradeReadService {
     private static final Logger logger = Logger.getLogger(TradeReadServiceDatabase.class);
     private static final int VEHICLE_PAGE_SIZE = 2000;
-    final MotTestReadService motTestReadService;
-    final VehicleReadService vehicleReadService;
-    final TradeReadDao tradeReadDao;
-    private final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy.MM.dd");
-    private final SimpleDateFormat sdfDateIso8601 = new SimpleDateFormat("yyyy-MM-dd");
-    private final SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
+
+    private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy.MM.dd");
+    private static final SimpleDateFormat SDF_DATE_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat SDF_YEAR = new SimpleDateFormat("yyyy");
+
+    private final MotTestReadService motTestReadService;
+    private final VehicleReadService vehicleReadService;
+    private final TradeReadDao tradeReadDao;
 
     @Inject
     public TradeReadServiceDatabase(MotTestReadService motTestReadService, VehicleReadService vehicleReadService,
@@ -43,6 +47,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<String> getMakes() {
 
         return vehicleReadService.getMakes();
@@ -55,6 +60,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * getMotTestsByVehicleId1(int)
      */
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByVehicleId(int id) {
 
         return tradeReadDao.getVehiclesMotTestsByVehicleId(id);
@@ -67,6 +73,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * getMotTestsByVehicleId1(int)
      */
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesMotTestsByMotTestNumber(long number) {
 
         return tradeReadDao.getVehiclesMotTestsByMotTestNumber(number);
@@ -79,6 +86,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * getVehiclesByRegistartionAndMake(String,String)
      */
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByRegistrationAndMake(String registration, String make) {
 
         return tradeReadDao.getVehiclesMotTestsByRegistrationAndMake(registration, make);
@@ -91,13 +99,12 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * getVehiclesByRegistartionAndMake(String,String)
      */
     @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByRegistration(String registration) {
 
         List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
 
-        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = getLatestMotTestPassAndMapToTradeVehicle(vehicles);
-
-        return tradeVehicle;
+        return getLatestMotTestPassAndMapToTradeVehicle(vehicles);
     }
 
 
@@ -108,13 +115,12 @@ public class TradeReadServiceDatabase implements TradeReadService {
  * getVehiclesByRegistartionAndMake(String,String)
  */
     @Override
+    @ProvideDbConnection
     public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber) {
 
         List<Vehicle> vehicles = vehicleReadService.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
 
-        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = getLatestMotTestPassAndMapToTradeVehicle(vehicles);
-
-        return tradeVehicle;
+        return getLatestMotTestPassAndMapToTradeVehicle(vehicles);
     }
 
     /*
@@ -125,6 +131,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * (java.lang.Integer, java.lang.Integer)
      */
     @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByPage(int page) {
 
         int startVehicleId = page * VEHICLE_PAGE_SIZE;
@@ -133,6 +140,8 @@ public class TradeReadServiceDatabase implements TradeReadService {
         return tradeReadDao.getVehiclesMotTestsByRange(startVehicleId, endVehicleId);
     }
 
+    @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByDatePage(Date date, Integer page) {
 
         int pages = 1440;
@@ -166,6 +175,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
     }
 
     @Override
+    @ProvideDbConnection
     public List<DisplayMotTestItem> getMotTestsByRegistrationAndMake(String registration, String make) {
 
         List<DisplayMotTestItem> displayMotTestItems = new ArrayList<>();
@@ -193,15 +203,15 @@ public class TradeReadServiceDatabase implements TradeReadService {
         displayMotTestItem.setModelName(vehicle.getModel());
         displayMotTestItem.setFuelType(vehicle.getFuelType());
         if (vehicle.getFirstUsedDate() != null) {
-            displayMotTestItem.setFirstUsedDate(sdfDate.format(vehicle.getFirstUsedDate()));
+            displayMotTestItem.setFirstUsedDate(SDF_DATE.format(vehicle.getFirstUsedDate()));
         }
         displayMotTestItem.setPrimaryColour(vehicle.getPrimaryColour());
         displayMotTestItem.setRegistration(vehicle.getRegistration());
         if (motTest.getCompletedDate() != null) {
-            displayMotTestItem.setCompletedDate(sdfDate.format(motTest.getCompletedDate()));
+            displayMotTestItem.setCompletedDate(SDF_DATE.format(motTest.getCompletedDate()));
         }
         if (motTest.getExpiryDate() != null) {
-            displayMotTestItem.setExpiryDate(sdfDate.format(motTest.getExpiryDate()));
+            displayMotTestItem.setExpiryDate(SDF_DATE.format(motTest.getExpiryDate()));
         }
 
         displayMotTestItem.setMotTestNumber(String.valueOf(motTest.getNumber()));
@@ -258,7 +268,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
 
         uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = null;
 
-        if (vehicles != null && !vehicles.isEmpty()) {
+        if (!CollectionUtils.isNullOrEmpty(vehicles)) {
             Vehicle vehicle = null;
             MotTest motTest = null;
 
@@ -276,22 +286,24 @@ public class TradeReadServiceDatabase implements TradeReadService {
 
             tradeVehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
 
-            tradeVehicle.setRegistration(vehicle.getRegistration());
-            tradeVehicle.setMake(vehicle.getMake());
-            tradeVehicle.setModel(vehicle.getModel());
-            tradeVehicle.setPrimaryColour(vehicle.getPrimaryColour());
+            if (vehicle != null) {
+                tradeVehicle.setRegistration(vehicle.getRegistration());
+                tradeVehicle.setMake(vehicle.getMake());
+                tradeVehicle.setModel(vehicle.getModel());
+                tradeVehicle.setPrimaryColour(vehicle.getPrimaryColour());
 
-            if (!"Not Stated".equalsIgnoreCase(vehicle.getSecondaryColour())) {
-                tradeVehicle.setSecondaryColour(vehicle.getSecondaryColour());
-            }
+                if (!"Not Stated".equalsIgnoreCase(vehicle.getSecondaryColour())) {
+                    tradeVehicle.setSecondaryColour(vehicle.getSecondaryColour());
+                }
 
-            if (vehicle.getManufactureDate() != null) {
-                tradeVehicle.setManufactureYear(sdfYear.format(vehicle.getManufactureDate()));
+                if (vehicle.getManufactureDate() != null) {
+                    tradeVehicle.setManufactureYear(SDF_YEAR.format(vehicle.getManufactureDate()));
+                }
             }
 
             if (motTest != null) {
                 if (motTest.getExpiryDate() != null) {
-                    tradeVehicle.setMotTestExpiryDate(sdfDateIso8601.format(motTest.getExpiryDate()));
+                    tradeVehicle.setMotTestExpiryDate(SDF_DATE_ISO_8601.format(motTest.getExpiryDate()));
                 }
                 if (motTest.getNumber() != null) {
                     tradeVehicle.setMotTestNumber(motTest.getNumber().toString());
