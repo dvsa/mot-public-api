@@ -1,7 +1,10 @@
 package uk.gov.dvsa.mot.persist.jdbc;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 
+import uk.gov.dvsa.mot.mottest.read.core.ConnectionManager;
 import uk.gov.dvsa.mot.persist.MotTestReadDao;
 import uk.gov.dvsa.mot.persist.jdbc.queries.GetLatestMotTestCurrentByVehicleId;
 import uk.gov.dvsa.mot.persist.jdbc.queries.GetMotTestCurrentByVehicleId;
@@ -58,12 +61,14 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
     private static final Logger logger = Logger.getLogger(MotTestReadDaoJdbc.class);
     private final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy.MM.dd");
     private final SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-    private final Connection connection;
     private final Map<Long, MotTest> motTestMap = new HashMap<>();
 
-    public MotTestReadDaoJdbc(Connection connection) {
+    private ConnectionManager connectionManager;
 
-        this.connection = connection;
+    @Inject
+    public void setConnectionManager(ConnectionManager connectionManager) {
+
+        this.connectionManager = connectionManager;
     }
 
     @Override
@@ -92,15 +97,20 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTest motTest = null;
 
         logger.debug("Prepare getMotTestCurrentById " + id);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentById)) {
-            stmt.setLong(1, id);
 
-            logger.debug("Resultset getMotTestCurrentById " + id);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    logger.debug("Map getMotTestCurrentById " + id);
-                    motTest = mapResultSetToMotTestCurrent(resultSet);
-                    this.motTestMap.put(id, motTest);
+        try {
+            Connection connection = connectionManager.getConnection();
+
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentById)) {
+                stmt.setLong(1, id);
+
+                logger.debug("Resultset getMotTestCurrentById " + id);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        logger.debug("Map getMotTestCurrentById " + id);
+                        motTest = mapResultSetToMotTestCurrent(resultSet);
+                        this.motTestMap.put(id, motTest);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -118,15 +128,20 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTest motTest = null;
 
         logger.debug("Prepare getMotTestHistoryById " + id);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistoryById)) {
-            stmt.setLong(1, id);
 
-            logger.debug("Resultset getMotTestHistoryById " + id);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    logger.debug("Map getMotTestHistoryById " + id);
-                    motTest = mapResultSetToMotTestHistory(resultSet);
-                    this.motTestMap.put(id, motTest);
+        try {
+            Connection connection = connectionManager.getConnection();;
+
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistoryById)) {
+                stmt.setLong(1, id);
+
+                logger.debug("Resultset getMotTestHistoryById " + id);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        logger.debug("Map getMotTestHistoryById " + id);
+                        motTest = mapResultSetToMotTestHistory(resultSet);
+                        this.motTestMap.put(id, motTest);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -154,14 +169,18 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTest motTest = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentByNumber)) {
-            stmt.setLong(1, number);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTest = mapResultSetToMotTestCurrent(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentByNumber)) {
+                stmt.setLong(1, number);
 
-                    return motTest;
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTest = mapResultSetToMotTestCurrent(resultSet);
+
+                        return motTest;
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -176,12 +195,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTest motTest = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistoryByNumber)) {
-            stmt.setLong(1, number);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTest = mapResultSetToMotTestHistory(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistoryByNumber)) {
+                stmt.setLong(1, number);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTest = mapResultSetToMotTestHistory(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -221,14 +244,18 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
 
-        try (PreparedStatement stmt = connection.prepareStatement(new GetLatestMotTestCurrentByVehicleId().buildQuery())) {
-            stmt.setInt(1, vehicleId);
+        try {
+            Connection connection = connectionManager.getConnection();
 
-            logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
-                if (resultSet.next()) {
-                    motTest = mapResultSetToMotTestCurrent(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(new GetLatestMotTestCurrentByVehicleId().buildQuery())) {
+                stmt.setInt(1, vehicleId);
+
+                logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
+                    if (resultSet.next()) {
+                        motTest = mapResultSetToMotTestCurrent(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -247,15 +274,20 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
 
-        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestCurrentByVehicleId().buildQuery())) {
-            stmt.setInt(1, vehicleId);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
-                    MotTest motTest = mapResultSetToMotTestCurrent(resultSet);
-                    motTests.add(motTest);
+            try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestCurrentByVehicleId().buildQuery())) {
+                stmt.setInt(1, vehicleId);
+
+                logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
+                        MotTest motTest = mapResultSetToMotTestCurrent(resultSet);
+                        motTests.add(motTest);
+
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -274,15 +306,19 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         logger.debug("Prepare getMotTestHistorysByVehicleId : " + vehicleId);
 
-        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestHistoryByVehicleId().buildQuery())) {
-            stmt.setInt(1, vehicleId);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            logger.debug("Resultset getMotTestHistorysByVehicleId : " + vehicleId);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    logger.debug("Map getMotTestHistorysByVehicleId : " + vehicleId);
-                    MotTest motTest = mapResultSetToMotTestHistory(resultSet);
-                    motTests.add(motTest);
+            try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestHistoryByVehicleId().buildQuery())) {
+                stmt.setInt(1, vehicleId);
+
+                logger.debug("Resultset getMotTestHistorysByVehicleId : " + vehicleId);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        logger.debug("Map getMotTestHistorysByVehicleId : " + vehicleId);
+                        MotTest motTest = mapResultSetToMotTestHistory(resultSet);
+                        motTests.add(motTest);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -311,16 +347,21 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestCurrentsByDateRange : " + startDate + " - " + endDate);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByDateRange)) {
-            stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
-            stmt.setTimestamp(2, new Timestamp(endDate.getTime()));
 
-            logger.debug("Resultset getMotTestCurrentsByDateRange : " + startDate + " - " + endDate);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    MotTest motTest = mapResultSetToMotTestCurrent(resultSet);
-                    motTests.add(motTest);
-                    logger.debug("Mapped getMotTestCurrentsByDateRange : " + motTest.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
+
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByDateRange)) {
+                stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
+                stmt.setTimestamp(2, new Timestamp(endDate.getTime()));
+
+                logger.debug("Resultset getMotTestCurrentsByDateRange : " + startDate + " - " + endDate);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        MotTest motTest = mapResultSetToMotTestCurrent(resultSet);
+                        motTests.add(motTest);
+                        logger.debug("Mapped getMotTestCurrentsByDateRange : " + motTest.getId());
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -340,16 +381,21 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestHistorysByDateRange : " + startDate + " - " + endDate);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByDateRange)) {
-            stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
-            stmt.setTimestamp(2, new Timestamp(endDate.getTime()));
 
-            logger.debug("Resultset getMotTestHistorysByDateRange : " + startDate + " - " + endDate);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    MotTest motTest = mapResultSetToMotTestHistory(resultSet);
-                    motTests.add(motTest);
-                    logger.debug("Map getMotTestHistorysByDateRange : " + motTest.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
+
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByDateRange)) {
+                stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
+                stmt.setTimestamp(2, new Timestamp(endDate.getTime()));
+
+                logger.debug("Resultset getMotTestHistorysByDateRange : " + startDate + " - " + endDate);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        MotTest motTest = mapResultSetToMotTestHistory(resultSet);
+                        motTests.add(motTest);
+                        logger.debug("Map getMotTestHistorysByDateRange : " + motTest.getId());
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -380,13 +426,18 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<DisplayMotTestItem> motHistories;
 
         logger.debug("Prepare getMotHistoryCurrentByDateRange : " + startDate + " - " + endDate);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.QueryGetMotHistoryCurrentVehicleByDateRange)) {
-            stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
-            stmt.setTimestamp(2, new Timestamp(endDate.getTime()));
 
-            logger.debug("Resultset getMotHistoryCurrentByDateRange : " + startDate + " - " + endDate);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                motHistories = mapResultSetToDisplayMotTestItem(resultSet);
+        try {
+            Connection connection = connectionManager.getConnection();;
+
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.QueryGetMotHistoryCurrentVehicleByDateRange)) {
+                stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
+                stmt.setTimestamp(2, new Timestamp(endDate.getTime()));
+
+                logger.debug("Resultset getMotHistoryCurrentByDateRange : " + startDate + " - " + endDate);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    motHistories = mapResultSetToDisplayMotTestItem(resultSet);
+                }
             }
         } catch (SQLException e) {
             logger.error("SQLException getMotHistoryCurrentByDateRange : " + startDate + " - " + endDate, e);
@@ -404,13 +455,18 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<DisplayMotTestItem> motHistories;
 
         logger.debug("Prepare getMotHistoryHistoryByDateRange : " + startDate + " - " + endDate);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.QueryGetMotHistoryHistoryVehicleByDateRange)) {
-            stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
-            stmt.setTimestamp(2, new Timestamp(endDate.getTime()));
 
-            logger.debug("Resultset getMotHistoryHistoryByDateRange : " + startDate + " - " + endDate);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                motHistories = mapResultSetToDisplayMotTestItem(resultSet);
+        try {
+            Connection connection = connectionManager.getConnection();;
+
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.QueryGetMotHistoryHistoryVehicleByDateRange)) {
+                stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
+                stmt.setTimestamp(2, new Timestamp(endDate.getTime()));
+
+                logger.debug("Resultset getMotHistoryHistoryByDateRange : " + startDate + " - " + endDate);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    motHistories = mapResultSetToDisplayMotTestItem(resultSet);
+                }
             }
         } catch (SQLException e) {
             logger.error("SQLException getMotTestHistorysByDateRange : " + startDate + " - " + endDate, e);
@@ -437,14 +493,18 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         List<MotTest> motTestsCurrent = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByIdRange)) {
-            stmt.setLong(1, offset);
-            stmt.setLong(2, limit);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    MotTest motTestCurrent = mapResultSetToMotTestCurrent(resultSet);
-                    motTestsCurrent.add(motTestCurrent);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByIdRange)) {
+                stmt.setLong(1, offset);
+                stmt.setLong(2, limit);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        MotTest motTestCurrent = mapResultSetToMotTestCurrent(resultSet);
+                        motTestsCurrent.add(motTestCurrent);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -459,14 +519,18 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         List<MotTest> motTestsCurrent = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByIdRange)) {
-            stmt.setLong(1, offset);
-            stmt.setLong(2, limit);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    MotTest motTestCurrent = mapResultSetToMotTestHistory(resultSet);
-                    motTestsCurrent.add(motTestCurrent);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByIdRange)) {
+                stmt.setLong(1, offset);
+                stmt.setLong(2, limit);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        MotTest motTestCurrent = mapResultSetToMotTestHistory(resultSet);
+                        motTestsCurrent.add(motTestCurrent);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -481,13 +545,17 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestAddressComment motTestAddressComment = null;
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetMotTestAddressCommentByMotTestId)) {
-            stmt.setLong(1, parent.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestAddressComment = mapResultSetToMotTestAddressComment(parent, resultSet);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetMotTestAddressCommentByMotTestId)) {
+                stmt.setLong(1, parent.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestAddressComment = mapResultSetToMotTestAddressComment(parent, resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -502,12 +570,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestCancelled motTestCancelled = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCancelledByMotTestId)) {
-            stmt.setLong(1, parent.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestCancelled = mapResultSetToMotTestCancelled(parent, resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCancelledByMotTestId)) {
+                stmt.setLong(1, parent.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestCancelled = mapResultSetToMotTestCancelled(parent, resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -522,13 +594,17 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestComplaintRef motTestComplaintRef = null;
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetMotTestComplaintRefByMotTestId)) {
-            stmt.setLong(1, parent.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestComplaintRef = mapResultSetToMotTestComplaintRef(parent, resultSet);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetMotTestComplaintRefByMotTestId)) {
+                stmt.setLong(1, parent.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestComplaintRef = mapResultSetToMotTestComplaintRef(parent, resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -543,13 +619,17 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestEmergencyReason motTestEmergencyReason = null;
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetMotTestEmergencyReasonByMotTestId)) {
-            stmt.setLong(1, parent.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestEmergencyReason = mapResultSetToMotTestEmergencyReason(parent, resultSet);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetMotTestEmergencyReasonByMotTestId)) {
+                stmt.setLong(1, parent.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestEmergencyReason = mapResultSetToMotTestEmergencyReason(parent, resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -564,12 +644,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         Comment comment = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetCommentById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    comment = mapResultSetToComment(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetCommentById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        comment = mapResultSetToComment(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -584,13 +668,17 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestReasonForCancelLookup motTestReasonForCancelLookup = null;
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetMotTestReasonForCancelLookupById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestReasonForCancelLookup = mapResultSetToMotTestReasonForCancelLookup(resultSet);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetMotTestReasonForCancelLookupById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestReasonForCancelLookup = mapResultSetToMotTestReasonForCancelLookup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -605,12 +693,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         EmergencyLog emergencyLog = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetEmergencyLogById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    emergencyLog = mapResultSetToEmergencyLog(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetEmergencyLogById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        emergencyLog = mapResultSetToEmergencyLog(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -625,12 +717,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         EmergencyReasonLookup emergencyReasonLookup = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetEmergencyReasonLookupById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    emergencyReasonLookup = mapResultSetToEmergencyReasonLookup(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetEmergencyReasonLookupById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        emergencyReasonLookup = mapResultSetToEmergencyReasonLookup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -645,14 +741,18 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         List<MotTestRfrMap> motTestsCurrentRfrMap = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetMotTestCurrentRfrMapsByMotTestId)) {
-            stmt.setLong(1, motTestCurrent.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    MotTestRfrMap motTestCurrentRfrMap = mapResultSetToMotTestCurrentRfrMap(motTestCurrent, resultSet);
-                    motTestsCurrentRfrMap.add(motTestCurrentRfrMap);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetMotTestCurrentRfrMapsByMotTestId)) {
+                stmt.setLong(1, motTestCurrent.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        MotTestRfrMap motTestCurrentRfrMap = mapResultSetToMotTestCurrentRfrMap(motTestCurrent, resultSet);
+                        motTestsCurrentRfrMap.add(motTestCurrentRfrMap);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -667,14 +767,18 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         List<MotTestRfrMap> motTestsHistoryRfrMap = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetMotTestHistoryRfrMapsByMotTestId)) {
-            stmt.setLong(1, motTestCurrent.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    MotTestRfrMap motTestCurrentRfrMap = mapResultSetToMotTestCurrentRfrMap(motTestCurrent, resultSet);
-                    motTestsHistoryRfrMap.add(motTestCurrentRfrMap);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetMotTestHistoryRfrMapsByMotTestId)) {
+                stmt.setLong(1, motTestCurrent.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        MotTestRfrMap motTestCurrentRfrMap = mapResultSetToMotTestCurrentRfrMap(motTestCurrent, resultSet);
+                        motTestsHistoryRfrMap.add(motTestCurrentRfrMap);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -689,13 +793,17 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestRfrMapComment motTestRfrMapComment = null;
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetMotTestRfrMapCommentByMotTestRfrMapId)) {
-            stmt.setLong(1, parent.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestRfrMapComment = mapResultSetToMotTestRfrMapComment(parent, resultSet);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetMotTestRfrMapCommentByMotTestRfrMapId)) {
+                stmt.setLong(1, parent.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestRfrMapComment = mapResultSetToMotTestRfrMapComment(parent, resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -710,13 +818,17 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestRfrMapCustomDescription motTestRfrMapCustomDescription = null;
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetMotTestRfrMapCustomDescriptionByMotTestRfrMapId)) {
-            stmt.setLong(1, parent.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestRfrMapCustomDescription = mapResultSetToMotTestRfrMapCustomDescription(parent, resultSet);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetMotTestRfrMapCustomDescriptionByMotTestRfrMapId)) {
+                stmt.setLong(1, parent.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestRfrMapCustomDescription = mapResultSetToMotTestRfrMapCustomDescription(parent, resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -731,12 +843,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         ReasonForRejection reasonForRejection = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetReasonForRejectionById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    reasonForRejection = mapResultSetToReasonForRejection(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetReasonForRejectionById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        reasonForRejection = mapResultSetToReasonForRejection(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -752,15 +868,19 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         List<RfrLanguageContentMap> rfrLanguageContentMaps = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetRfrLanguageContentMapByReasonForRejection)) {
-            stmt.setInt(1, reasonForRejection.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    RfrLanguageContentMap rfrLanguageContentMap = mapResultSetToRfrLanguageContentMap(reasonForRejection,
-                            resultSet);
-                    rfrLanguageContentMaps.add(rfrLanguageContentMap);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetRfrLanguageContentMapByReasonForRejection)) {
+                stmt.setInt(1, reasonForRejection.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        RfrLanguageContentMap rfrLanguageContentMap = mapResultSetToRfrLanguageContentMap(reasonForRejection,
+                                resultSet);
+                        rfrLanguageContentMaps.add(rfrLanguageContentMap);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -775,13 +895,17 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         ReasonForRejectionType reasonForRejectionType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetReasonForRejectionTypeById)) {
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            stmt.setInt(1, id);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetReasonForRejectionTypeById)) {
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    reasonForRejectionType = mapResultSetToReasonForRejectionType(resultSet);
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        reasonForRejectionType = mapResultSetToReasonForRejectionType(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -796,12 +920,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestRfrLocationType motTestRfrLocationType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestRfrLocationTypeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestRfrLocationType = mapResultSetToMotTestRfrLocationType(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestRfrLocationTypeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestRfrLocationType = mapResultSetToMotTestRfrLocationType(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -816,12 +944,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         TestItemCategory testItemCategory = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetTestItemCategoryById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    testItemCategory = mapResultSetToTestItemCategory(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetTestItemCategoryById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        testItemCategory = mapResultSetToTestItemCategory(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -837,15 +969,19 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         List<TiCategoryLanguageContentMap> tiCategoryLanguageContentMaps = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(MotTestReadSql.queryGetTiCategoryLanguageContentMapByTestItemCategory)) {
-            stmt.setInt(1, testItemCategory.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    TiCategoryLanguageContentMap tiCategoryLanguageContentMap = mapResultSetToTiCategoryLanguageContentMap(
-                            testItemCategory, resultSet);
-                    tiCategoryLanguageContentMaps.add(tiCategoryLanguageContentMap);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(MotTestReadSql.queryGetTiCategoryLanguageContentMapByTestItemCategory)) {
+                stmt.setInt(1, testItemCategory.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        TiCategoryLanguageContentMap tiCategoryLanguageContentMap = mapResultSetToTiCategoryLanguageContentMap(
+                                testItemCategory, resultSet);
+                        tiCategoryLanguageContentMaps.add(tiCategoryLanguageContentMap);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -860,12 +996,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         LanguageType languageType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetLanguageTypeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    languageType = mapResultSetToLanguageType(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetLanguageTypeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        languageType = mapResultSetToLanguageType(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -880,12 +1020,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         BusinessRule businessRule = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetBusinessRuleById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    businessRule = mapResultSetToBusinessRule(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetBusinessRuleById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        businessRule = mapResultSetToBusinessRule(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -900,12 +1044,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         BusinessRuleType businessRuleType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetBusinessRuleTypeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    businessRuleType = mapResultSetToBusinessRuleType(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetBusinessRuleTypeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        businessRuleType = mapResultSetToBusinessRuleType(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -920,12 +1068,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         Person person = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetPersonById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    person = mapResultSetToPerson(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetPersonById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        person = mapResultSetToPerson(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -940,12 +1092,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         Organisation organisation = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetOrganisationById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    organisation = mapResultSetToOrganisation(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetOrganisationById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        organisation = mapResultSetToOrganisation(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -960,13 +1116,17 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         Site site = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetSiteById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            ResultSet resultSet = stmt.executeQuery();
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetSiteById)) {
+                stmt.setInt(1, id);
 
-            if (resultSet.next()) {
-                site = mapResultSetToSite(resultSet);
+                ResultSet resultSet = stmt.executeQuery();
+
+                if (resultSet.next()) {
+                    site = mapResultSetToSite(resultSet);
+                }
             }
         } catch (SQLException e) {
             throw new InternalException(e);
@@ -980,12 +1140,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         JasperDocument jasperDocument = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetJasperDocumentById)) {
-            stmt.setLong(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    jasperDocument = mapResultSetToJasperDocument(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetJasperDocumentById)) {
+                stmt.setLong(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        jasperDocument = mapResultSetToJasperDocument(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -1000,12 +1164,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestType motTestType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestTypeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestType = mapResultSetToMotTestType(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestTypeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestType = mapResultSetToMotTestType(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -1020,12 +1188,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         MotTestStatus motTestStatus = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestStatusById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    motTestStatus = mapResultSetToMotTestStatus(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestStatusById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        motTestStatus = mapResultSetToMotTestStatus(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -1040,12 +1212,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         WeightSourceLookup weightSourceLookup = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestTypeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    weightSourceLookup = mapResultSetToWeightSourceLookup(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestTypeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        weightSourceLookup = mapResultSetToWeightSourceLookup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {

@@ -33,12 +33,26 @@ public class ConfigManager {
      */
     public static String getEnvironmentVariable(String name) throws IOException {
 
+        return getEnvironmentVariable(name, true);
+    }
+
+    /**
+     * Retrieve the value of the environment variable with the given name.
+     *
+     * If the code is not running inside a Lambda container, retrieve the same key
+     * from config.properties instead.
+     *
+     * @param name The name of the environment variable to get the value of.
+     * @return The value of the environment variable.
+     * @throws IOException if an error occured getting local config settings
+     */
+    public static String getEnvironmentVariable(String name, boolean decrypt) throws IOException {
+
         if (isRunningInLambda()) {
             String value = System.getenv(name);
 
-            if ((name.contains("ENCRYPTED")) && (value != null)) {
-                Decrypt decrypt = new Decrypt();
-                return decrypt.decrypt(value);
+            if ((name.contains("ENCRYPTED")) && (value != null) && decrypt) {
+                return new Decrypt().decrypt(value);
             } else {
                 return value;
             }

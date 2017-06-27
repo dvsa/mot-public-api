@@ -24,7 +24,6 @@ public class MotServiceRequestHandler extends AbstractRequestHandler {
      * @param context AWS Lambda request context
      */
     public MotTest getMotTestById(Integer id, Context context) {
-
         return motTestReadService.getMotTestById(id);
     }
 

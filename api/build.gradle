@@ -1,3 +1,26 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+group 'uk.gov.dvsa.mot'
+version null
+
+buildscript {
+    repositories {
+        maven {
+            url "https://maven.eveoh.nl/content/repositories/releases"
+        }
+    }
+
+    dependencies {
+        classpath "nl.eveoh:gradle-aspectj:1.6"
+    }
+}
+
+project.ext {
+    aspectjVersion = '1.8.10'
+}
+
+apply plugin: 'aspectj'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -21,10 +44,10 @@ sourceSets {
     }
 }
 
-repositories 
-{
-    mavenCentral()
-}
+repositories
+        {
+            mavenCentral()
+        }
 
 dependencies {
     compile 'com.google.inject:guice:4.1.0'
@@ -41,20 +64,43 @@ dependencies {
 task wrapper (type: Wrapper)
 
 task setVersion() {
-	doFirst {
-		// Get the patch version (if not on build server defaults to 0)
-		patchVersion = Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
-		project.version = "${majorVersion}.${minorVersion}.${patchVersion}"
-		println "Version set to: ${project.version}"
-	}
+    doFirst {
+        // Get the patch version (if not on build server defaults to 0)
+        patchVersion = Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
+        project.version = "${majorVersion}.${minorVersion}.${patchVersion}"
+        println "Version set to: ${project.version}"
+    }
 }
 
 task buildZip(type: Zip) {
-	from compileJava
-	from processResources
-	into('lib') {
-		from configurations.runtime
-	}	
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+}
+
+tasks.withType(Test) {
+    testLogging {
+        events = [TestLogEvent.PASSED,
+                  TestLogEvent.SKIPPED,
+                  TestLogEvent.FAILED,
+                  TestLogEvent.STANDARD_OUT]
+        showStandardStreams = true
+        exceptionFormat = TestExceptionFormat.FULL
+        showExceptions = true
+        showStackTraces = true
+        showCauses = true
+
+        afterSuite { desc, result ->
+            if (!desc.parent) { // will match the outermost suite
+                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                def startItem = '|  ', endItem = '  |'
+                def repeatLength = startItem.length() + output.length() + endItem.length()
+                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+            }
+        }
+    }
 }
 
 buildZip.dependsOn setVersion

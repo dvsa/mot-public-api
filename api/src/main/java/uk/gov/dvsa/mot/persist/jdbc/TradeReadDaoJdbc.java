@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
 
-import uk.gov.dvsa.mot.persist.ConnectionFactory;
+import uk.gov.dvsa.mot.mottest.read.core.ConnectionManager;
 import uk.gov.dvsa.mot.persist.TradeReadDao;
 import uk.gov.dvsa.mot.trade.api.InternalException;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
@@ -17,13 +17,15 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-public class TradeReadDaoJdbc extends AbstractDaoJdbc implements TradeReadDao {
+public class TradeReadDaoJdbc implements TradeReadDao {
     private static final Logger logger = Logger.getLogger(MotTestReadDaoJdbc.class);
 
-    @Inject
-    public TradeReadDaoJdbc(ConnectionFactory connectionFactory) {
+    private ConnectionManager connectionManager;
 
-        super(connectionFactory);
+    @Inject
+    public void setConnectionManager(ConnectionManager connectionManager) {
+
+        this.connectionManager = connectionManager;
     }
 
     @Override
@@ -33,7 +35,9 @@ public class TradeReadDaoJdbc extends AbstractDaoJdbc implements TradeReadDao {
         List<Vehicle> vehicles;
 
         logger.debug("Connect getMotHistoryByVehicleId : " + vehicleId);
-        try (Connection connection = getConnection()) {
+        try {
+            Connection connection = connectionManager.getConnection();;
+
             logger.debug("Prepare getMotHistoryByVehicleId : " + vehicleId);
             try (PreparedStatement stmt = connection
                     .prepareStatement(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_VEHICLE_ID)) {
@@ -61,7 +65,9 @@ public class TradeReadDaoJdbc extends AbstractDaoJdbc implements TradeReadDao {
         List<Vehicle> vehicles;
 
         logger.debug("Connect getVehiclesMotTestsByMotTestNumber : " + number);
-        try (Connection connection = getConnection()) {
+        try {
+            Connection connection = connectionManager.getConnection();;
+
             logger.debug("Prepare getVehiclesMotTestsByMotTestNumber : " + number);
             try (PreparedStatement stmt = connection
                     .prepareStatement(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_MOT_TEST_NUMBER)) {
@@ -89,7 +95,9 @@ public class TradeReadDaoJdbc extends AbstractDaoJdbc implements TradeReadDao {
         List<Vehicle> vehicles;
 
         logger.debug("Connect getVehiclesMotTestsByRegistrationAndMake : " + registration + " " + make);
-        try (Connection connection = getConnection()) {
+        try {
+            Connection connection = connectionManager.getConnection();;
+
             logger.debug("Prepare getVehiclesMotTestsByRegistrationAndMake : " + registration + " " + make);
             try (PreparedStatement stmt = connection
                     .prepareStatement(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_REGISTRATION_AND_MAKE)) {
@@ -120,7 +128,9 @@ public class TradeReadDaoJdbc extends AbstractDaoJdbc implements TradeReadDao {
         List<Vehicle> vehicles;
 
         logger.debug("Connect getMotHistoryByDateRange1 : " + startDate + " - " + endDate);
-        try (Connection connection = getConnection()) {
+        try {
+            Connection connection = connectionManager.getConnection();;
+
             logger.debug("Prepare getMotHistoryByDateRange1 : " + startDate + " - " + endDate);
             try (PreparedStatement stmt = connection
                     .prepareStatement(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE)) {
@@ -156,7 +166,9 @@ public class TradeReadDaoJdbc extends AbstractDaoJdbc implements TradeReadDao {
         List<Vehicle> vehicles;
 
         logger.debug("Connect getMotHistoryByRange : " + startVehicleId + " - " + endVehicleId);
-        try (Connection connection = getConnection()) {
+        try {
+            Connection connection = connectionManager.getConnection();;
+
             logger.debug("Prepare getMotHistoryByRange : " + startVehicleId + " - " + endVehicleId);
             try (
                     PreparedStatement stmt = connection.prepareStatement(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_RANGE)) {

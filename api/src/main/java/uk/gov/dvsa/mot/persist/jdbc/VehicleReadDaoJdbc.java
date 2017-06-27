@@ -1,7 +1,10 @@
 package uk.gov.dvsa.mot.persist.jdbc;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 
+import uk.gov.dvsa.mot.mottest.read.core.ConnectionManager;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
 import uk.gov.dvsa.mot.persist.model.BodyType;
 import uk.gov.dvsa.mot.persist.model.ColourLookup;
@@ -32,11 +35,13 @@ import java.util.List;
 
 public class VehicleReadDaoJdbc implements VehicleReadDao {
     private static final Logger logger = Logger.getLogger(VehicleReadDaoJdbc.class);
-    private final Connection connection;
 
-    public VehicleReadDaoJdbc(Connection connection) {
+    private ConnectionManager connectionManager;
 
-        this.connection = connection;
+    @Inject
+    public void setConnectionManager(ConnectionManager connectionManager) {
+
+        this.connectionManager = connectionManager;
     }
 
     @Override
@@ -44,12 +49,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         Vehicle vehicle = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    vehicle = mapResultSetToVehicle(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        vehicle = mapResultSetToVehicle(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -64,16 +73,20 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         Vehicle vehicle;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByIdAndVersion)) {
-            stmt.setInt(1, id);
-            stmt.setInt(2, version);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByIdAndVersion)) {
+                stmt.setInt(1, id);
+                stmt.setInt(2, version);
 
-                if (resultSet.next()) {
-                    vehicle = mapResultSetToVehicle(resultSet);
-                } else {
-                    vehicle = getVehicleHistByIdAndVersion(id, version);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+
+                    if (resultSet.next()) {
+                        vehicle = mapResultSetToVehicle(resultSet);
+                    } else {
+                        vehicle = getVehicleHistByIdAndVersion(id, version);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -88,13 +101,17 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         Vehicle vehicle = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleHistByIdAndVersion)) {
-            stmt.setInt(1, id);
-            stmt.setInt(2, version);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    vehicle = mapResultSetToVehicle(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleHistByIdAndVersion)) {
+                stmt.setInt(1, id);
+                stmt.setInt(2, version);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        vehicle = mapResultSetToVehicle(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -110,12 +127,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         DvlaVehicle dvlaVehicle = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetDvlaVehicleById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    dvlaVehicle = mapResultSetToDvlaVehicle(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetDvlaVehicleById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        dvlaVehicle = mapResultSetToDvlaVehicle(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -133,16 +154,21 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         List<Vehicle> vehicles = new ArrayList<>();
 
         logger.debug("Prepare getVehiclesById " + startid + " - " + endid);
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesById)) {
-            stmt.setInt(1, startid);
-            stmt.setInt(2, startid);
 
-            logger.debug("Resultset getVehiclesById " + startid + " - " + endid);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                    logger.debug("Mapped getVehiclesById " + vehicle.getId());
-                    vehicles.add(vehicle);
+        try {
+            Connection connection = connectionManager.getConnection();;
+
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesById)) {
+                stmt.setInt(1, startid);
+                stmt.setInt(2, startid);
+
+                logger.debug("Resultset getVehiclesById " + startid + " - " + endid);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                        logger.debug("Mapped getVehiclesById " + vehicle.getId());
+                        vehicles.add(vehicle);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -161,16 +187,21 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         List<Vehicle> vehicles = new ArrayList<>();
 
         logger.debug("Prepare getVehiclesByPage " + offset + " - " + limit);
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByPage)) {
-            stmt.setInt(1, offset);
-            stmt.setInt(2, offset + limit);
 
-            logger.debug("Resultset getVehiclesByPage " + offset + " - " + limit);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                    vehicles.add(vehicle);
-                    logger.debug("Mapped getVehiclesByPage vehicle " + vehicle.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
+
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByPage)) {
+                stmt.setInt(1, offset);
+                stmt.setInt(2, offset + limit);
+
+                logger.debug("Resultset getVehiclesByPage " + offset + " - " + limit);
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                        vehicles.add(vehicle);
+                        logger.debug("Mapped getVehiclesByPage vehicle " + vehicle.getId());
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -187,14 +218,18 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         Vehicle vehicle = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByFullRegAndMake)) {
-            String wildmake = "%" + make + "%";
-            stmt.setString(1, registration);
-            stmt.setString(2, wildmake);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    vehicle = mapResultSetToVehicle(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByFullRegAndMake)) {
+                String wildmake = "%" + make + "%";
+                stmt.setString(1, registration);
+                stmt.setString(2, wildmake);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        vehicle = mapResultSetToVehicle(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -210,13 +245,17 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         List<Vehicle> vehicles = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByFullRegistration)) {
-            stmt.setString(1, registration);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                    vehicles.add(vehicle);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByFullRegistration)) {
+                stmt.setString(1, registration);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                        vehicles.add(vehicle);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -232,14 +271,18 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         List<Vehicle> vehicles = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByRegistrationOrVin)) {
-            stmt.setString(1, registration);
-            stmt.setString(2, vin);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                    vehicles.add(vehicle);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByRegistrationOrVin)) {
+                stmt.setString(1, registration);
+                stmt.setString(2, vin);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                        vehicles.add(vehicle);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -255,14 +298,18 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         List<Vehicle> vehicles = new ArrayList<>();
 
-        try (PreparedStatement stmt =
-                     connection.prepareStatement(VehicleReadSql.queryGetVehiclesByMotTestNumberWithSameRegistrationAndVin)) {
-            stmt.setLong(1, motTestNumber);
+        try {
+            Connection connection = connectionManager.getConnection();
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                    vehicles.add(vehicle);
+            try (PreparedStatement stmt =
+                         connection.prepareStatement(VehicleReadSql.queryGetVehiclesByMotTestNumberWithSameRegistrationAndVin)) {
+                stmt.setLong(1, motTestNumber);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                        vehicles.add(vehicle);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -278,14 +325,18 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         List<Vehicle> vehicles = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndFullVin)) {
-            stmt.setString(1, registration);
-            stmt.setString(2, vin);
+        try {
+            Connection connection = connectionManager.getConnection();
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                    vehicles.add(vehicle);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndFullVin)) {
+                stmt.setString(1, registration);
+                stmt.setString(2, vin);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                        vehicles.add(vehicle);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -301,15 +352,19 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         List<Vehicle> vehicles = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndPartialVin)) {
-            stmt.setString(1, registration);
-            stmt.setString(2, vin);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                    vehicles.add(vehicle);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndPartialVin)) {
+                stmt.setString(1, registration);
+                stmt.setString(2, vin);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                        vehicles.add(vehicle);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -325,13 +380,17 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         List<Vehicle> vehicles = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndNullVin)) {
-            stmt.setString(1, registration);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                    vehicles.add(vehicle);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndNullVin)) {
+                stmt.setString(1, registration);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                        vehicles.add(vehicle);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -347,13 +406,17 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         List<Vehicle> vehicles = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByNullRegAndFullVin)) {
-            stmt.setString(1, vin);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                    vehicles.add(vehicle);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByNullRegAndFullVin)) {
+                stmt.setString(1, vin);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
+                        vehicles.add(vehicle);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -369,11 +432,15 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         Model model = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelFromDvlaVehicle)) {
-            ResultSet resultSet = stmt.executeQuery();
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            if (resultSet.next()) {
-                model = mapResultSetToModel(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelFromDvlaVehicle)) {
+                ResultSet resultSet = stmt.executeQuery();
+
+                if (resultSet.next()) {
+                    model = mapResultSetToModel(resultSet);
+                }
             }
         } catch (SQLException e) {
 
@@ -388,10 +455,14 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         List<Make> makes = new ArrayList<>();
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetMakes)) {
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                while (resultSet.next()) {
-                    makes.add(mapResultSetToMake(resultSet));
+        try {
+            Connection connection = connectionManager.getConnection();;
+
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetMakes)) {
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        makes.add(mapResultSetToMake(resultSet));
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -406,12 +477,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         ModelDetail modelDetail = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelDetailById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    modelDetail = mapResultSetToModelDetail(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelDetailById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        modelDetail = mapResultSetToModelDetail(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -427,12 +502,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         EmptyReasonMap emptyReasonMap = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyReasonMapByVehicle)) {
-            stmt.setInt(1, parent.getId());
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    emptyReasonMap = mapResultSetToEmptyReasonMap(parent, resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyReasonMapByVehicle)) {
+                stmt.setInt(1, parent.getId());
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        emptyReasonMap = mapResultSetToEmptyReasonMap(parent, resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -448,12 +527,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         EmptyVinReasonLookup emptyVinReasonLookup = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyVinReasonLookupById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    emptyVinReasonLookup = mapResultSetToEmptyVinReasonLookup(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyVinReasonLookupById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        emptyVinReasonLookup = mapResultSetToEmptyVinReasonLookup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -469,12 +552,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         EmptyVrmReasonLookup emptyVrmReasonLookup = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyVrmReasonLookupById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    emptyVrmReasonLookup = mapResultSetToEmptyVrmReasonLookup(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyVrmReasonLookupById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        emptyVrmReasonLookup = mapResultSetToEmptyVrmReasonLookup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -490,12 +577,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         Make make = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetMakeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    make = mapResultSetToMake(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetMakeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        make = mapResultSetToMake(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -511,12 +602,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         Model model = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    model = mapResultSetToModel(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        model = mapResultSetToModel(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -532,12 +627,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         VehicleClass vehicleClass = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleClassById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    vehicleClass = mapResultSetToVehicleClass(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleClassById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        vehicleClass = mapResultSetToVehicleClass(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -553,12 +652,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         VehicleClassGroup vehicleClassGroup = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleClassGroupById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    vehicleClassGroup = mapResultSetToVehicleClassGroup(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleClassGroupById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        vehicleClassGroup = mapResultSetToVehicleClassGroup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -575,12 +678,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         BodyType bodyType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetBodyTypeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    bodyType = mapResultSetToBodyType(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetBodyTypeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        bodyType = mapResultSetToBodyType(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -596,12 +703,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         FuelType fuelType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetFuelTypeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    fuelType = mapResultSetToFuelType(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetFuelTypeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        fuelType = mapResultSetToFuelType(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -617,12 +728,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         TransmissionType transmissionType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetTransmissionTypeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    transmissionType = mapResultSetToTransmissionType(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetTransmissionTypeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        transmissionType = mapResultSetToTransmissionType(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -638,12 +753,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         WheelplanType wheelplanType = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetWheelplanTypeById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    wheelplanType = mapResultSetToWheelplanType(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetWheelplanTypeById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        wheelplanType = mapResultSetToWheelplanType(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -659,12 +778,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         ColourLookup colourLookup = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetColourLookupById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    colourLookup = mapResultSetToColourLookup(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetColourLookupById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        colourLookup = mapResultSetToColourLookup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -679,12 +802,17 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     public WeightSourceLookup getWeightSourceLookupById(int id) {
 
         WeightSourceLookup weightSourceLookup = null;
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetWeightSourceLookupById)) {
-            stmt.setInt(1, id);
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    weightSourceLookup = mapResultSetToWeightSourceLookup(resultSet);
+        try {
+            Connection connection = connectionManager.getConnection();;
+
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetWeightSourceLookupById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        weightSourceLookup = mapResultSetToWeightSourceLookup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -700,13 +828,17 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         CountryOfRegistrationLookup countryOfRegistrationLookup = null;
 
-        try (PreparedStatement stmt = connection
-                .prepareStatement(VehicleReadSql.queryGetCountryOfRegistrationLookupById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    countryOfRegistrationLookup = mapResultSetToCountryOfRegistrationLookup(resultSet);
+            try (PreparedStatement stmt = connection
+                .prepareStatement(VehicleReadSql.queryGetCountryOfRegistrationLookupById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        countryOfRegistrationLookup = mapResultSetToCountryOfRegistrationLookup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -722,12 +854,16 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
         CountryLookup countryLookup = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetCountryLookupById)) {
-            stmt.setInt(1, id);
+        try {
+            Connection connection = connectionManager.getConnection();;
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    countryLookup = mapResultSetToCountryLookup(resultSet);
+            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetCountryLookupById)) {
+                stmt.setInt(1, id);
+
+                try (ResultSet resultSet = stmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        countryLookup = mapResultSetToCountryLookup(resultSet);
+                    }
                 }
             }
         } catch (SQLException e) {
