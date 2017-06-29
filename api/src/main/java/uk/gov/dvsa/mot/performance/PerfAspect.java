@@ -16,7 +16,11 @@ public class PerfAspect {
     public void anyPublicMethod() {
     }
 
-    @Around("withinPublicApi() && anyPublicMethod()")
+    @Pointcut("execution(private * getClient(..))")
+    public void decryptGetClient() {
+    }
+
+    @Around("withinPublicApi() && anyPublicMethod() && decryptGetClient")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
         Object response;
