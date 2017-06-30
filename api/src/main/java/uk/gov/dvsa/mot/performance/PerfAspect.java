@@ -20,7 +20,7 @@ public class PerfAspect {
     public void decryptGetClient() {
     }
 
-    @Around("withinPublicApi() && anyPublicMethod() && decryptGetClient")
+    @Around("withinPublicApi() && anyPublicMethod() && decryptGetClient()")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
         Object response;
