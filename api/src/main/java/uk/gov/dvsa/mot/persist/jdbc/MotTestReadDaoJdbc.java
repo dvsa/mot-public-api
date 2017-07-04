@@ -3,6 +3,7 @@ package uk.gov.dvsa.mot.persist.jdbc;
 import org.apache.log4j.Logger;
 
 import uk.gov.dvsa.mot.persist.MotTestReadDao;
+import uk.gov.dvsa.mot.persist.jdbc.queries.GetLatestMotTestCurrentByVehicleId;
 import uk.gov.dvsa.mot.persist.jdbc.queries.GetMotTestCurrentByVehicleId;
 import uk.gov.dvsa.mot.persist.jdbc.queries.GetMotTestHistoryByVehicleId;
 import uk.gov.dvsa.mot.persist.model.BusinessRule;
@@ -191,25 +192,63 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
     }
 
     @Override
-    public List<MotTest> getMotTestsByVehicleId(int vehicleId, boolean includeAppealedTests) {
+    public MotTest getLatestMotTestByVehicleId(int vehicleId) {
 
         logger.debug("Entry getMotTestsByVehicleId : " + vehicleId);
-        List<MotTest> motTest = getMotTestCurrentsByVehicleId(vehicleId, includeAppealedTests);
-        motTest.addAll(getMotTestHistorysByVehicleId(vehicleId, includeAppealedTests));
+        MotTest motTest = getLatestMotTestCurrentByVehicleId(vehicleId);
+
+        logger.debug("Exit getMotTestsByVehicleId : " + vehicleId + " found ");
+        return motTest;
+    }
+
+    @Override
+    public List<MotTest> getMotTestsByVehicleId(int vehicleId) {
+
+        logger.debug("Entry getMotTestsByVehicleId : " + vehicleId);
+        List<MotTest> motTest = getMotTestCurrentsByVehicleId(vehicleId);
+        motTest.addAll(getMotTestHistorysByVehicleId(vehicleId));
 
         logger.debug("Exit getMotTestsByVehicleId : " + vehicleId + " found " + motTest.size());
         return motTest;
     }
 
     @Override
-    public List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId, boolean includeAppealedTests) {
+    public MotTest getLatestMotTestCurrentByVehicleId(int vehicleId) {
+
+        logger.debug("Entry getMotTestCurrentsByVehicleId : " + vehicleId);
+
+        MotTest motTest;
+
+        logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
+
+        try (PreparedStatement stmt = connection.prepareStatement(new GetLatestMotTestCurrentByVehicleId().buildQuery())) {
+            stmt.setInt(1, vehicleId);
+
+            logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
+                motTest = mapResultSetToMotTestCurrent(resultSet);
+                if (resultSet.next()) {
+                    motTest = mapResultSetToMotTestCurrent(resultSet);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Map getMotTestCurrentsByVehicleId : " + vehicleId, e);
+            throw new InternalException(e);
+        }
+
+        return motTest;
+    }
+
+    @Override
+    public List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId) {
 
         logger.debug("Entry getMotTestCurrentsByVehicleId : " + vehicleId);
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
 
-        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestCurrentByVehicleId().buildQuery(includeAppealedTests))) {
+        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestCurrentByVehicleId().buildQuery())) {
             stmt.setInt(1, vehicleId);
 
             logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
@@ -229,14 +268,14 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
     }
 
     @Override
-    public List<MotTest> getMotTestHistorysByVehicleId(int vehicleId, boolean includeAppealedTests) {
+    public List<MotTest> getMotTestHistorysByVehicleId(int vehicleId) {
 
         logger.debug("Entry getMotTestHistorysByVehicleId : " + vehicleId);
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestHistorysByVehicleId : " + vehicleId);
 
-        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestHistoryByVehicleId().buildQuery(includeAppealedTests))) {
+        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestHistoryByVehicleId().buildQuery())) {
             stmt.setInt(1, vehicleId);
 
             logger.debug("Resultset getMotTestHistorysByVehicleId : " + vehicleId);

@@ -31,6 +31,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -149,10 +150,10 @@ public class MotTestReadServiceDatabaseTest {
     public void getMotTestsByVehicleId_WithNoMatches_ReturnsEmptyList() {
         // Arrange - Set-up mock
         List<uk.gov.dvsa.mot.persist.model.MotTest> result = new ArrayList<>();
-        when(motTestReadDaoMock.getMotTestsByVehicleId(10, false)).thenReturn(result);
+        when(motTestReadDaoMock.getMotTestsByVehicleId(anyInt())).thenReturn(result);
 
         // Act
-        List<MotTest> actual = motTestReadServiceDatabase.getMotTestsByVehicleId(10);
+        List<MotTest> actual = motTestReadServiceDatabase.getMotTestsByVehicleId(anyInt());
 
         // Assert - Check the response
         assertNotNull(actual);
@@ -163,10 +164,10 @@ public class MotTestReadServiceDatabaseTest {
     @Test
     public void getMotTestsByVehicleId_WithNullList_ReturnsEmptyList() {
         // Arrange - Set-up mock
-        when(motTestReadDaoMock.getMotTestsByVehicleId(10, false)).thenReturn(null);
+        when(motTestReadDaoMock.getMotTestsByVehicleId(anyInt())).thenReturn(null);
 
         // Act
-        List<MotTest> actual = motTestReadServiceDatabase.getMotTestsByVehicleId(10);
+        List<MotTest> actual = motTestReadServiceDatabase.getMotTestsByVehicleId(anyInt());
 
         // Assert - Check the response
         assertNotNull(actual);
@@ -178,10 +179,10 @@ public class MotTestReadServiceDatabaseTest {
     public void getMotTestsByVehicleId_WithMatches_ReturnsMotTestList() {
 
         // Arrange - Set-up mocks
-        when(motTestReadDaoMock.getMotTestsByVehicleId(10, false)).thenReturn(getMotTestList());
+        when(motTestReadDaoMock.getMotTestsByVehicleId(anyInt())).thenReturn(getMotTestList());
 
         // Act
-        List<MotTest> actual = motTestReadServiceDatabase.getMotTestsByVehicleId(10);
+        List<MotTest> actual = motTestReadServiceDatabase.getMotTestsByVehicleId(anyInt());
 
         // Assert - Check the response and mapping
         assertNotNull(actual);
@@ -326,42 +327,20 @@ public class MotTestReadServiceDatabaseTest {
     }
 
     @Test
-    public void getLatestMotTestPassByVehicle_ValidVehicle_OnlyFailedTests_ReturnsNull() {
+    public void getLatestMotTestPassByVehicle_NullTest_ReturnsNull() {
 
         final int vehicleId = 78923;
         final Vehicle vehicle = new Vehicle();
         vehicle.setId(vehicleId);
 
-        MotTestStatus failedStatus = new MotTestStatus();
-        failedStatus.setName("FAILED");
-
-        uk.gov.dvsa.mot.persist.model.MotTest failedTest1 = new uk.gov.dvsa.mot.persist.model.MotTest();
-        failedTest1.setMotTestStatus(failedStatus);
-        uk.gov.dvsa.mot.persist.model.MotTest failedTest2 = new uk.gov.dvsa.mot.persist.model.MotTest();
-        failedTest2.setMotTestStatus(failedStatus);
-
-        when(motTestReadDaoMock.getMotTestsByVehicleId(vehicleId, true))
-                .thenReturn(Arrays.asList(failedTest1, failedTest2));
+        when(motTestReadDaoMock.getLatestMotTestByVehicleId(vehicleId)).thenReturn(null);
 
         MotTest actual = motTestReadServiceDatabase.getLatestMotTestPassByVehicle(vehicle);
         assertThat(actual, nullValue());
     }
 
     @Test
-    public void getLatestMotTestPassByVehicle_NullTestList_ReturnsNull() {
-
-        final int vehicleId = 78923;
-        final Vehicle vehicle = new Vehicle();
-        vehicle.setId(vehicleId);
-
-        when(motTestReadDaoMock.getMotTestsByVehicleId(vehicleId, true)).thenReturn(null);
-
-        MotTest actual = motTestReadServiceDatabase.getLatestMotTestPassByVehicle(vehicle);
-        assertThat(actual, nullValue());
-    }
-
-    @Test
-    public void getLatestMotTestPassByVehicle_ValidVehicle_MixedPassedFailedTests_ReturnsPassedTest() {
+    public void getLatestMotTestPassByVehicle_ValidVehicle_ReturnsPassedTest() {
 
         final int vehicleId = 78923;
         final Vehicle vehicle = new Vehicle();
@@ -370,24 +349,17 @@ public class MotTestReadServiceDatabaseTest {
         MotTestType testType = new MotTestType();
         testType.setDescription("Test Type");
 
-        MotTestStatus failedStatus = new MotTestStatus();
-        failedStatus.setName("FAILED");
-
         MotTestStatus passedStatus = new MotTestStatus();
         passedStatus.setName("PASSED");
 
-        uk.gov.dvsa.mot.persist.model.MotTest failedTest = new uk.gov.dvsa.mot.persist.model.MotTest();
-        failedTest.setMotTestStatus(failedStatus);
-        failedTest.setNumber(BigDecimal.valueOf(12351352));
-        failedTest.setMotTestType(testType);
         uk.gov.dvsa.mot.persist.model.MotTest passedTest = new uk.gov.dvsa.mot.persist.model.MotTest();
         passedTest.setMotTestStatus(passedStatus);
         passedTest.setNumber(BigDecimal.valueOf(8348235));
         passedTest.setMotTestType(testType);
         passedTest.setMotTestCurrentRfrMaps(Arrays.asList());
 
-        when(motTestReadDaoMock.getMotTestsByVehicleId(vehicleId, true))
-                .thenReturn(Arrays.asList(failedTest, passedTest));
+        when(motTestReadDaoMock.getLatestMotTestByVehicleId(vehicleId))
+                .thenReturn(passedTest);
 
         MotTest actual = motTestReadServiceDatabase.getLatestMotTestPassByVehicle(vehicle);
         assertThat(actual, notNullValue());

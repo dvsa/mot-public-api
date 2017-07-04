@@ -1,7 +1,7 @@
 package uk.gov.dvsa.mot.persist.jdbc.queries;
 
 @SuppressWarnings({"checkstyle:OperatorWrap", "checkstyle:Indentation"})
-public class GetMotTestCurrentByVehicleId {
+public class GetLatestMotTestCurrentByVehicleId {
 
     public String buildQuery() {
         return "SELECT `mot_test_current`.`id` "
@@ -21,8 +21,10 @@ public class GetMotTestCurrentByVehicleId {
                 + ", `mot_test_current`.`version` " + ", `mot_test_current`.`client_ip` " + "FROM  `mot2`.`mot_test_current` "
                 + "JOIN  `mot2`.`mot_test_type` on `mot_test_type`.`id` = `mot_test_current`.`mot_test_type_id` "
                 + "JOIN  `mot2`.`mot_test_status` on `mot_test_status`.`id` = `mot_test_current`.`status_id` "
-                + "WHERE `mot_test_current`.`vehicle_id` = ? " + "AND   `mot_test_type`.`code` IN ( 'NT', 'PL', 'PV', 'RT' ) "
-                + "AND   `mot_test_status`.`code` IN ( 'P', 'F' ) "
-                + "ORDER BY `mot_test_current`.`completed_date` desc, `mot_test_current`.`id` desc ";
+                + "WHERE `mot_test_current`.`vehicle_id` = ? " + "AND   `mot_test_type`.`code` IN ( 'NT', 'PL', 'PV', 'RT' "
+                + ", 'ES', 'EI' ) "
+                + "AND   `mot_test_status`.`code` = 'P' "
+                + "ORDER BY `mot_test_current`.`completed_date` desc, `mot_test_current`.`id` desc "
+                + "LIMIT 1";
     }
 }
