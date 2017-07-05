@@ -217,7 +217,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
 
         logger.debug("Entry getMotTestCurrentsByVehicleId : " + vehicleId);
 
-        MotTest motTest;
+        MotTest motTest = null;
 
         logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
 
@@ -227,7 +227,6 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
             logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
             try (ResultSet resultSet = stmt.executeQuery()) {
                 logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
-                motTest = mapResultSetToMotTestCurrent(resultSet);
                 if (resultSet.next()) {
                     motTest = mapResultSetToMotTestCurrent(resultSet);
                 }
