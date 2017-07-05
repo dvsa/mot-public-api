@@ -73,15 +73,10 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
 
     public uk.gov.dvsa.mot.mottest.api.MotTest getLatestMotTestPassByVehicle(Vehicle vehicle) {
 
-        List<MotTest> motTests = motTestReadDao.getMotTestsByVehicleId(vehicle.getId());
+        MotTest motTest = motTestReadDao.getLatestMotTestByVehicleId(vehicle.getId());
 
-        if (motTests != null) {
-            for (MotTest motTest : motTests) {
-                String name = motTest.getMotTestStatus().getName();
-                if ("PASSED".equalsIgnoreCase(name)) {
-                    return mapMotTestSqltoJson(motTest);
-                }
-            }
+        if (motTest != null) {
+            return mapMotTestSqltoJson(motTest);
         }
 
         return null;

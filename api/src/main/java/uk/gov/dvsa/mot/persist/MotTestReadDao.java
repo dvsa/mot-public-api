@@ -49,6 +49,10 @@ public interface MotTestReadDao {
 
     List<MotTest> getMotTestsByVehicleId(int vehicleId);
 
+    MotTest getLatestMotTestCurrentByVehicleId(int vehicleId);
+
+    MotTest getLatestMotTestByVehicleId(int vehicleId);
+
     List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId);
 
     List<MotTest> getMotTestHistorysByVehicleId(int vehicleId);

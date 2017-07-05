@@ -3,6 +3,9 @@ package uk.gov.dvsa.mot.persist.jdbc;
 import org.apache.log4j.Logger;
 
 import uk.gov.dvsa.mot.persist.MotTestReadDao;
+import uk.gov.dvsa.mot.persist.jdbc.queries.GetLatestMotTestCurrentByVehicleId;
+import uk.gov.dvsa.mot.persist.jdbc.queries.GetMotTestCurrentByVehicleId;
+import uk.gov.dvsa.mot.persist.jdbc.queries.GetMotTestHistoryByVehicleId;
 import uk.gov.dvsa.mot.persist.model.BusinessRule;
 import uk.gov.dvsa.mot.persist.model.BusinessRuleType;
 import uk.gov.dvsa.mot.persist.model.Comment;
@@ -189,6 +192,16 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
     }
 
     @Override
+    public MotTest getLatestMotTestByVehicleId(int vehicleId) {
+
+        logger.debug("Entry getMotTestsByVehicleId : " + vehicleId);
+        MotTest motTest = getLatestMotTestCurrentByVehicleId(vehicleId);
+
+        logger.debug("Exit getMotTestsByVehicleId : " + vehicleId + " found ");
+        return motTest;
+    }
+
+    @Override
     public List<MotTest> getMotTestsByVehicleId(int vehicleId) {
 
         logger.debug("Entry getMotTestsByVehicleId : " + vehicleId);
@@ -200,13 +213,41 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
     }
 
     @Override
+    public MotTest getLatestMotTestCurrentByVehicleId(int vehicleId) {
+
+        logger.debug("Entry getMotTestCurrentsByVehicleId : " + vehicleId);
+
+        MotTest motTest = null;
+
+        logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
+
+        try (PreparedStatement stmt = connection.prepareStatement(new GetLatestMotTestCurrentByVehicleId().buildQuery())) {
+            stmt.setInt(1, vehicleId);
+
+            logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                logger.debug("Map getMotTestCurrentsByVehicleId : " + vehicleId);
+                if (resultSet.next()) {
+                    motTest = mapResultSetToMotTestCurrent(resultSet);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Map getMotTestCurrentsByVehicleId : " + vehicleId, e);
+            throw new InternalException(e);
+        }
+
+        return motTest;
+    }
+
+    @Override
     public List<MotTest> getMotTestCurrentsByVehicleId(int vehicleId) {
 
         logger.debug("Entry getMotTestCurrentsByVehicleId : " + vehicleId);
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByVehicleId)) {
+
+        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestCurrentByVehicleId().buildQuery())) {
             stmt.setInt(1, vehicleId);
 
             logger.debug("Resultset getMotTestCurrentsByVehicleId : " + vehicleId);
@@ -232,7 +273,8 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<MotTest> motTests = new ArrayList<>();
 
         logger.debug("Prepare getMotTestHistorysByVehicleId : " + vehicleId);
-        try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByVehicleId)) {
+
+        try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestHistoryByVehicleId().buildQuery())) {
             stmt.setInt(1, vehicleId);
 
             logger.debug("Resultset getMotTestHistorysByVehicleId : " + vehicleId);
