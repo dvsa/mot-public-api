@@ -254,6 +254,7 @@ public class TradeServiceRequest {
 
     public class MotTestPathParams {
         private Long id;
+        private Long number;
         private String registration;
         private String make;
 
@@ -285,6 +286,16 @@ public class TradeServiceRequest {
         public void setMake(String make) {
 
             this.make = make;
+        }
+
+        public Long getNumber() {
+
+            return number;
+        }
+
+        public void setNumber(Long number) {
+
+            this.number = number;
         }
     }
 }

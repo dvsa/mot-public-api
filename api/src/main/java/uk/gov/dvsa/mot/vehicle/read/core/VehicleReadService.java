@@ -15,6 +15,8 @@ public interface VehicleReadService {
 
     List<Vehicle> findByRegistration(String registration);
 
+    List<Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber);
+
     List<Vehicle> getVehiclesById(int startId, int endId);
 
     List<Vehicle> getVehiclesByPage(int offset, int limit);

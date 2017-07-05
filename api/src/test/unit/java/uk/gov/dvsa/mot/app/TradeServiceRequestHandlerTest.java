@@ -71,6 +71,21 @@ public class TradeServiceRequestHandlerTest {
     }
 
     /**
+     * Convenience function for testing getLatestMotTestByMotTestNumber calls with less boilerplate
+     *
+     * @param request the request to pass to getLatestMotTestByMotTestNumber
+     * @return The return value of getLatestMotTestByMotTestNumber
+     * @throws TradeException if getLatestMotTestByMotTestNumber throws
+     */
+    private Vehicle createHandlerAndGetLatestMotTestByMotTestNumber(TradeServiceRequest request) throws TradeException {
+
+        TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
+        sut.setTradeReadService(tradeReadService);
+
+        return sut.getLatestMotTestByMotTestNumber(request, lambdaContext);
+    }
+
+    /**
      * Convenience function for testing getTradeMotTestsLegacy calls with less boilerplate
      *
      * @param request the request to pass to getTradeMotTestsLegacy
@@ -550,6 +565,51 @@ public class TradeServiceRequestHandlerTest {
         when(tradeReadService.getLatestMotTestByRegistration(registration)).thenReturn(vehicle);
 
         Vehicle receivedVehicle = createHandlerAndGetLatestMotTest(request);
+
+        assertEquals(vehicle, receivedVehicle);
+    }
+
+    /**
+     * If we don't provide an MOT number we should get an BadRequestException.
+     */
+    @Test(expected = BadRequestException.class)
+    public void getLatestMotTestByMotTestNumber_IncorrectParamsProvided() throws TradeException {
+
+        createHandlerAndGetLatestMotTestByMotTestNumber(request);
+    }
+
+    /**
+     * When you ask for a vehicle which doesn't have any MOTs you should get an InvalidResourceException
+     */
+    @Test(expected = InvalidResourceException.class)
+    public void getLatestMotTestByMotTestNumber_VehicleHasNoMot() throws TradeException {
+
+        final long motNumber = 42;
+        request.getPathParams().setNumber(motNumber);
+
+        when(tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motNumber)).thenReturn(null);
+
+        createHandlerAndGetLatestMotTestByMotTestNumber(request);
+    }
+
+    /**
+     * If asked for a vehicle which does exist and has a valid MOT we expect to receive that vehicle.
+     */
+    @Test
+    public void getLatestMotTestByMotTestNumber_ValidRegistrationAndMot() throws TradeException {
+
+        final long motNumber = 42;
+        request.getPathParams().setNumber(motNumber);
+
+        final String registration = "XX89UIP";
+        request.getPathParams().setRegistration(registration);
+
+        final Vehicle vehicle = new Vehicle();
+        vehicle.setRegistration(registration);
+
+        when(tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motNumber)).thenReturn(vehicle);
+
+        Vehicle receivedVehicle = createHandlerAndGetLatestMotTestByMotTestNumber(request);
 
         assertEquals(vehicle, receivedVehicle);
     }
