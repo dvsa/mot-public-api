@@ -74,7 +74,7 @@ public class MotTestReadServiceDatabase implements MotTestReadService {
 
         return result;
     }
-
+    
     @Override
     @ProvideDbConnection
     public uk.gov.dvsa.mot.mottest.api.MotTest getLatestMotTestPassByVehicle(Vehicle vehicle) {

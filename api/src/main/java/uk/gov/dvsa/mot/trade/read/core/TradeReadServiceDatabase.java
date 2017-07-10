@@ -140,7 +140,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
 
         return tradeReadDao.getVehiclesMotTestsByRange(startVehicleId, endVehicleId);
     }
-
+    
     @Override
     @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByDatePage(Date date, Integer page) {
