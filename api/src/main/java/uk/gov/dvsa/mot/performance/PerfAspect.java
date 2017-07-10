@@ -31,7 +31,10 @@ public class PerfAspect {
             response = proceedingJoinPoint.proceed();
         } finally {
             long end = System.currentTimeMillis() - start;
-            System.out.println("The following method " + name + " took " + end + " ms");
+
+            if (end > 50) {
+                System.out.println("The following method " + name + " took " + end + " ms");
+            }
         }
 
         return response;
