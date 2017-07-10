@@ -52,8 +52,7 @@ public class ConfigManager {
             String value = System.getenv(name);
 
             if ((name.contains("ENCRYPTED")) && (value != null) && decrypt) {
-                Decrypt decryptor = new Decrypt();
-                return decryptor.decrypt(value);
+                return new Decrypt().decrypt(value);
             } else {
                 return value;
             }
