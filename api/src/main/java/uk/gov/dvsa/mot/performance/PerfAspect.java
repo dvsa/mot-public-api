@@ -5,7 +5,10 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
-@Aspect
+/**
+ * Uncomment @Aspect and @Around for performance logging.
+ */
+//@Aspect
 public class PerfAspect {
 
     @Pointcut("within(uk.gov.dvsa.mot..*)")
@@ -24,7 +27,7 @@ public class PerfAspect {
     public void decryptGetClient() {
     }
 
-    @Around("withinPublicApi() && (anyPublicMethod() || decryptGetClient())")
+    //@Around("withinPublicApi() && (anyPublicMethod() || decryptGetClient())")
     public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
         Object response;

@@ -1,12 +1,14 @@
 package uk.gov.dvsa.mot.mottest.read.core;
 
-import uk.gov.dvsa.mot.persist.ConnectionFactory;
+import org.apache.log4j.Logger;
+
 import uk.gov.dvsa.mot.persist.jdbc.MySqlConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class ConnectionManager {
+    private static final Logger logger = Logger.getLogger(ConnectionManager.class);
     private static final ThreadLocal<Connection> connectionHolder = new ThreadLocal<>();
 
     public Connection getConnection() {
@@ -21,8 +23,7 @@ public class ConnectionManager {
         Connection connection = connectionHolder.get();
 
         if (connection == null) {
-            ConnectionFactory factory = new MySqlConnectionFactory();
-            connection = factory.getConnection();
+            connection = new MySqlConnectionFactory().getConnection();
             connectionHolder.set(connection);
         }
     }
@@ -35,7 +36,7 @@ public class ConnectionManager {
             try {
                 connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.warn("Exception when closing database connection.", e);
             } finally {
                 connectionHolder.remove();
             }
