@@ -32,7 +32,7 @@ public class VehicleServiceRequestHandlerTest {
      * null.
      */
     @Test(expected = InvalidResourceException.class)
-    public void getVehicleById_VehicleDoesNotExist() throws Throwable {
+    public void getVehicleById_VehicleDoesNotExist() throws TradeException {
 
         final int vehicleId = 19;
 
@@ -88,15 +88,5 @@ public class VehicleServiceRequestHandlerTest {
 
         // call method, which should throw
         sut.getVehicleById(vehicleId, lambdaContext);
-    }
-
-    /**
-     * We expect the default constructor to throw when it tries to talk to a MySQL
-     * server which doesn't exist
-     */
-    //@Test(expected = ProvisionException.class)
-    public void defaultConstructor_Throws() throws Exception {
-
-        new VehicleServiceRequestHandler();
     }
 }

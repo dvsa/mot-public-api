@@ -130,7 +130,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         logger.debug("Prepare getMotTestHistoryById " + id);
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistoryById)) {
                 stmt.setLong(1, id);
@@ -170,7 +170,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTest motTest = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentByNumber)) {
                 stmt.setLong(1, number);
@@ -196,7 +196,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTest motTest = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistoryByNumber)) {
                 stmt.setLong(1, number);
@@ -275,7 +275,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         logger.debug("Prepare getMotTestCurrentsByVehicleId : " + vehicleId);
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestCurrentByVehicleId().buildQuery())) {
                 stmt.setInt(1, vehicleId);
@@ -307,7 +307,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         logger.debug("Prepare getMotTestHistorysByVehicleId : " + vehicleId);
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(new GetMotTestHistoryByVehicleId().buildQuery())) {
                 stmt.setInt(1, vehicleId);
@@ -349,7 +349,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         logger.debug("Prepare getMotTestCurrentsByDateRange : " + startDate + " - " + endDate);
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByDateRange)) {
                 stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
@@ -383,7 +383,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         logger.debug("Prepare getMotTestHistorysByDateRange : " + startDate + " - " + endDate);
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByDateRange)) {
                 stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
@@ -428,7 +428,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         logger.debug("Prepare getMotHistoryCurrentByDateRange : " + startDate + " - " + endDate);
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.QueryGetMotHistoryCurrentVehicleByDateRange)) {
                 stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
@@ -457,7 +457,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         logger.debug("Prepare getMotHistoryHistoryByDateRange : " + startDate + " - " + endDate);
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.QueryGetMotHistoryHistoryVehicleByDateRange)) {
                 stmt.setTimestamp(1, new Timestamp(startDate.getTime()));
@@ -494,7 +494,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<MotTest> motTestsCurrent = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCurrentsByIdRange)) {
                 stmt.setLong(1, offset);
@@ -520,7 +520,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<MotTest> motTestsCurrent = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestHistorysByIdRange)) {
                 stmt.setLong(1, offset);
@@ -546,7 +546,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestAddressComment motTestAddressComment = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetMotTestAddressCommentByMotTestId)) {
@@ -571,7 +571,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestCancelled motTestCancelled = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestCancelledByMotTestId)) {
                 stmt.setLong(1, parent.getId());
@@ -595,7 +595,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestComplaintRef motTestComplaintRef = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetMotTestComplaintRefByMotTestId)) {
@@ -620,7 +620,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestEmergencyReason motTestEmergencyReason = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetMotTestEmergencyReasonByMotTestId)) {
@@ -645,7 +645,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         Comment comment = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetCommentById)) {
                 stmt.setInt(1, id);
@@ -669,7 +669,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestReasonForCancelLookup motTestReasonForCancelLookup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetMotTestReasonForCancelLookupById)) {
@@ -694,7 +694,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         EmergencyLog emergencyLog = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetEmergencyLogById)) {
                 stmt.setInt(1, id);
@@ -718,7 +718,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         EmergencyReasonLookup emergencyReasonLookup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetEmergencyReasonLookupById)) {
                 stmt.setInt(1, id);
@@ -742,7 +742,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<MotTestRfrMap> motTestsCurrentRfrMap = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetMotTestCurrentRfrMapsByMotTestId)) {
@@ -768,7 +768,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<MotTestRfrMap> motTestsHistoryRfrMap = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetMotTestHistoryRfrMapsByMotTestId)) {
@@ -794,7 +794,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestRfrMapComment motTestRfrMapComment = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetMotTestRfrMapCommentByMotTestRfrMapId)) {
@@ -819,7 +819,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestRfrMapCustomDescription motTestRfrMapCustomDescription = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetMotTestRfrMapCustomDescriptionByMotTestRfrMapId)) {
@@ -844,7 +844,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         ReasonForRejection reasonForRejection = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetReasonForRejectionById)) {
                 stmt.setInt(1, id);
@@ -869,7 +869,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<RfrLanguageContentMap> rfrLanguageContentMaps = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetRfrLanguageContentMapByReasonForRejection)) {
@@ -896,7 +896,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         ReasonForRejectionType reasonForRejectionType = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetReasonForRejectionTypeById)) {
 
@@ -921,7 +921,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestRfrLocationType motTestRfrLocationType = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestRfrLocationTypeById)) {
                 stmt.setInt(1, id);
@@ -945,7 +945,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         TestItemCategory testItemCategory = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetTestItemCategoryById)) {
                 stmt.setInt(1, id);
@@ -970,7 +970,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         List<TiCategoryLanguageContentMap> tiCategoryLanguageContentMaps = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(MotTestReadSql.queryGetTiCategoryLanguageContentMapByTestItemCategory)) {
@@ -997,7 +997,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         LanguageType languageType = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetLanguageTypeById)) {
                 stmt.setInt(1, id);
@@ -1021,7 +1021,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         BusinessRule businessRule = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetBusinessRuleById)) {
                 stmt.setInt(1, id);
@@ -1045,7 +1045,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         BusinessRuleType businessRuleType = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetBusinessRuleTypeById)) {
                 stmt.setInt(1, id);
@@ -1069,7 +1069,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         Person person = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetPersonById)) {
                 stmt.setInt(1, id);
@@ -1093,7 +1093,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         Organisation organisation = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetOrganisationById)) {
                 stmt.setInt(1, id);
@@ -1117,7 +1117,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         Site site = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetSiteById)) {
                 stmt.setInt(1, id);
@@ -1141,7 +1141,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         JasperDocument jasperDocument = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetJasperDocumentById)) {
                 stmt.setLong(1, id);
@@ -1165,7 +1165,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestType motTestType = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestTypeById)) {
                 stmt.setInt(1, id);
@@ -1189,7 +1189,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         MotTestStatus motTestStatus = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestStatusById)) {
                 stmt.setInt(1, id);
@@ -1213,7 +1213,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         WeightSourceLookup weightSourceLookup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(MotTestReadSql.queryGetMotTestTypeById)) {
                 stmt.setInt(1, id);

@@ -35,7 +35,6 @@ public class DependencyResolver extends AbstractModule {
         bind(MotTestReadDao.class).to(MotTestReadDaoJdbc.class);
         bind(VehicleReadDao.class).to(VehicleReadDaoJdbc.class);
         bind(ConnectionManager.class).in(Singleton.class);
-        bind(ConnectionManager.class).in(Singleton.class);
 
         DbConnectionInterceptor dbConnectionInterceptor = new DbConnectionInterceptor();
         requestInjection(dbConnectionInterceptor);

@@ -50,7 +50,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         Vehicle vehicle = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleById)) {
                 stmt.setInt(1, id);
@@ -74,7 +74,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         Vehicle vehicle;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByIdAndVersion)) {
                 stmt.setInt(1, id);
@@ -102,7 +102,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         Vehicle vehicle = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleHistByIdAndVersion)) {
                 stmt.setInt(1, id);
@@ -128,7 +128,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         DvlaVehicle dvlaVehicle = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetDvlaVehicleById)) {
                 stmt.setInt(1, id);
@@ -156,7 +156,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         logger.debug("Prepare getVehiclesById " + startid + " - " + endid);
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesById)) {
                 stmt.setInt(1, startid);
@@ -189,7 +189,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         logger.debug("Prepare getVehiclesByPage " + offset + " - " + limit);
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByPage)) {
                 stmt.setInt(1, offset);
@@ -219,7 +219,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         Vehicle vehicle = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByFullRegAndMake)) {
                 String wildmake = "%" + make + "%";
@@ -246,7 +246,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         List<Vehicle> vehicles = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByFullRegistration)) {
                 stmt.setString(1, registration);
@@ -272,7 +272,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         List<Vehicle> vehicles = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByRegistrationOrVin)) {
                 stmt.setString(1, registration);
@@ -353,7 +353,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         List<Vehicle> vehicles = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndPartialVin)) {
@@ -381,7 +381,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         List<Vehicle> vehicles = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndNullVin)) {
                 stmt.setString(1, registration);
@@ -407,7 +407,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         List<Vehicle> vehicles = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByNullRegAndFullVin)) {
                 stmt.setString(1, vin);
@@ -433,7 +433,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         Model model = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelFromDvlaVehicle)) {
                 ResultSet resultSet = stmt.executeQuery();
@@ -456,7 +456,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         List<Make> makes = new ArrayList<>();
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetMakes)) {
                 try (ResultSet resultSet = stmt.executeQuery()) {
@@ -478,7 +478,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         ModelDetail modelDetail = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelDetailById)) {
                 stmt.setInt(1, id);
@@ -503,7 +503,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         EmptyReasonMap emptyReasonMap = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyReasonMapByVehicle)) {
                 stmt.setInt(1, parent.getId());
@@ -528,7 +528,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         EmptyVinReasonLookup emptyVinReasonLookup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyVinReasonLookupById)) {
                 stmt.setInt(1, id);
@@ -553,7 +553,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         EmptyVrmReasonLookup emptyVrmReasonLookup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyVrmReasonLookupById)) {
                 stmt.setInt(1, id);
@@ -578,7 +578,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         Make make = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetMakeById)) {
                 stmt.setInt(1, id);
@@ -603,7 +603,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         Model model = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelById)) {
                 stmt.setInt(1, id);
@@ -628,7 +628,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         VehicleClass vehicleClass = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleClassById)) {
                 stmt.setInt(1, id);
@@ -653,7 +653,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         VehicleClassGroup vehicleClassGroup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleClassGroupById)) {
                 stmt.setInt(1, id);
@@ -679,7 +679,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         BodyType bodyType = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetBodyTypeById)) {
                 stmt.setInt(1, id);
@@ -704,7 +704,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         FuelType fuelType = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetFuelTypeById)) {
                 stmt.setInt(1, id);
@@ -729,7 +729,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         TransmissionType transmissionType = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetTransmissionTypeById)) {
                 stmt.setInt(1, id);
@@ -754,7 +754,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         WheelplanType wheelplanType = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetWheelplanTypeById)) {
                 stmt.setInt(1, id);
@@ -779,7 +779,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         ColourLookup colourLookup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetColourLookupById)) {
                 stmt.setInt(1, id);
@@ -804,7 +804,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         WeightSourceLookup weightSourceLookup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetWeightSourceLookupById)) {
                 stmt.setInt(1, id);
@@ -829,7 +829,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         CountryOfRegistrationLookup countryOfRegistrationLookup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection
                 .prepareStatement(VehicleReadSql.queryGetCountryOfRegistrationLookupById)) {
@@ -855,7 +855,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         CountryLookup countryLookup = null;
 
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetCountryLookupById)) {
                 stmt.setInt(1, id);

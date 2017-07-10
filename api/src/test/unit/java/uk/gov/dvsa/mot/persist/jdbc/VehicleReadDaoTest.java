@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import uk.gov.dvsa.mot.mottest.read.core.ConnectionManager;
 import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.persist.model.Vehicle;
 import uk.gov.dvsa.mot.test.utility.ResultSetMockHelper;
@@ -29,13 +30,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
-
 import static uk.gov.dvsa.mot.test.utility.Matchers.isEmpty;
 
-//@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class VehicleReadDaoTest {
 
     private VehicleReadDaoJdbc vehicleReadReadDao;
+
+    @Mock
+    ConnectionManager connectionManager;
 
     @Mock
     private Connection mockConnection;
@@ -56,6 +59,9 @@ public class VehicleReadDaoTest {
 
         // Arrange - Create object under test
         vehicleReadReadDao = new VehicleReadDaoJdbc();
+        vehicleReadReadDao.setConnectionManager(connectionManager);
+
+        when(connectionManager.getConnection()).thenReturn(mockConnection);
     }
 
     @After
@@ -67,7 +73,7 @@ public class VehicleReadDaoTest {
         mockResultSet = null;
     }
 
-    //@Test
+    @Test
     public void getVehicleById_WithNoMatches_ReturnsNull() throws SQLException {
         // Arrange - Set-up result set mock
         when(mockResultSet.next()).thenReturn(false);
@@ -80,7 +86,7 @@ public class VehicleReadDaoTest {
         assertThat(actual, nullValue());
     }
 
-    //@Test
+    @Test
     public void getVehicleById_WithMatches_ReturnsMotTestCurrentObject() throws SQLException {
         // Arrange - Set-up result set mock
         when(mockResultSet.next()).thenReturn(true).thenReturn(false);
@@ -93,16 +99,17 @@ public class VehicleReadDaoTest {
         assertThat(actual, notNullValue());
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getVehicleById_ThrowingSqlException_ThrowsInternalException() throws InternalException, SQLException {
 
         when(mockStatement.executeQuery()).thenThrow(new SQLException(""));
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
+        when(connectionManager.getConnection()).thenReturn(mockConnection);
 
         vehicleReadReadDao.getVehicleById(1);
     }
 
-    //@Test
+    @Test
     public void getVehiclebyIdAndVersion_WithNoMatches_ReturnsNull() throws SQLException {
 
         final int vehicleId = 890321;
@@ -126,7 +133,7 @@ public class VehicleReadDaoTest {
         assertThat(actual, nullValue());
     }
 
-    //@Test
+    @Test
     public void getVehicleByIdAndVersion_NoCurrent_GoesToHistory() throws SQLException {
 
         final int vehicleId = 890321;
@@ -155,7 +162,7 @@ public class VehicleReadDaoTest {
         assertThat(actual, notNullValue());
     }
 
-    //@Test
+    @Test
     public void getVehiclebyIdAndVersion_WithMatches_ReturnsVehicle() throws SQLException {
 
         final int vehicleId = 890321;
@@ -180,7 +187,7 @@ public class VehicleReadDaoTest {
         assertThat(actual, notNullValue());
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getVehiclebyIdAndVersion_ExecuteThrows_ThrowsInternalException() throws SQLException, InternalException {
 
         final int vehicleId = 890321;
@@ -198,7 +205,7 @@ public class VehicleReadDaoTest {
         vehicleReadReadDao.getVehicleByIdAndVersion(vehicleId, version);
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getVehiclebyIdAndVersion_PrepareThrows_ThrowsInternalException() throws SQLException, InternalException {
 
         final int vehicleId = 890321;
@@ -210,7 +217,7 @@ public class VehicleReadDaoTest {
         vehicleReadReadDao.getVehicleByIdAndVersion(vehicleId, version);
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getVehicleByIdAndVersion_NoCurrent_GoesToHistory_HistoryThrows_ThrowsInternalException()
             throws SQLException, InternalException {
 
@@ -230,7 +237,7 @@ public class VehicleReadDaoTest {
         vehicleReadReadDao.getVehicleByIdAndVersion(vehicleId, version);
     }
 
-    //@Test
+    @Test
     public void getDvlaVehicleById_HappyPath() throws SQLException {
 
         final int dvlaVehicleId = 89047;
@@ -243,7 +250,7 @@ public class VehicleReadDaoTest {
         assertThat(actual, notNullValue());
     }
 
-    //@Test
+    @Test
     public void getDvlaVehicleById_NoVehicle_ReturnsNull() throws SQLException {
 
         final int dvlaVehicleId = 89047;
@@ -255,7 +262,7 @@ public class VehicleReadDaoTest {
         assertThat(actual, nullValue());
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getDvlaVehicleById_DbThrows_ThrowsInternalException() throws SQLException, InternalException {
 
         final int dvlaVehicleId = 89047;
@@ -266,7 +273,7 @@ public class VehicleReadDaoTest {
         vehicleReadReadDao.getDvlaVehicleById(dvlaVehicleId);
     }
 
-    //@Test
+    @Test
     public void getVehiclesById_NoVehicles_ReturnsEmptyList() throws SQLException {
 
         final int startId = 1;

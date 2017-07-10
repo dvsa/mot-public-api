@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import uk.gov.dvsa.mot.mottest.read.core.ConnectionManager;
 import uk.gov.dvsa.mot.persist.ConnectionFactory;
 import uk.gov.dvsa.mot.persist.TradeReadDao;
 import uk.gov.dvsa.mot.trade.api.InternalException;
@@ -23,9 +24,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-//@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class TradeReadDaoTest {
-    ConnectionFactory connectionFactory;
+    @Mock
+    ConnectionManager connectionManager;
 
     @Mock
     Connection connectionMock;
@@ -36,16 +38,17 @@ public class TradeReadDaoTest {
     @Mock
     ResultSet resultSetMock;
 
-    TradeReadDao tradeReadDao;
+    TradeReadDaoJdbc tradeReadDao;
 
     @Before
     public void setUp() {
 
-        connectionFactory = () -> connectionMock;
         tradeReadDao = new TradeReadDaoJdbc();
+        tradeReadDao.setConnectionManager(connectionManager);
+        when(connectionManager.getConnection()).thenReturn(connectionMock);
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getVehiclesMotTestsByRegistrationAndMake_TurnsSqlExceptionToInternalException() throws SQLException {
 
         when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException(""));
@@ -53,7 +56,7 @@ public class TradeReadDaoTest {
         tradeReadDao.getVehiclesMotTestsByRegistrationAndMake("Reg", "make");
     }
 
-    //@Test
+    @Test
     public void getVehiclesMotTestsByRegistrationAndMake_SetsParametersProperly() throws SQLException {
 
         final String registration = "AA01AAA";
@@ -71,7 +74,7 @@ public class TradeReadDaoTest {
         verify(preparedStatementMock).setString(4, "%" + make + "%");
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getVehiclesMotTestsByDateRange_TurnsSqlExceptionToInternalException() throws SQLException {
 
         final Date startDate = new Date();
@@ -82,7 +85,7 @@ public class TradeReadDaoTest {
         tradeReadDao.getVehiclesMotTestsByDateRange(startDate, endDate);
     }
 
-    //@Test
+    @Test
     public void getVehiclesMotTestsByDateRange_SetsTimestampsCorrectly() throws SQLException {
 
         final LocalDateTime startDateTime = LocalDateTime.of(2000, 1, 1, 7, 0);
@@ -112,7 +115,7 @@ public class TradeReadDaoTest {
         verify(preparedStatementMock).setTimestamp(10, endTimestamp);
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getVehiclesMotTestsByRange_ConvertsSqlExceptionToInternalException() throws SQLException {
 
         when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException(""));
@@ -120,7 +123,7 @@ public class TradeReadDaoTest {
         tradeReadDao.getVehiclesMotTestsByRange(0, 1000);
     }
 
-    //@Test
+    @Test
     public void getVehiclesMotTestsByRange_SetsRangeParametersCorrectly() throws SQLException {
 
         final int startVehicleId = 23;
@@ -138,7 +141,7 @@ public class TradeReadDaoTest {
         verify(preparedStatementMock).setInt(4, endVehicleId);
     }
 
-    //@Test
+    @Test
     public void getVehiclesMotTestsByVehicleId_SetsParameters() throws SQLException {
 
         final int vehicleId = 23;
@@ -153,7 +156,7 @@ public class TradeReadDaoTest {
         verify(preparedStatementMock).setInt(2, vehicleId);
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getVehiclesMotTestsByVehicleId_ConvertsSqlException() throws SQLException {
 
         when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException(""));
@@ -161,7 +164,7 @@ public class TradeReadDaoTest {
         tradeReadDao.getVehiclesMotTestsByVehicleId(4);
     }
 
-    //@Test
+    @Test
     public void getVehiclesMotTestsByMotTestNumber_SetsParameters() throws SQLException {
 
         final long testNumber = 78923;
@@ -176,7 +179,7 @@ public class TradeReadDaoTest {
         verify(preparedStatementMock).setLong(2, testNumber);
     }
 
-    //@Test(expected = InternalException.class)
+    @Test(expected = InternalException.class)
     public void getVehiclesMotTestsByMotTestNumber_ConvertsSqlException() throws SQLException {
 
         when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException(""));

@@ -36,7 +36,7 @@ public class TradeReadDaoJdbc implements TradeReadDao {
 
         logger.debug("Connect getMotHistoryByVehicleId : " + vehicleId);
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             logger.debug("Prepare getMotHistoryByVehicleId : " + vehicleId);
             try (PreparedStatement stmt = connection
@@ -66,7 +66,7 @@ public class TradeReadDaoJdbc implements TradeReadDao {
 
         logger.debug("Connect getVehiclesMotTestsByMotTestNumber : " + number);
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             logger.debug("Prepare getVehiclesMotTestsByMotTestNumber : " + number);
             try (PreparedStatement stmt = connection
@@ -96,7 +96,7 @@ public class TradeReadDaoJdbc implements TradeReadDao {
 
         logger.debug("Connect getVehiclesMotTestsByRegistrationAndMake : " + registration + " " + make);
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             logger.debug("Prepare getVehiclesMotTestsByRegistrationAndMake : " + registration + " " + make);
             try (PreparedStatement stmt = connection
@@ -129,7 +129,7 @@ public class TradeReadDaoJdbc implements TradeReadDao {
 
         logger.debug("Connect getMotHistoryByDateRange1 : " + startDate + " - " + endDate);
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             logger.debug("Prepare getMotHistoryByDateRange1 : " + startDate + " - " + endDate);
             try (PreparedStatement stmt = connection
@@ -167,7 +167,7 @@ public class TradeReadDaoJdbc implements TradeReadDao {
 
         logger.debug("Connect getMotHistoryByRange : " + startVehicleId + " - " + endVehicleId);
         try {
-            Connection connection = connectionManager.getConnection();;
+            Connection connection = connectionManager.getConnection();
 
             logger.debug("Prepare getMotHistoryByRange : " + startVehicleId + " - " + endVehicleId);
             try (

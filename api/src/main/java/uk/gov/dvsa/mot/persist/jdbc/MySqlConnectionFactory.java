@@ -20,40 +20,57 @@ import java.sql.DriverManager;
 public class MySqlConnectionFactory implements ConnectionFactory {
     private static final Logger logger = Logger.getLogger(MySqlConnectionFactory.class);
 
-    private static String url;
-    private static String username;
-    private static String password;
-    private static String passwordEncrypted;
+    private static final DatabasePasswordHolder DB_PASSWORD_HOLDER = new DatabasePasswordHolder();
 
     @Override
     public Connection getConnection() {
 
         try {
-            initDbEnvironmentVariables();
-
-            return DriverManager.getConnection(url, username, password);
+            return DriverManager.getConnection(getDbUrl(), getDbUsername(), getDbPassword());
         } catch (Exception e) {
             logger.error("Unable to connect to database", e);
             throw new InternalException(e);
         }
     }
 
-    private void initDbEnvironmentVariables() throws IOException {
+    private String getDbUrl() throws IOException {
 
-        url = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseConnection);
-        username = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseUsername);
+        return ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseConnection);
+    }
 
-        String configPasswordEncrypted = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseEncryptedPassword, false);
+    private String getDbUsername() throws IOException {
 
-        if (Strings.isNullOrEmpty(configPasswordEncrypted)) {
-            password = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabasePassword);
+        return ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseUsername);
+    }
 
-        } else {
-            // If not set or changed, then get decrypted password.
-            if (Strings.isNullOrEmpty(password) || !configPasswordEncrypted.equalsIgnoreCase(passwordEncrypted)) {
-                password = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseEncryptedPassword);
-                passwordEncrypted = configPasswordEncrypted;
+    private String getDbPassword() throws IOException {
+
+        return DB_PASSWORD_HOLDER.getDbPassword();
+    }
+
+    private static class DatabasePasswordHolder {
+
+        private String passwordDecrypted;
+        private String passwordEncrypted;
+
+        public String getDbPassword() throws IOException {
+
+            String password = null;
+            String configPasswordEncrypted = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseEncryptedPassword, false);
+
+            if (Strings.isNullOrEmpty(configPasswordEncrypted)) {
+                password = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabasePassword);
+
+            } else {
+                if (Strings.isNullOrEmpty(passwordDecrypted) || !configPasswordEncrypted.equalsIgnoreCase(passwordEncrypted)) {
+
+                    password = ConfigManager.getEnvironmentVariable(ConfigKeys.DatabaseEncryptedPassword);
+
+                    passwordEncrypted = configPasswordEncrypted;
+                    passwordDecrypted = password;
+                }
             }
+            return password;
         }
     }
 }
