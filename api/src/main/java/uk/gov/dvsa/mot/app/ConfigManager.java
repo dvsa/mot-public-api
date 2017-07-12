@@ -1,5 +1,7 @@
 package uk.gov.dvsa.mot.app;
 
+import com.google.common.base.Strings;
+
 import uk.gov.dvsa.mot.security.Decrypt;
 
 import java.io.IOException;
@@ -51,7 +53,11 @@ public class ConfigManager {
         if (isRunningInLambda()) {
             String value = System.getenv(name);
 
-            if ((name.contains("ENCRYPTED")) && (value != null) && decrypt) {
+            if (Strings.isNullOrEmpty(value)) {
+                return value;
+            }
+
+            if (isValueDecryptionRequired(name, decrypt)) {
                 return new Decrypt().decrypt(value);
             } else {
                 return value;
@@ -95,5 +101,14 @@ public class ConfigManager {
     private static boolean isRunningInLambda() {
 
         return System.getenv("AWS_LAMBDA_FUNCTION_NAME") != null;
+    }
+
+    private static boolean isValueDecryptionRequired(String name, boolean decrypt) {
+
+        if (decrypt) {
+            return name.contains("ENCRYPTED");
+        }
+
+        return false;
     }
 }

@@ -37,7 +37,6 @@ public class TradeServiceRequestHandlerTest {
 
     private TradeServiceRequest request;
 
-
     public TradeServiceRequestHandlerTest() {
 
         MockitoAnnotations.initMocks(this);

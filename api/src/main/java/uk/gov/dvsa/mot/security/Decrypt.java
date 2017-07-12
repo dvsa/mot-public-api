@@ -14,10 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Base64;
 
-//import com.amazonaws.auth.DefaultAWSCredentialsProviderChain ;
-//import com.amazonaws.client.builder.AwsClientBuilder ;
-//import com.amazonaws.services.kms.AWSKMSClient;
-
 public class Decrypt {
     private final AWSKMS kms;
 
