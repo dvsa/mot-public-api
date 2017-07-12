@@ -1,6 +1,8 @@
 package uk.gov.dvsa.mot.performance;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
 /**
@@ -8,8 +10,6 @@ import org.aspectj.lang.annotation.Pointcut;
  */
 //@Aspect
 public class PerfAspect {
-
-    private static final int LOG_METHOD_CALLS_GREATER_THAN_MS = 50;
 
     @Pointcut("within(uk.gov.dvsa.mot..*)")
     public void withinPublicApi() {
@@ -38,7 +38,7 @@ public class PerfAspect {
             response = proceedingJoinPoint.proceed();
         } finally {
             long end = System.currentTimeMillis() - start;
-            if (end > LOG_METHOD_CALLS_GREATER_THAN_MS) {
+            if (end > 50) {
                 System.out.println("The following method " + name + " took " + end + " ms");
             }
         }
