@@ -265,10 +265,10 @@ public class TradeReadServiceDatabase implements TradeReadService {
             for (Vehicle v : vehicles) {
                 MotTest mt = motTestReadService.getLatestMotTestPassByVehicle(v);
 
-                // if vehicle has not been set yet (i.e. first vehicle) or latest
-                // expiryDate is later than current expiryDate
-                if (vehicle == null || (mt.getExpiryDate() != null
-                        && (motTest.getExpiryDate() == null || mt.getExpiryDate().after(motTest.getExpiryDate())))) {
+                // If the vehicle or MOT hasn't been set yet
+                // or the latest expiryDate is after the current Expiry date
+                if ((vehicle == null || motTest == null || motTest.getExpiryDate() == null)
+                        || (mt != null && (mt.getExpiryDate() != null && mt.getExpiryDate().after(motTest.getExpiryDate())))) {
                     vehicle = v;
                     motTest = mt;
                 }
