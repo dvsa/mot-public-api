@@ -44,10 +44,9 @@ sourceSets {
     }
 }
 
-repositories
-        {
-            mavenCentral()
-        }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     compile 'com.google.inject:guice:4.1.0'
@@ -57,6 +56,7 @@ dependencies {
     compile 'com.amazonaws:aws-java-sdk:1.11.77'
     compile 'log4j:log4j:1.2.17'
     compile 'mysql:mysql-connector-java:5.1.40'
+
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:2.+'
 }
