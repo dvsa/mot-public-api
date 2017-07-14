@@ -22,36 +22,16 @@ public class Decrypt {
         kms = getClient();
     }
 
-    public static ByteBuffer str_to_bb(String msg, Charset charset) {
+    public String decrypt(String cipherText) {
 
-        return ByteBuffer.wrap(msg.getBytes(charset));
+        ByteBuffer cipherTextBlob64 = strToBb(cipherText, Charset.defaultCharset());
+        ByteBuffer cipherTextBlob = Base64.getDecoder().decode(cipherTextBlob64);
+        ByteBuffer plainTextBlob = decrypt(cipherTextBlob);
+
+        return bbToStr(plainTextBlob, Charset.defaultCharset());
     }
 
-    public static String bb_to_str(ByteBuffer buffer, Charset charset) {
-
-        byte[] bytes;
-
-        if (buffer.hasArray()) {
-            bytes = buffer.array();
-        } else {
-            bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-        }
-
-        return new String(bytes, charset);
-    }
-
-    public String decrypt(String ciphertext) {
-
-        ByteBuffer ciphertextblob64 = str_to_bb(ciphertext, Charset.defaultCharset());
-        ByteBuffer ciphertextblob = Base64.getDecoder().decode(ciphertextblob64);
-
-        ByteBuffer plaintextblob = decrypt(ciphertextblob);
-
-        return bb_to_str(plaintextblob, Charset.defaultCharset());
-    }
-
-    public ByteBuffer decrypt(ByteBuffer ciphertextblob) {
+    private ByteBuffer decrypt(ByteBuffer ciphertextblob) {
 
         DecryptRequest req = new DecryptRequest().withCiphertextBlob(ciphertextblob);
         return kms.decrypt(req).getPlaintext();
@@ -70,13 +50,25 @@ public class Decrypt {
         }
         clientBuilder.setClientConfiguration(clientConfig);
 
-        //    DefaultAWSCredentialsProviderChain defaultCredentials = new DefaultAWSCredentialsProviderChain() ;
-        //    clientBuilder.setCredentials( defaultCredentials );
+        return clientBuilder.build();
+    }
 
-        AWSKMS kmsclient = clientBuilder.build();
+    private static ByteBuffer strToBb(String msg, Charset charset) {
 
-        //    kmsclient.setEndpoint( "https://kms.eu-west-1.amazonaws.com" ) ;
+        return ByteBuffer.wrap(msg.getBytes(charset));
+    }
 
-        return kmsclient;
+    private static String bbToStr(ByteBuffer buffer, Charset charset) {
+
+        byte[] bytes;
+
+        if (buffer.hasArray()) {
+            bytes = buffer.array();
+        } else {
+            bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+        }
+
+        return new String(bytes, charset);
     }
 }
