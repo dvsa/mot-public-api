@@ -246,8 +246,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 Vehicle vehicle = tradeReadService.getLatestMotTestByRegistration(registration);
 
                 if (vehicle == null) {
-                    throw new InvalidResourceException("No Mot Test found for registration " + request.getPathParams().getRegistration() +
-                            " and make " + request.getPathParams().getMake(), context.getAwsRequestId());
+                    throw new InvalidResourceException("No MOT Test found for registration " + registration, context.getAwsRequestId());
                 }
 
                 logger.info("Trade API MOTR request for registration = " + registration + " returned 1 record");

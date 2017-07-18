@@ -457,6 +457,112 @@ public class TradeReadServiceTest {
         assertNull(apiVehicle);
     }
 
+    @Test
+    public void getLatestMotTestByMotTestNumberWithSameRegistrationAndVin_VehicleWithSplitHistory_MotDoesNotExist() {
+
+        final String registration = "AA00AAA";
+        final LocalDateTime manufactureDateTime = LocalDateTime.now().minus(5, ChronoUnit.YEARS);
+        final int manufactureYear = manufactureDateTime.getYear();
+        final Date manufactureDate = Date.from(manufactureDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        final long motTestNumber = 5672823;
+        final String make = "MADEBY";
+        final String model = "ETERNIA";
+        final String primaryColour = "BLUE";
+        final String secondaryColour = "WHITE";
+
+        final Vehicle backendVehicle = new Vehicle();
+        backendVehicle.setRegistration(registration);
+        backendVehicle.setManufactureDate(manufactureDate);
+        backendVehicle.setMake(make);
+        backendVehicle.setModel(model);
+        backendVehicle.setPrimaryColour(primaryColour);
+        backendVehicle.setSecondaryColour(secondaryColour);
+
+        final Vehicle backendVehicle2 = new Vehicle();
+        backendVehicle2.setRegistration(registration);
+        backendVehicle2.setManufactureDate(manufactureDate);
+        backendVehicle2.setMake(make);
+        backendVehicle2.setModel(model);
+        backendVehicle2.setPrimaryColour(primaryColour);
+        backendVehicle2.setSecondaryColour(secondaryColour);
+
+        when(vehicleReadServiceMock.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber))
+                .thenReturn(Arrays.asList(backendVehicle, backendVehicle2));
+        when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(null);
+        when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle2)).thenReturn(null);
+
+        uk.gov.dvsa.mot.trade.api.Vehicle apiVehicle =
+                tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
+
+        assertNotNull("Returned vehicle is null", apiVehicle);
+        assertEquals("Registration is incorrect", registration, apiVehicle.getRegistration());
+        assertEquals("Make is incorrect", make, apiVehicle.getMake());
+        assertEquals("Model is incorrect", model, apiVehicle.getModel());
+        assertEquals("Manufacturing year is incorrect", Integer.toString(manufactureYear),
+                apiVehicle.getManufactureYear());
+        assertNull("Test expiry date is incorrect", apiVehicle.getMotTestExpiryDate());
+        assertNull("Test number is incorrect", apiVehicle.getMotTestNumber());
+        assertEquals("Primary colour is incorrect", primaryColour, apiVehicle.getPrimaryColour());
+        assertEquals("Secondary colour is incorrect", secondaryColour, apiVehicle.getSecondaryColour());
+    }
+
+
+    @Test
+    public void getLatestMotTestByMotTestNumberWithSameRegistrationAndVin_VehicleWithSplitHistory_MotExistsOneVehicle() {
+
+        final String registration = "AA00AAA";
+        final LocalDateTime expiryDateTime = LocalDateTime.now().plus(Period.ofMonths(6));
+        final Date expiryDate = Date.from(expiryDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        final LocalDateTime manufactureDateTime = LocalDateTime.now().minus(5, ChronoUnit.YEARS);
+        final int manufactureYear = manufactureDateTime.getYear();
+        final Date manufactureDate = Date.from(manufactureDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        final long motTestNumber = 5672823;
+        final String make = "MADEBY";
+        final String model = "ETERNIA";
+        final String primaryColour = "BLUE";
+        final String secondaryColour = "WHITE";
+
+        final Vehicle backendVehicle = new Vehicle();
+        backendVehicle.setRegistration(registration);
+        backendVehicle.setManufactureDate(manufactureDate);
+        backendVehicle.setMake(make);
+        backendVehicle.setModel(model);
+        backendVehicle.setPrimaryColour(primaryColour);
+        backendVehicle.setSecondaryColour(secondaryColour);
+
+        final Vehicle backendVehicle2 = new Vehicle();
+        backendVehicle2.setRegistration(registration);
+        backendVehicle2.setManufactureDate(manufactureDate);
+        backendVehicle2.setMake(make);
+        backendVehicle2.setModel(model);
+        backendVehicle2.setPrimaryColour(primaryColour);
+        backendVehicle2.setSecondaryColour(secondaryColour);
+
+        final MotTest backendTest = new MotTest();
+        backendTest.setExpiryDate(expiryDate);
+        backendTest.setNumber(motTestNumber);
+
+        when(vehicleReadServiceMock.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber))
+                .thenReturn(Arrays.asList(backendVehicle, backendVehicle2));
+        when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(null);
+        when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle2)).thenReturn(backendTest);
+
+        uk.gov.dvsa.mot.trade.api.Vehicle apiVehicle =
+                tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
+
+        assertNotNull("Returned vehicle is null", apiVehicle);
+        assertEquals("Registration is incorrect", registration, apiVehicle.getRegistration());
+        assertEquals("Make is incorrect", make, apiVehicle.getMake());
+        assertEquals("Model is incorrect", model, apiVehicle.getModel());
+        assertEquals("Manufacturing year is incorrect", Integer.toString(manufactureYear),
+                apiVehicle.getManufactureYear());
+        assertEquals("Test expiry date is incorrect", expiryDateTime.format(DateTimeFormatter.ISO_DATE),
+                apiVehicle.getMotTestExpiryDate());
+        assertEquals("Test number is incorrect", Long.toString(motTestNumber), apiVehicle.getMotTestNumber());
+        assertEquals("Primary colour is incorrect", primaryColour, apiVehicle.getPrimaryColour());
+        assertEquals("Secondary colour is incorrect", secondaryColour, apiVehicle.getSecondaryColour());
+    }
+
     /**
      * Check that the service asks for the right vehicle IDs for a selection of
      * pages Based on the hard-coded page size of 2000
