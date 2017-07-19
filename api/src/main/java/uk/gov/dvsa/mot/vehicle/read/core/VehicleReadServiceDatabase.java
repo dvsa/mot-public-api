@@ -4,8 +4,6 @@ import com.google.inject.Inject;
 
 import uk.gov.dvsa.mot.persist.ProvideDbConnection;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
-import uk.gov.dvsa.mot.persist.model.Model;
 import uk.gov.dvsa.mot.persist.model.Vehicle;
 
 import java.util.ArrayList;
@@ -50,19 +48,6 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
         List<Vehicle> vehicles = vehicleReadDao.getVehiclesById(startId, endId);
 
         return mapVehiclesSqltoJson(vehicles);
-    }
-
-    @Override
-    @ProvideDbConnection
-    public uk.gov.dvsa.mot.vehicle.api.Vehicle getVehicleFromDvlaById(int id) {
-
-        DvlaVehicle dvlaVehicle = vehicleReadDao.getDvlaVehicleById(id);
-
-        if (dvlaVehicle != null) {
-            return mapDvlaVehicleSqltoVehicleJson(dvlaVehicle);
-        } else {
-            return null;
-        }
     }
 
     @Override
@@ -199,67 +184,6 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
             jsonVehicle.setLastUpdatedBy(String.valueOf(vehicle.getLastUpdatedBy()));
             jsonVehicle.setLastUpdatedOn(vehicle.getLastUpdatedOn());
             jsonVehicle.setVersion(vehicle.getVersion());
-
-            return jsonVehicle;
-        } else {
-            return null;
-        }
-    }
-
-    protected uk.gov.dvsa.mot.vehicle.api.Vehicle mapDvlaVehicleSqltoVehicleJson(DvlaVehicle storedVehicle) {
-
-        if (storedVehicle != null) {
-            uk.gov.dvsa.mot.vehicle.api.Vehicle jsonVehicle = new uk.gov.dvsa.mot.vehicle.api.Vehicle();
-
-            // jsonVehicle.setId( storedVehicle.getId() ); -- don't set id
-            jsonVehicle.setRegistration(storedVehicle.getRegistration());
-            jsonVehicle.setVin(storedVehicle.getVin());
-
-            // jsonVehicle.setCountryOfRegistration( ?? );
-            jsonVehicle.setDvlaVehicleId(storedVehicle.getDvlaVehicleId());
-            jsonVehicle.setEngineNumber(storedVehicle.getEngineNumber());
-            // jsonVehicle.setChassisNumber( ?? );
-
-            // jsonVehicle.setYear( ?? );
-            jsonVehicle.setFirstRegistrationDate(storedVehicle.getFirstRegistrationDate());
-            // jsonVehicle.setFirstUsedDate( storedVehicle.getFirstUsedDate() );
-            jsonVehicle.setIsDamaged(storedVehicle.getIsSeriouslyDamaged());
-            // jsonVehicle.setIsDestroyed( storedVehicle.getIsDestroyed() );
-            // jsonVehicle.setIsIncognito( storedVehicle.getIsIncognito() );
-            jsonVehicle.setIsNewAtFirstReg(storedVehicle.getIsVehicleNewAtFirstRegistration());
-            jsonVehicle.setManufactureDate(storedVehicle.getManufactureDate());
-            // jsonVehicle.setWeight( storedVehicle.get??Weight() );
-            // jsonVehicle.setWeightSource( ?? );
-
-            Model model = vehicleReadDao.getModelFromDvlaVehicle(storedVehicle);
-            jsonVehicle.setMake(model.getMake().getName());
-            jsonVehicle.setModel(model.getName());
-
-            if (storedVehicle.getColour1() != null) {
-                jsonVehicle.setPrimaryColour(storedVehicle.getColour1().getName());
-            }
-            if (storedVehicle.getColour2() != null) {
-                jsonVehicle.setSecondaryColour(storedVehicle.getColour2().getName());
-            }
-            // jsonVehicle.setVehicleClass( ?? );
-
-            if (storedVehicle.getBodyType() != null) {
-                jsonVehicle.setBodyType(storedVehicle.getBodyType().getName());
-            }
-            if (storedVehicle.getPropulsion() != null) {
-                jsonVehicle.setFuelType(storedVehicle.getPropulsion().getName());
-            }
-            jsonVehicle.setCylinderCapacity(storedVehicle.getEngineCapacity());
-            jsonVehicle.setEuClassification(storedVehicle.getEuClassification());
-            if (storedVehicle.getWheelplan() != null) {
-                jsonVehicle.setWheelplan(storedVehicle.getWheelplan().getName());
-            }
-
-            jsonVehicle.setCreatedBy(String.valueOf(storedVehicle.getCreatedBy()));
-            jsonVehicle.setCreatedOn(storedVehicle.getCreatedOn());
-            jsonVehicle.setLastUpdatedBy(String.valueOf(storedVehicle.getLastUpdatedBy()));
-            jsonVehicle.setLastUpdatedOn(storedVehicle.getLastUpdatedOn());
-            jsonVehicle.setVersion(storedVehicle.getVersion());
 
             return jsonVehicle;
         } else {

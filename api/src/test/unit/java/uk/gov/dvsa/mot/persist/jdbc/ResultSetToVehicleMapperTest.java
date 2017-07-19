@@ -22,7 +22,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import static uk.gov.dvsa.mot.test.utility.Matchers.hasSize;
 
 public class ResultSetToVehicleMapperTest {
@@ -111,7 +110,7 @@ public class ResultSetToVehicleMapperTest {
 
         ResultSet rs = createMockResultSetForFullPath();
 
-        List<Vehicle> actual = ResultSetToVehicleMapper.mapResultSetToVehicle(rs);
+        List<Vehicle> actual = new VehicleResultSetMapper().map(rs);
 
         assertThat(actual, notNullValue());
         assertThat(actual, hasSize(2));
@@ -127,7 +126,7 @@ public class ResultSetToVehicleMapperTest {
 
         ResultSet rs = createMockResultSetForMinimalPath();
 
-        List<Vehicle> actual = ResultSetToVehicleMapper.mapResultSetToVehicle(rs);
+        List<Vehicle> actual = new VehicleResultSetMapper().map(rs);
 
         assertThat(actual, notNullValue());
         assertThat(actual, hasSize(2));
@@ -144,7 +143,7 @@ public class ResultSetToVehicleMapperTest {
         ResultSet rs = mock(ResultSet.class);
         when(rs.next()).thenThrow(new SQLException(""));
 
-        ResultSetToVehicleMapper.mapResultSetToVehicle(rs);
+        new VehicleResultSetMapper().map(rs);
     }
 
     private void assertVehicleIsCorrect(Vehicle vehicle) {

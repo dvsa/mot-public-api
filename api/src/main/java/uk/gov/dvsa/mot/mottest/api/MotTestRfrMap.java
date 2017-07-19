@@ -12,25 +12,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {"type", "location", "testItemCategory", "reasonForRejection",
         "inspectionManualReference", "comment", "customDescription", "failureDangerous", "generated", "onOriginalTest"})
 public class MotTestRfrMap {
-    @XmlElement(name = "type", required = false)
+    @XmlElement(name = "type")
     private String type;
-    @XmlElement(name = "location", required = false)
+    @XmlElement(name = "location")
     private MotTestRfrLocation location;
-    @XmlElement(name = "test_item_category", required = false)
+    @XmlElement(name = "test_item_category")
     private String testItemCategory;
-    @XmlElement(name = "reason_for_rejection", required = false)
+    @XmlElement(name = "reason_for_rejection")
     private String reasonForRejection;
-    @XmlElement(name = "inspection_manual_reference", required = false)
+    @XmlElement(name = "inspection_manual_reference")
     private String inspectionManualReference;
-    @XmlElement(name = "comment", required = false)
+    @XmlElement(name = "comment")
     private String comment;
-    @XmlElement(name = "custom_description", required = false)
+    @XmlElement(name = "custom_description")
     private String customDescription;
-    @XmlElement(name = "failure_dangerous", required = false)
+    @XmlElement(name = "failure_dangerous")
     private boolean failureDangerous;
-    @XmlElement(name = "generated", required = false)
+    @XmlElement(name = "generated")
     private boolean generated;
-    @XmlElement(name = "on_original_test", required = false)
+    @XmlElement(name = "on_original_test")
     private boolean onOriginalTest;
 
     public String getType() {

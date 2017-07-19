@@ -11,11 +11,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {"lateral", "longitudinal", "vertical"})
 public class MotTestRfrLocation {
-    @XmlElement(name = "lateral", required = false)
+    @XmlElement(name = "lateral")
     private String lateral;
-    @XmlElement(name = "longitudinal", required = false)
+    @XmlElement(name = "longitudinal")
     private String longitudinal;
-    @XmlElement(name = "vertical", required = false)
+    @XmlElement(name = "vertical")
     private String vertical;
 
     public String getLateral() {

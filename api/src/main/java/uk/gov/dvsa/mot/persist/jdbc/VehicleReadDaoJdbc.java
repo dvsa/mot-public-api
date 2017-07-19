@@ -6,11 +6,13 @@ import org.apache.log4j.Logger;
 
 import uk.gov.dvsa.mot.mottest.read.core.ConnectionManager;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
+import uk.gov.dvsa.mot.persist.jdbc.util.DbQueryRunner;
+import uk.gov.dvsa.mot.persist.jdbc.util.DbQueryRunnerImpl;
+import uk.gov.dvsa.mot.persist.jdbc.util.ResultSetMapper;
 import uk.gov.dvsa.mot.persist.model.BodyType;
 import uk.gov.dvsa.mot.persist.model.ColourLookup;
 import uk.gov.dvsa.mot.persist.model.CountryLookup;
 import uk.gov.dvsa.mot.persist.model.CountryOfRegistrationLookup;
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.persist.model.EmptyReasonMap;
 import uk.gov.dvsa.mot.persist.model.EmptyVinReasonLookup;
 import uk.gov.dvsa.mot.persist.model.EmptyVrmReasonLookup;
@@ -24,13 +26,9 @@ import uk.gov.dvsa.mot.persist.model.VehicleClass;
 import uk.gov.dvsa.mot.persist.model.VehicleClassGroup;
 import uk.gov.dvsa.mot.persist.model.WeightSourceLookup;
 import uk.gov.dvsa.mot.persist.model.WheelplanType;
-import uk.gov.dvsa.mot.trade.api.InternalException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class VehicleReadDaoJdbc implements VehicleReadDao {
@@ -47,1244 +45,511 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     @Override
     public Vehicle getVehicleById(int id) {
 
-        Vehicle vehicle = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Vehicle> mapper = new VehicleMapper();
 
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleById)) {
-                stmt.setInt(1, id);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        vehicle = mapResultSetToVehicle(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new InternalException(e);
-        }
-
-        return vehicle;
+        return runner.executeQuery(VehicleReadSql.queryGetVehicleById, mapper, id);
     }
 
     @Override
     public Vehicle getVehicleByIdAndVersion(int id, int version) {
 
-        Vehicle vehicle;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Vehicle> mapper = new VehicleMapper();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+        Vehicle vehicle = runner.executeQuery(VehicleReadSql.queryGetVehicleByIdAndVersion, mapper, id, version);
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByIdAndVersion)) {
-                stmt.setInt(1, id);
-                stmt.setInt(2, version);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-
-                    if (resultSet.next()) {
-                        vehicle = mapResultSetToVehicle(resultSet);
-                    } else {
-                        vehicle = getVehicleHistByIdAndVersion(id, version);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicle;
-    }
-
-    private Vehicle getVehicleHistByIdAndVersion(int id, int version) {
-
-        Vehicle vehicle = null;
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleHistByIdAndVersion)) {
-                stmt.setInt(1, id);
-                stmt.setInt(2, version);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        vehicle = mapResultSetToVehicle(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
+        if (vehicle == null) {
+            vehicle = runner.executeQuery(VehicleReadSql.queryGetVehicleHistByIdAndVersion, mapper, id, version);
         }
 
         return vehicle;
     }
 
     @Override
-    public DvlaVehicle getDvlaVehicleById(int id) {
+    public List<Vehicle> getVehiclesById(int startId, int endId) {
 
-        DvlaVehicle dvlaVehicle = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Vehicle> mapper = new VehicleMapper();
 
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetDvlaVehicleById)) {
-                stmt.setInt(1, id);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        dvlaVehicle = mapResultSetToDvlaVehicle(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return dvlaVehicle;
-    }
-
-    @Override
-    public List<Vehicle> getVehiclesById(int startid, int endid) {
-
-        logger.debug("Entry getVehiclesById " + startid + " - " + endid);
-        List<Vehicle> vehicles = new ArrayList<>();
-
-        logger.debug("Prepare getVehiclesById " + startid + " - " + endid);
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesById)) {
-                stmt.setInt(1, startid);
-                stmt.setInt(2, startid);
-
-                logger.debug("Resultset getVehiclesById " + startid + " - " + endid);
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                        logger.debug("Mapped getVehiclesById " + vehicle.getId());
-                        vehicles.add(vehicle);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug("SQLException getVehiclesById " + startid + " - " + endid, e);
-            throw new InternalException(e);
-        }
-
-        logger.debug("Exit getVehiclesById " + startid + " - " + endid + " found " + vehicles.size());
-        return vehicles;
+        return runner.executeQueryForList(VehicleReadSql.queryGetVehiclesById, mapper, startId, endId);
     }
 
     @Override
     public List<Vehicle> getVehiclesByPage(int offset, int limit) {
 
-        logger.debug("Entry getVehiclesByPage " + offset + " - " + limit);
-        List<Vehicle> vehicles = new ArrayList<>();
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Vehicle> mapper = new VehicleMapper();
 
-        logger.debug("Prepare getVehiclesByPage " + offset + " - " + limit);
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByPage)) {
-                stmt.setInt(1, offset);
-                stmt.setInt(2, offset + limit);
-
-                logger.debug("Resultset getVehiclesByPage " + offset + " - " + limit);
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                        vehicles.add(vehicle);
-                        logger.debug("Mapped getVehiclesByPage vehicle " + vehicle.getId());
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("SQLException getVehiclesByPage " + offset + " - " + limit, e);
-            throw new InternalException(e);
-        }
-
-        logger.debug("Exit getVehiclesByPage " + offset + " - " + limit + " found " + vehicles.size());
-        return vehicles;
+        return runner.executeQueryForList(VehicleReadSql.queryGetVehiclesByPage, mapper, offset, limit);
     }
 
     @Override
     public Vehicle getVehicleByFullRegAndMake(String registration, String make) {
 
-        Vehicle vehicle = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Vehicle> mapper = new VehicleMapper();
 
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByFullRegAndMake)) {
-                String wildmake = "%" + make + "%";
-                stmt.setString(1, registration);
-                stmt.setString(2, wildmake);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        vehicle = mapResultSetToVehicle(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicle;
+        return runner.executeQuery(VehicleReadSql.queryGetVehicleByFullRegAndMake, mapper, registration, "%" + make + "%");
     }
 
     @Override
     public List<Vehicle> getVehicleByFullRegistration(String registration) {
 
-        List<Vehicle> vehicles = new ArrayList<>();
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Vehicle> mapper = new VehicleMapper();
 
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleByFullRegistration)) {
-                stmt.setString(1, registration);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                        vehicles.add(vehicle);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicles;
-    }
-
-    @Override
-    public List<Vehicle> getVehiclesByRegistrationOrVin(String registration, String vin) {
-
-        List<Vehicle> vehicles = new ArrayList<>();
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByRegistrationOrVin)) {
-                stmt.setString(1, registration);
-                stmt.setString(2, vin);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                        vehicles.add(vehicle);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicles;
+        return runner.executeQueryForList(VehicleReadSql.queryGetVehicleByFullRegistration, mapper, registration);
     }
 
     @Override
     public List<Vehicle> getVehiclesByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber) {
 
-        List<Vehicle> vehicles = new ArrayList<>();
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Vehicle> mapper = new VehicleMapper();
 
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt =
-                         connection.prepareStatement(VehicleReadSql.queryGetVehiclesByMotTestNumberWithSameRegistrationAndVin)) {
-                stmt.setLong(1, motTestNumber);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                        vehicles.add(vehicle);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicles;
-    }
-
-    @Override
-    public List<Vehicle> getVehiclesByFullRegAndFullVin(String registration, String vin, boolean includeDvla) {
-
-        List<Vehicle> vehicles = new ArrayList<>();
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndFullVin)) {
-                stmt.setString(1, registration);
-                stmt.setString(2, vin);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                        vehicles.add(vehicle);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicles;
-    }
-
-    @Override
-    public List<Vehicle> getVehiclesByFullRegAndPartialVin(String registration, String vin, boolean includeDvla) {
-
-        List<Vehicle> vehicles = new ArrayList<>();
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection
-                .prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndPartialVin)) {
-                stmt.setString(1, registration);
-                stmt.setString(2, vin);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                        vehicles.add(vehicle);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicles;
-    }
-
-    @Override
-    public List<Vehicle> getVehiclesByFullRegAndNullVin(String registration, boolean includeDvla) {
-
-        List<Vehicle> vehicles = new ArrayList<>();
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByFullRegAndNullVin)) {
-                stmt.setString(1, registration);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                        vehicles.add(vehicle);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicles;
-    }
-
-    @Override
-    public List<Vehicle> getVehiclesByNullRegAndFullVin(String vin, boolean includeDvla) {
-
-        List<Vehicle> vehicles = new ArrayList<>();
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehiclesByNullRegAndFullVin)) {
-                stmt.setString(1, vin);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Vehicle vehicle = mapResultSetToVehicle(resultSet);
-                        vehicles.add(vehicle);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicles;
-    }
-
-    @Override
-    public Model getModelFromDvlaVehicle(DvlaVehicle vehicle) {
-
-        Model model = null;
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelFromDvlaVehicle)) {
-                ResultSet resultSet = stmt.executeQuery();
-
-                if (resultSet.next()) {
-                    model = mapResultSetToModel(resultSet);
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return model;
+        return runner.executeQueryForList(VehicleReadSql.queryGetVehiclesByMotTestNumberWithSameRegistrationAndVin, mapper, motTestNumber);
     }
 
     @Override
     public List<Make> getMakes() {
 
-        List<Make> makes = new ArrayList<>();
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Make> mapper = new MakeMapper();
 
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetMakes)) {
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        makes.add(mapResultSetToMake(resultSet));
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new InternalException(e);
-        }
-
-        return makes;
+        return runner.executeQueryForList(VehicleReadSql.queryGetMakes, mapper);
     }
 
     @Override
     public ModelDetail getModelDetailById(int id) {
 
-        ModelDetail modelDetail = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<ModelDetail> mapper = new ModelDetailMapper();
 
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelDetailById)) {
-                stmt.setInt(1, id);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        modelDetail = mapResultSetToModelDetail(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return modelDetail;
+        return runner.executeQuery(VehicleReadSql.queryGetModelDetailById, mapper, id);
     }
 
     @Override
     public EmptyReasonMap getEmptyReasonMapByVehicle(Vehicle parent) {
 
-        EmptyReasonMap emptyReasonMap = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<EmptyReasonMap> mapper = rs -> {
+            EmptyReasonMap emptyReasonMap = new EmptyReasonMap();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            emptyReasonMap.setId(rs.getInt(1));
+            emptyReasonMap.setVehicle(parent);
+            emptyReasonMap.setEmptyVinReasonLookup(getEmptyVinReasonLookupById(rs.getInt(3)));
+            emptyReasonMap.setEmptyVrmReasonLookup(getEmptyVrmReasonLookupById(rs.getInt(4)));
+            emptyReasonMap.setCreatedBy(rs.getInt(5));
+            emptyReasonMap.setCreatedOn(rs.getTimestamp(6));
+            emptyReasonMap.setLastUpdatedBy(rs.getInt(7));
+            emptyReasonMap.setLastUpdatedOn(rs.getTimestamp(8));
+            emptyReasonMap.setVersion(rs.getInt(9));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyReasonMapByVehicle)) {
-                stmt.setInt(1, parent.getId());
+            return emptyReasonMap;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        emptyReasonMap = mapResultSetToEmptyReasonMap(parent, resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return emptyReasonMap;
+        return runner.executeQuery(VehicleReadSql.queryGetEmptyReasonMapByVehicle, mapper, parent.getId());
     }
 
     @Override
     public EmptyVinReasonLookup getEmptyVinReasonLookupById(int id) {
 
-        EmptyVinReasonLookup emptyVinReasonLookup = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<EmptyVinReasonLookup> mapper = rs -> {
+            EmptyVinReasonLookup emptyVinReasonLookup = new EmptyVinReasonLookup();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            emptyVinReasonLookup.setId(rs.getInt(1));
+            emptyVinReasonLookup.setCode(rs.getString(2));
+            emptyVinReasonLookup.setName(rs.getString(3));
+            emptyVinReasonLookup.setCreatedBy(rs.getInt(4));
+            emptyVinReasonLookup.setCreatedOn(rs.getTimestamp(5));
+            emptyVinReasonLookup.setLastUpdatedBy(rs.getInt(6));
+            emptyVinReasonLookup.setLastUpdatedOn(rs.getTimestamp(7));
+            emptyVinReasonLookup.setVersion(rs.getInt(8));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyVinReasonLookupById)) {
-                stmt.setInt(1, id);
+            return emptyVinReasonLookup;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        emptyVinReasonLookup = mapResultSetToEmptyVinReasonLookup(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return emptyVinReasonLookup;
+        return runner.executeQuery(VehicleReadSql.queryGetEmptyVinReasonLookupById, mapper, id);
     }
 
     @Override
     public EmptyVrmReasonLookup getEmptyVrmReasonLookupById(int id) {
 
-        EmptyVrmReasonLookup emptyVrmReasonLookup = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<EmptyVrmReasonLookup> mapper = rs -> {
+            EmptyVrmReasonLookup emptyVrmReasonLookup = new EmptyVrmReasonLookup();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            emptyVrmReasonLookup.setId(rs.getInt(1));
+            emptyVrmReasonLookup.setCode(rs.getString(2));
+            emptyVrmReasonLookup.setName(rs.getString(3));
+            emptyVrmReasonLookup.setCreatedBy(rs.getInt(4));
+            emptyVrmReasonLookup.setCreatedOn(rs.getTimestamp(5));
+            emptyVrmReasonLookup.setLastUpdatedBy(rs.getInt(6));
+            emptyVrmReasonLookup.setLastUpdatedOn(rs.getTimestamp(7));
+            emptyVrmReasonLookup.setVersion(rs.getInt(8));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetEmptyVrmReasonLookupById)) {
-                stmt.setInt(1, id);
+            return emptyVrmReasonLookup;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        emptyVrmReasonLookup = mapResultSetToEmptyVrmReasonLookup(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return emptyVrmReasonLookup;
+        return runner.executeQuery(VehicleReadSql.queryGetEmptyVrmReasonLookupById, mapper, id);
     }
 
     @Override
     public Make getMakeById(int id) {
 
-        Make make = null;
-
-        try {
-            Connection connection = connectionManager.getConnection();
-
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetMakeById)) {
-                stmt.setInt(1, id);
-
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        make = mapResultSetToMake(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return make;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Make> mapper = new MakeMapper();
+        return runner.executeQuery(VehicleReadSql.queryGetMakeById, mapper, id);
     }
 
     @Override
     public Model getModelById(int id) {
 
-        Model model = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<Model> mapper = rs -> {
+            Model model = new Model();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            model.setId(rs.getInt(1));
+            model.setMake(getMakeById(rs.getInt(2)));
+            model.setCode(rs.getString(3));
+            model.setName(rs.getString(4));
+            model.setIsVerified(rs.getBoolean(5));
+            model.setCreatedBy(rs.getInt(6));
+            model.setCreatedOn(rs.getTimestamp(7));
+            model.setLastUpdatedBy(rs.getInt(8));
+            model.setLastUpdatedOn(rs.getTimestamp(9));
+            model.setVersion(rs.getInt(10));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetModelById)) {
-                stmt.setInt(1, id);
+            return model;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        model = mapResultSetToModel(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return model;
+        return runner.executeQuery(VehicleReadSql.queryGetModelById, mapper, id);
     }
 
     @Override
     public VehicleClass getVehicleClassById(int id) {
 
-        VehicleClass vehicleClass = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<VehicleClass> mapper = rs -> {
+            VehicleClass vehicleClass = new VehicleClass();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            vehicleClass.setId(rs.getInt(1));
+            vehicleClass.setName(rs.getString(2));
+            vehicleClass.setCode(rs.getString(3));
+            vehicleClass.setVehicleClassGroup(getVehicleClassGroupById(rs.getInt(4)));
+            vehicleClass.setCreatedBy(rs.getInt(5));
+            vehicleClass.setCreatedOn(rs.getTimestamp(6));
+            vehicleClass.setLastUpdatedBy(rs.getInt(7));
+            vehicleClass.setLastUpdatedOn(rs.getTimestamp(8));
+            vehicleClass.setVersion(rs.getInt(9));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleClassById)) {
-                stmt.setInt(1, id);
+            return vehicleClass;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        vehicleClass = mapResultSetToVehicleClass(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return vehicleClass;
+        return runner.executeQuery(VehicleReadSql.queryGetVehicleClassById, mapper, id);
     }
 
     @Override
     public VehicleClassGroup getVehicleClassGroupById(int id) {
 
-        VehicleClassGroup vehicleClassGroup = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<VehicleClassGroup> mapper = rs -> {
+            VehicleClassGroup vehicleClassGroup = new VehicleClassGroup();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            vehicleClassGroup.setId(rs.getInt(1));
+            vehicleClassGroup.setName(rs.getString(2));
+            vehicleClassGroup.setCode(rs.getString(3));
+            vehicleClassGroup.setCreatedBy(rs.getInt(4));
+            vehicleClassGroup.setCreatedOn(rs.getTimestamp(5));
+            vehicleClassGroup.setLastUpdatedBy(rs.getInt(6));
+            vehicleClassGroup.setLastUpdatedOn(rs.getTimestamp(7));
+            vehicleClassGroup.setVersion(rs.getInt(8));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetVehicleClassGroupById)) {
-                stmt.setInt(1, id);
+            return vehicleClassGroup;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        vehicleClassGroup = mapResultSetToVehicleClassGroup(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-            throw new InternalException(e);
-        }
-
-        return vehicleClassGroup;
+        return runner.executeQuery(VehicleReadSql.queryGetVehicleClassGroupById, mapper, id);
     }
 
     @Override
     public BodyType getBodyTypeById(int id) {
 
-        BodyType bodyType = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<BodyType> mapper = rs -> {
+            BodyType bodyType = new BodyType();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            bodyType.setId(rs.getInt(1));
+            bodyType.setName(rs.getString(2));
+            bodyType.setCode(rs.getString(3));
+            bodyType.setDisplayOrder(rs.getInt(4));
+            bodyType.setCreatedBy(rs.getInt(5));
+            bodyType.setCreatedOn(rs.getTimestamp(6));
+            bodyType.setLastUpdatedBy(rs.getInt(7));
+            bodyType.setLastUpdatedOn(rs.getTimestamp(8));
+            bodyType.setVersion(rs.getInt(9));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetBodyTypeById)) {
-                stmt.setInt(1, id);
+            return bodyType;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        bodyType = mapResultSetToBodyType(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return bodyType;
+        return runner.executeQuery(VehicleReadSql.queryGetBodyTypeById, mapper, id);
     }
 
     @Override
     public FuelType getFuelTypeById(int id) {
 
-        FuelType fuelType = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<FuelType> mapper = rs -> {
+            FuelType fuelType = new FuelType();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            fuelType.setId(rs.getInt(1));
+            fuelType.setName(rs.getString(2));
+            fuelType.setCode(rs.getString(3));
+            fuelType.setDvlaPropulsionCode(rs.getString(4));
+            fuelType.setDisplayOrder(rs.getInt(5));
+            fuelType.setCreatedBy(rs.getInt(6));
+            fuelType.setCreatedOn(rs.getTimestamp(7));
+            fuelType.setLastUpdatedBy(rs.getInt(8));
+            fuelType.setLastUpdatedOn(rs.getTimestamp(9));
+            fuelType.setVersion(rs.getInt(10));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetFuelTypeById)) {
-                stmt.setInt(1, id);
+            return fuelType;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        fuelType = mapResultSetToFuelType(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return fuelType;
+        return runner.executeQuery(VehicleReadSql.queryGetFuelTypeById, mapper, id);
     }
 
     @Override
     public TransmissionType getTransmissionTypeById(int id) {
 
-        TransmissionType transmissionType = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<TransmissionType> mapper = rs -> {
+            TransmissionType transmissionType = new TransmissionType();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            transmissionType.setId(rs.getInt(1));
+            transmissionType.setName(rs.getString(2));
+            transmissionType.setCode(rs.getString(3));
+            transmissionType.setDisplayOrder(rs.getInt(4));
+            transmissionType.setCreatedBy(rs.getInt(5));
+            transmissionType.setCreatedOn(rs.getTimestamp(6));
+            transmissionType.setLastUpdatedBy(rs.getInt(7));
+            transmissionType.setLastUpdatedOn(rs.getTimestamp(8));
+            transmissionType.setVersion(rs.getInt(9));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetTransmissionTypeById)) {
-                stmt.setInt(1, id);
+            return transmissionType;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        transmissionType = mapResultSetToTransmissionType(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return transmissionType;
+        return runner.executeQuery(VehicleReadSql.queryGetTransmissionTypeById, mapper, id);
     }
 
     @Override
     public WheelplanType getWheelplanTypeById(int id) {
 
-        WheelplanType wheelplanType = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<WheelplanType> mapper = rs -> {
+            WheelplanType wheelplanType = new WheelplanType();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            wheelplanType.setId(rs.getInt(1));
+            wheelplanType.setCode(rs.getString(2));
+            wheelplanType.setName(rs.getString(3));
+            wheelplanType.setDescription(rs.getString(4));
+            wheelplanType.setDisplayOrder(rs.getInt(5));
+            wheelplanType.setCreatedBy(rs.getInt(6));
+            wheelplanType.setCreatedOn(rs.getTimestamp(7));
+            wheelplanType.setLastUpdatedBy(rs.getInt(8));
+            wheelplanType.setLastUpdatedOn(rs.getTimestamp(9));
+            wheelplanType.setVersion(rs.getInt(10));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetWheelplanTypeById)) {
-                stmt.setInt(1, id);
+            return wheelplanType;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        wheelplanType = mapResultSetToWheelplanType(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return wheelplanType;
+        return runner.executeQuery(VehicleReadSql.queryGetWheelplanTypeById, mapper, id);
     }
 
     @Override
     public ColourLookup getColourLookupById(int id) {
 
-        ColourLookup colourLookup = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<ColourLookup> mapper = rs -> {
+            ColourLookup colourLookup = new ColourLookup();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            colourLookup.setId(rs.getInt(1));
+            colourLookup.setCode(rs.getString(2));
+            colourLookup.setName(rs.getString(3));
+            colourLookup.setDisplayOrder(rs.getInt(4));
+            colourLookup.setCreatedBy(rs.getInt(5));
+            colourLookup.setCreatedOn(rs.getTimestamp(6));
+            colourLookup.setLastUpdatedBy(rs.getInt(7));
+            colourLookup.setLastUpdatedOn(rs.getTimestamp(8));
+            colourLookup.setVersion(rs.getInt(9));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetColourLookupById)) {
-                stmt.setInt(1, id);
+            return colourLookup;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        colourLookup = mapResultSetToColourLookup(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return colourLookup;
+        return runner.executeQuery(VehicleReadSql.queryGetColourLookupById, mapper, id);
     }
 
     @Override
     public WeightSourceLookup getWeightSourceLookupById(int id) {
 
-        WeightSourceLookup weightSourceLookup = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<WeightSourceLookup> mapper = rs -> {
+            WeightSourceLookup weightSourceLookup = new WeightSourceLookup();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            weightSourceLookup.setId(rs.getInt(1));
+            weightSourceLookup.setCode(rs.getString(2));
+            weightSourceLookup.setName(rs.getString(3));
+            weightSourceLookup.setDescription(rs.getString(4));
+            weightSourceLookup.setDisplayOrder(rs.getInt(5));
+            weightSourceLookup.setCreatedBy(rs.getInt(6));
+            weightSourceLookup.setCreatedOn(rs.getTimestamp(7));
+            weightSourceLookup.setLastUpdatedBy(rs.getInt(8));
+            weightSourceLookup.setLastUpdatedOn(rs.getTimestamp(9));
+            weightSourceLookup.setVersion(rs.getInt(10));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetWeightSourceLookupById)) {
-                stmt.setInt(1, id);
+            return weightSourceLookup;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        weightSourceLookup = mapResultSetToWeightSourceLookup(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return weightSourceLookup;
+        return runner.executeQuery(VehicleReadSql.queryGetWeightSourceLookupById, mapper, id);
     }
 
     @Override
     public CountryOfRegistrationLookup getCountryOfRegistrationLookupById(int id) {
 
-        CountryOfRegistrationLookup countryOfRegistrationLookup = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<CountryOfRegistrationLookup> mapper = rs -> {
+            CountryOfRegistrationLookup countryOfRegistrationLookup = new CountryOfRegistrationLookup();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            countryOfRegistrationLookup.setId(rs.getInt(1));
+            countryOfRegistrationLookup.setCountryLookup(getCountryLookupById(rs.getInt(2)));
+            countryOfRegistrationLookup.setName(rs.getString(3));
+            countryOfRegistrationLookup.setCode(rs.getString(4));
+            countryOfRegistrationLookup.setLicensingCopy(rs.getString(5));
+            countryOfRegistrationLookup.setCreatedBy(rs.getInt(6));
+            countryOfRegistrationLookup.setCreatedOn(rs.getTimestamp(7));
+            countryOfRegistrationLookup.setLastUpdatedBy(rs.getInt(8));
+            countryOfRegistrationLookup.setLastUpdatedOn(rs.getTimestamp(9));
+            countryOfRegistrationLookup.setVersion(rs.getInt(10));
 
-            try (PreparedStatement stmt = connection
-                .prepareStatement(VehicleReadSql.queryGetCountryOfRegistrationLookupById)) {
-                stmt.setInt(1, id);
+            return countryOfRegistrationLookup;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        countryOfRegistrationLookup = mapResultSetToCountryOfRegistrationLookup(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return countryOfRegistrationLookup;
+        return runner.executeQuery(VehicleReadSql.queryGetCountryOfRegistrationLookupById, mapper, id);
     }
 
     @Override
     public CountryLookup getCountryLookupById(int id) {
 
-        CountryLookup countryLookup = null;
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetMapper<CountryLookup> mapper = rs -> {
+            CountryLookup countryLookup = new CountryLookup();
 
-        try {
-            Connection connection = connectionManager.getConnection();
+            countryLookup.setId(rs.getInt(1));
+            countryLookup.setName(rs.getString(2));
+            countryLookup.setCode(rs.getString(3));
+            countryLookup.setIsoCode(rs.getString(4));
+            countryLookup.setDisplayOrder(rs.getInt(5));
+            countryLookup.setCreatedBy(rs.getInt(6));
+            countryLookup.setCreatedOn(rs.getTimestamp(7));
+            countryLookup.setLastUpdatedBy(rs.getInt(8));
+            countryLookup.setLastUpdatedOn(rs.getTimestamp(9));
+            countryLookup.setVersion(rs.getInt(10));
 
-            try (PreparedStatement stmt = connection.prepareStatement(VehicleReadSql.queryGetCountryLookupById)) {
-                stmt.setInt(1, id);
+            return countryLookup;
+        };
 
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        countryLookup = mapResultSetToCountryLookup(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-
-            throw new InternalException(e);
-        }
-
-        return countryLookup;
+        return runner.executeQuery(VehicleReadSql.queryGetCountryLookupById, mapper, id);
     }
 
-    private Vehicle mapResultSetToVehicle(ResultSet resultSet) {
+    private class VehicleMapper implements ResultSetMapper<Vehicle> {
 
-        try {
+        @Override
+        public Vehicle map(ResultSet rs) throws SQLException {
+
             Vehicle vehicle = new Vehicle();
 
-            vehicle.setId(resultSet.getInt(1));
-            vehicle.setRegistration(resultSet.getString(2));
-            vehicle.setRegistrationCollapsed(resultSet.getString(3));
-            vehicle.setVin(resultSet.getString(4));
-            vehicle.setVinCollapsed(resultSet.getString(5));
-            vehicle.setModelDetail(getModelDetailById(resultSet.getInt(6)));
-            vehicle.setYear(resultSet.getDate(7));
-            vehicle.setManufactureDate(resultSet.getDate(8));
-            vehicle.setFirstRegistrationDate(resultSet.getDate(9));
-            vehicle.setFirstUsedDate(resultSet.getDate(10));
-            vehicle.setPrimaryColour(getColourLookupById(resultSet.getInt(11)));
-            vehicle.setSecondaryColour(getColourLookupById(resultSet.getInt(12)));
-            vehicle.setWeight(resultSet.getInt(13));
-            vehicle.setWeightSourceLookup(getWeightSourceLookupById(resultSet.getInt(14)));
-            vehicle.setCountryOfRegistrationLookup(getCountryOfRegistrationLookupById(resultSet.getInt(15)));
-            vehicle.setEngineNumber(resultSet.getString(16));
-            vehicle.setChassisNumber(resultSet.getString(17));
-            vehicle.setIsNewAtFirstReg(resultSet.getBoolean(18));
-            vehicle.setDvlaVehicleId(resultSet.getInt(19));
-            vehicle.setIsDamaged(resultSet.getBoolean(20));
-            vehicle.setIsDestroyed(resultSet.getBoolean(21));
-            vehicle.setIsIncognito(resultSet.getBoolean(22));
-            vehicle.setCreatedBy(resultSet.getInt(23));
-            vehicle.setCreatedOn(resultSet.getTimestamp(24));
-            vehicle.setLastUpdatedBy(resultSet.getInt(25));
-            vehicle.setLastUpdatedOn(resultSet.getTimestamp(26));
-            vehicle.setVersion(resultSet.getInt(27));
+            vehicle.setId(rs.getInt(1));
+            vehicle.setRegistration(rs.getString(2));
+            vehicle.setRegistrationCollapsed(rs.getString(3));
+            vehicle.setVin(rs.getString(4));
+            vehicle.setVinCollapsed(rs.getString(5));
+            vehicle.setModelDetail(getModelDetailById(rs.getInt(6)));
+            vehicle.setYear(rs.getDate(7));
+            vehicle.setManufactureDate(rs.getDate(8));
+            vehicle.setFirstRegistrationDate(rs.getDate(9));
+            vehicle.setFirstUsedDate(rs.getDate(10));
+            vehicle.setPrimaryColour(getColourLookupById(rs.getInt(11)));
+            vehicle.setSecondaryColour(getColourLookupById(rs.getInt(12)));
+            vehicle.setWeight(rs.getInt(13));
+            vehicle.setWeightSourceLookup(getWeightSourceLookupById(rs.getInt(14)));
+            vehicle.setCountryOfRegistrationLookup(getCountryOfRegistrationLookupById(rs.getInt(15)));
+            vehicle.setEngineNumber(rs.getString(16));
+            vehicle.setChassisNumber(rs.getString(17));
+            vehicle.setIsNewAtFirstReg(rs.getBoolean(18));
+            vehicle.setDvlaVehicleId(rs.getInt(19));
+            vehicle.setIsDamaged(rs.getBoolean(20));
+            vehicle.setIsDestroyed(rs.getBoolean(21));
+            vehicle.setIsIncognito(rs.getBoolean(22));
+            vehicle.setCreatedBy(rs.getInt(23));
+            vehicle.setCreatedOn(rs.getTimestamp(24));
+            vehicle.setLastUpdatedBy(rs.getInt(25));
+            vehicle.setLastUpdatedOn(rs.getTimestamp(26));
+            vehicle.setVersion(rs.getInt(27));
 
             vehicle.setEmptyReasonMap(getEmptyReasonMapByVehicle(vehicle));
 
             return vehicle;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
         }
     }
 
-    private DvlaVehicle mapResultSetToDvlaVehicle(ResultSet resultSet) {
+    private class MakeMapper implements ResultSetMapper<Make> {
 
-        DvlaVehicle dvlaVehicle = new DvlaVehicle();
+        @Override
+        public Make map(ResultSet rs) throws SQLException {
 
-        // TODO
-
-        return dvlaVehicle;
-    }
-
-    private Make mapResultSetToMake(ResultSet resultSet) {
-
-        try {
             Make make = new Make();
 
-            make.setId(resultSet.getInt(1));
-            make.setName(resultSet.getString(2));
-            make.setCode(resultSet.getString(3));
-            make.setIsVerified(resultSet.getBoolean(4));
-            // make.setIsSelectable( resultSet.getBoolean( 5 ) ) ;
-            make.setCreatedBy(resultSet.getInt(5));
-            make.setCreatedOn(resultSet.getTimestamp(6));
-            make.setLastUpdatedBy(resultSet.getInt(7));
-            make.setLastUpdatedOn(resultSet.getTimestamp(8));
-            make.setVersion(resultSet.getInt(9));
+            make.setId(rs.getInt(1));
+            make.setName(rs.getString(2));
+            make.setCode(rs.getString(3));
+            make.setIsVerified(rs.getBoolean(4));
+            // make.setIsSelectable( rs.getBoolean( 5 ) ) ;
+            make.setCreatedBy(rs.getInt(5));
+            make.setCreatedOn(rs.getTimestamp(6));
+            make.setLastUpdatedBy(rs.getInt(7));
+            make.setLastUpdatedOn(rs.getTimestamp(8));
+            make.setVersion(rs.getInt(9));
 
             return make;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
         }
     }
 
-    private Model mapResultSetToModel(ResultSet resultSet) {
+    private class ModelDetailMapper implements ResultSetMapper<ModelDetail> {
 
-        try {
-            Model model = new Model();
+        @Override
+        public ModelDetail map(ResultSet rs) throws SQLException {
 
-            model.setId(resultSet.getInt(1));
-            model.setMake(getMakeById(resultSet.getInt(2)));
-            model.setCode(resultSet.getString(3));
-            model.setName(resultSet.getString(4));
-            model.setIsVerified(resultSet.getBoolean(5));
-            model.setCreatedBy(resultSet.getInt(6));
-            model.setCreatedOn(resultSet.getTimestamp(7));
-            model.setLastUpdatedBy(resultSet.getInt(8));
-            model.setLastUpdatedOn(resultSet.getTimestamp(9));
-            model.setVersion(resultSet.getInt(10));
-
-            return model;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private BodyType mapResultSetToBodyType(ResultSet resultSet) {
-
-        try {
-            BodyType bodyType = new BodyType();
-
-            bodyType.setId(resultSet.getInt(1));
-            bodyType.setName(resultSet.getString(2));
-            bodyType.setCode(resultSet.getString(3));
-            bodyType.setDisplayOrder(resultSet.getInt(4));
-            bodyType.setCreatedBy(resultSet.getInt(5));
-            bodyType.setCreatedOn(resultSet.getTimestamp(6));
-            bodyType.setLastUpdatedBy(resultSet.getInt(7));
-            bodyType.setLastUpdatedOn(resultSet.getTimestamp(8));
-            bodyType.setVersion(resultSet.getInt(9));
-
-            return bodyType;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private VehicleClass mapResultSetToVehicleClass(ResultSet resultSet) {
-
-        try {
-            VehicleClass vehicleClass = new VehicleClass();
-
-            vehicleClass.setId(resultSet.getInt(1));
-            vehicleClass.setName(resultSet.getString(2));
-            vehicleClass.setCode(resultSet.getString(3));
-            vehicleClass.setVehicleClassGroup(getVehicleClassGroupById(resultSet.getInt(4)));
-            vehicleClass.setCreatedBy(resultSet.getInt(5));
-            vehicleClass.setCreatedOn(resultSet.getTimestamp(6));
-            vehicleClass.setLastUpdatedBy(resultSet.getInt(7));
-            vehicleClass.setLastUpdatedOn(resultSet.getTimestamp(8));
-            vehicleClass.setVersion(resultSet.getInt(9));
-
-            return vehicleClass;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private VehicleClassGroup mapResultSetToVehicleClassGroup(ResultSet resultSet) {
-
-        try {
-            VehicleClassGroup vehicleClassGroup = new VehicleClassGroup();
-
-            vehicleClassGroup.setId(resultSet.getInt(1));
-            vehicleClassGroup.setName(resultSet.getString(2));
-            vehicleClassGroup.setCode(resultSet.getString(3));
-            vehicleClassGroup.setCreatedBy(resultSet.getInt(4));
-            vehicleClassGroup.setCreatedOn(resultSet.getTimestamp(5));
-            vehicleClassGroup.setLastUpdatedBy(resultSet.getInt(6));
-            vehicleClassGroup.setLastUpdatedOn(resultSet.getTimestamp(7));
-            vehicleClassGroup.setVersion(resultSet.getInt(8));
-
-            return vehicleClassGroup;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private FuelType mapResultSetToFuelType(ResultSet resultSet) {
-
-        try {
-            FuelType fuelType = new FuelType();
-
-            fuelType.setId(resultSet.getInt(1));
-            fuelType.setName(resultSet.getString(2));
-            fuelType.setCode(resultSet.getString(3));
-            fuelType.setDvlaPropulsionCode(resultSet.getString(4));
-            fuelType.setDisplayOrder(resultSet.getInt(5));
-            fuelType.setCreatedBy(resultSet.getInt(6));
-            fuelType.setCreatedOn(resultSet.getTimestamp(7));
-            fuelType.setLastUpdatedBy(resultSet.getInt(8));
-            fuelType.setLastUpdatedOn(resultSet.getTimestamp(9));
-            fuelType.setVersion(resultSet.getInt(10));
-
-            return fuelType;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private TransmissionType mapResultSetToTransmissionType(ResultSet resultSet) {
-
-        try {
-            TransmissionType transmissionType = new TransmissionType();
-
-            transmissionType.setId(resultSet.getInt(1));
-            transmissionType.setName(resultSet.getString(2));
-            transmissionType.setCode(resultSet.getString(3));
-            transmissionType.setDisplayOrder(resultSet.getInt(4));
-            transmissionType.setCreatedBy(resultSet.getInt(5));
-            transmissionType.setCreatedOn(resultSet.getTimestamp(6));
-            transmissionType.setLastUpdatedBy(resultSet.getInt(7));
-            transmissionType.setLastUpdatedOn(resultSet.getTimestamp(8));
-            transmissionType.setVersion(resultSet.getInt(9));
-
-            return transmissionType;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private WheelplanType mapResultSetToWheelplanType(ResultSet resultSet) {
-
-        try {
-            WheelplanType wheelplanType = new WheelplanType();
-
-            wheelplanType.setId(resultSet.getInt(1));
-            wheelplanType.setCode(resultSet.getString(2));
-            wheelplanType.setName(resultSet.getString(3));
-            wheelplanType.setDescription(resultSet.getString(4));
-            wheelplanType.setDisplayOrder(resultSet.getInt(5));
-            wheelplanType.setCreatedBy(resultSet.getInt(6));
-            wheelplanType.setCreatedOn(resultSet.getTimestamp(7));
-            wheelplanType.setLastUpdatedBy(resultSet.getInt(8));
-            wheelplanType.setLastUpdatedOn(resultSet.getTimestamp(9));
-            wheelplanType.setVersion(resultSet.getInt(10));
-
-            return wheelplanType;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private ModelDetail mapResultSetToModelDetail(ResultSet resultSet) {
-
-        try {
             ModelDetail modelDetail = new ModelDetail();
 
-            modelDetail.setId(resultSet.getInt(1));
-            modelDetail.setModel(getModelById(resultSet.getInt(2)));
-            modelDetail.setIsVerified(resultSet.getBoolean(3));
-            modelDetail.setVehicleClass(getVehicleClassById(resultSet.getInt(4)));
-            modelDetail.setBodyType(getBodyTypeById(resultSet.getInt(5)));
-            modelDetail.setFuelType(getFuelTypeById(resultSet.getInt(6)));
-            modelDetail.setWheelplanType(getWheelplanTypeById(resultSet.getInt(7)));
-            modelDetail.setTransmissionType(getTransmissionTypeById(resultSet.getInt(8)));
-            modelDetail.setEuClassification(resultSet.getString(9));
-            modelDetail.setCylinderCapacity(resultSet.getInt(10));
-            modelDetail.setSha1ConcatWsChksum(resultSet.getString(11));
-            modelDetail.setCreatedBy(resultSet.getInt(12));
-            modelDetail.setCreatedOn(resultSet.getTimestamp(13));
-            modelDetail.setLastUpdatedBy(resultSet.getInt(14));
-            modelDetail.setLastUpdatedOn(resultSet.getTimestamp(15));
-            modelDetail.setVersion(resultSet.getInt(16));
+            modelDetail.setId(rs.getInt(1));
+            modelDetail.setModel(getModelById(rs.getInt(2)));
+            modelDetail.setIsVerified(rs.getBoolean(3));
+            modelDetail.setVehicleClass(getVehicleClassById(rs.getInt(4)));
+            modelDetail.setBodyType(getBodyTypeById(rs.getInt(5)));
+            modelDetail.setFuelType(getFuelTypeById(rs.getInt(6)));
+            modelDetail.setWheelplanType(getWheelplanTypeById(rs.getInt(7)));
+            modelDetail.setTransmissionType(getTransmissionTypeById(rs.getInt(8)));
+            modelDetail.setEuClassification(rs.getString(9));
+            modelDetail.setCylinderCapacity(rs.getInt(10));
+            modelDetail.setSha1ConcatWsChksum(rs.getString(11));
+            modelDetail.setCreatedBy(rs.getInt(12));
+            modelDetail.setCreatedOn(rs.getTimestamp(13));
+            modelDetail.setLastUpdatedBy(rs.getInt(14));
+            modelDetail.setLastUpdatedOn(rs.getTimestamp(15));
+            modelDetail.setVersion(rs.getInt(16));
 
             return modelDetail;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private ColourLookup mapResultSetToColourLookup(ResultSet resultSet) {
-
-        try {
-            ColourLookup colourLookup = new ColourLookup();
-
-            colourLookup.setId(resultSet.getInt(1));
-            colourLookup.setCode(resultSet.getString(2));
-            colourLookup.setName(resultSet.getString(3));
-            colourLookup.setDisplayOrder(resultSet.getInt(4));
-            colourLookup.setCreatedBy(resultSet.getInt(5));
-            colourLookup.setCreatedOn(resultSet.getTimestamp(6));
-            colourLookup.setLastUpdatedBy(resultSet.getInt(7));
-            colourLookup.setLastUpdatedOn(resultSet.getTimestamp(8));
-            colourLookup.setVersion(resultSet.getInt(9));
-
-            return colourLookup;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private WeightSourceLookup mapResultSetToWeightSourceLookup(ResultSet resultSet) {
-
-        try {
-            WeightSourceLookup weightSourceLookup = new WeightSourceLookup();
-
-            weightSourceLookup.setId(resultSet.getInt(1));
-            weightSourceLookup.setCode(resultSet.getString(2));
-            weightSourceLookup.setName(resultSet.getString(3));
-            weightSourceLookup.setDescription(resultSet.getString(4));
-            weightSourceLookup.setDisplayOrder(resultSet.getInt(5));
-            weightSourceLookup.setCreatedBy(resultSet.getInt(6));
-            weightSourceLookup.setCreatedOn(resultSet.getTimestamp(7));
-            weightSourceLookup.setLastUpdatedBy(resultSet.getInt(8));
-            weightSourceLookup.setLastUpdatedOn(resultSet.getTimestamp(9));
-            weightSourceLookup.setVersion(resultSet.getInt(10));
-
-            return weightSourceLookup;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private CountryOfRegistrationLookup mapResultSetToCountryOfRegistrationLookup(ResultSet resultSet) {
-
-        try {
-            CountryOfRegistrationLookup countryOfRegistrationLookup = new CountryOfRegistrationLookup();
-
-            countryOfRegistrationLookup.setId(resultSet.getInt(1));
-            countryOfRegistrationLookup.setCountryLookup(getCountryLookupById(resultSet.getInt(2)));
-            countryOfRegistrationLookup.setName(resultSet.getString(3));
-            countryOfRegistrationLookup.setCode(resultSet.getString(4));
-            countryOfRegistrationLookup.setLicensingCopy(resultSet.getString(5));
-            countryOfRegistrationLookup.setCreatedBy(resultSet.getInt(6));
-            countryOfRegistrationLookup.setCreatedOn(resultSet.getTimestamp(7));
-            countryOfRegistrationLookup.setLastUpdatedBy(resultSet.getInt(8));
-            countryOfRegistrationLookup.setLastUpdatedOn(resultSet.getTimestamp(9));
-            countryOfRegistrationLookup.setVersion(resultSet.getInt(10));
-
-            return countryOfRegistrationLookup;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private CountryLookup mapResultSetToCountryLookup(ResultSet resultSet) {
-
-        try {
-            CountryLookup countryLookup = new CountryLookup();
-
-            countryLookup.setId(resultSet.getInt(1));
-            countryLookup.setName(resultSet.getString(2));
-            countryLookup.setCode(resultSet.getString(3));
-            countryLookup.setIsoCode(resultSet.getString(4));
-            countryLookup.setDisplayOrder(resultSet.getInt(5));
-            countryLookup.setCreatedBy(resultSet.getInt(6));
-            countryLookup.setCreatedOn(resultSet.getTimestamp(7));
-            countryLookup.setLastUpdatedBy(resultSet.getInt(8));
-            countryLookup.setLastUpdatedOn(resultSet.getTimestamp(9));
-            countryLookup.setVersion(resultSet.getInt(10));
-
-            return countryLookup;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private EmptyReasonMap mapResultSetToEmptyReasonMap(Vehicle parent, ResultSet resultSet) {
-
-        try {
-            EmptyReasonMap emptyReasonMap = new EmptyReasonMap();
-
-            emptyReasonMap.setId(resultSet.getInt(1));
-            emptyReasonMap.setVehicle(parent);
-            emptyReasonMap.setEmptyVinReasonLookup(getEmptyVinReasonLookupById(resultSet.getInt(3)));
-            emptyReasonMap.setEmptyVrmReasonLookup(getEmptyVrmReasonLookupById(resultSet.getInt(4)));
-            emptyReasonMap.setCreatedBy(resultSet.getInt(5));
-            emptyReasonMap.setCreatedOn(resultSet.getTimestamp(6));
-            emptyReasonMap.setLastUpdatedBy(resultSet.getInt(7));
-            emptyReasonMap.setLastUpdatedOn(resultSet.getTimestamp(8));
-            emptyReasonMap.setVersion(resultSet.getInt(9));
-
-            return emptyReasonMap;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private EmptyVinReasonLookup mapResultSetToEmptyVinReasonLookup(ResultSet resultSet) {
-
-        try {
-            EmptyVinReasonLookup emptyVinReasonLookup = new EmptyVinReasonLookup();
-
-            emptyVinReasonLookup.setId(resultSet.getInt(1));
-            emptyVinReasonLookup.setCode(resultSet.getString(2));
-            emptyVinReasonLookup.setName(resultSet.getString(3));
-            emptyVinReasonLookup.setCreatedBy(resultSet.getInt(4));
-            emptyVinReasonLookup.setCreatedOn(resultSet.getTimestamp(5));
-            emptyVinReasonLookup.setLastUpdatedBy(resultSet.getInt(6));
-            emptyVinReasonLookup.setLastUpdatedOn(resultSet.getTimestamp(7));
-            emptyVinReasonLookup.setVersion(resultSet.getInt(8));
-
-            return emptyVinReasonLookup;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
-        }
-    }
-
-    private EmptyVrmReasonLookup mapResultSetToEmptyVrmReasonLookup(ResultSet resultSet) {
-
-        try {
-            EmptyVrmReasonLookup emptyVrmReasonLookup = new EmptyVrmReasonLookup();
-
-            emptyVrmReasonLookup.setId(resultSet.getInt(1));
-            emptyVrmReasonLookup.setCode(resultSet.getString(2));
-            emptyVrmReasonLookup.setName(resultSet.getString(3));
-            emptyVrmReasonLookup.setCreatedBy(resultSet.getInt(4));
-            emptyVrmReasonLookup.setCreatedOn(resultSet.getTimestamp(5));
-            emptyVrmReasonLookup.setLastUpdatedBy(resultSet.getInt(6));
-            emptyVrmReasonLookup.setLastUpdatedOn(resultSet.getTimestamp(7));
-            emptyVrmReasonLookup.setVersion(resultSet.getInt(8));
-
-            return emptyVrmReasonLookup;
-        } catch (Exception e) {
-
-            throw new InternalException(e);
         }
     }
 }
