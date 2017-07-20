@@ -14,21 +14,12 @@ public class DatabasePasswordLoader {
 
     public String getDbPassword() throws IOException {
 
-        String password = null;
-        String configPasswordEncrypted = getEnvironmentVariable(ConfigKeys.DatabaseEncryptedPassword, false);
+        String password = getEnvironmentVariable(ConfigKeys.DatabaseEncryptedPassword, true);
 
-        if (Strings.isNullOrEmpty(configPasswordEncrypted)) {
+        if (password == null || password.length() == 0) {
             password = getEnvironmentVariable(ConfigKeys.DatabasePassword);
-
-        } else {
-            if (Strings.isNullOrEmpty(passwordDecrypted) || !configPasswordEncrypted.equalsIgnoreCase(passwordEncrypted)) {
-
-                password = getEnvironmentVariable(ConfigKeys.DatabaseEncryptedPassword);
-
-                passwordEncrypted = configPasswordEncrypted;
-                passwordDecrypted = password;
-            }
         }
+
         return password;
     }
 
