@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import uk.gov.dvsa.mot.mottest.api.MotTest;
-import uk.gov.dvsa.mot.persist.Database;
 import uk.gov.dvsa.mot.persist.jdbc.MotTestReadDaoJdbc;
 import uk.gov.dvsa.mot.persist.model.MotTestStatus;
 import uk.gov.dvsa.mot.persist.model.MotTestType;
@@ -42,18 +41,12 @@ public class MotTestReadServiceDatabaseTest {
     MotTestReadServiceDatabase motTestReadServiceDatabase;
 
     @Mock
-    Database databaseMock;
-
-    @Mock
     MotTestReadDaoJdbc motTestReadDaoMock;
 
     @Before
     public void beforeTest() throws SQLException {
-        // Arrange - Set-up the mocks
-        when(databaseMock.getMotTestReadDao()).thenReturn(motTestReadDaoMock);
-
         // Arrange - Create class under test
-        motTestReadServiceDatabase = new MotTestReadServiceDatabase(databaseMock);
+        motTestReadServiceDatabase = new MotTestReadServiceDatabase(motTestReadDaoMock);
     }
 
     @After

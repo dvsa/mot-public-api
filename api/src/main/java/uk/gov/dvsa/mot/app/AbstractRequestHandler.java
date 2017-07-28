@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 public abstract class AbstractRequestHandler {
     private static final Logger logger = Logger.getLogger(AbstractRequestHandler.class);
-    public final Injector injector;
+    private final Injector injector;
 
     public AbstractRequestHandler() {
 
@@ -22,12 +22,12 @@ public abstract class AbstractRequestHandler {
      *
      * @param inject If false, will not initiate dependency injection.
      */
-    public AbstractRequestHandler(boolean inject) {
+    AbstractRequestHandler(boolean inject) {
 
         this(inject ? new DependencyResolver() : null, inject);
     }
 
-    public AbstractRequestHandler(AbstractModule dependencyResolver, boolean injectSelf) {
+    private AbstractRequestHandler(AbstractModule dependencyResolver, boolean injectSelf) {
 
         logger.trace("Entered Abstract Request Handler");
         overrideLogLevel();
@@ -44,7 +44,7 @@ public abstract class AbstractRequestHandler {
     /**
      * Set the logging level from the configuration.
      */
-    public void overrideLogLevel() {
+    private void overrideLogLevel() {
 
         logger.trace("Entering overrideLogLevel");
 

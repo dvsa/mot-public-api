@@ -9,15 +9,7 @@ import java.util.List;
 public interface TradeReadService {
     List<String> getMakes();
 
-    //  DisplayMotTestItem getMotTestById( long id ) ;
-
-    //  DisplayMotTestItem getMotTestByNumber( long number ) ;
-
     List<DisplayMotTestItem> getMotTestsByRegistrationAndMake(String registration, String make);
-    //  List<DisplayMotTestItem> getMotTestsByVehicleId( int id ) ;
-    //  List<DisplayMotTestItem> getMotTestsByPage( int page ) ;
-    //  List<DisplayMotTestItem> getMotTestsByRange( int startVehicleId, int endVehicleId ) ;
-    //  List<DisplayMotTestItem> getMotTestsByDatePage( Date date, Integer page ) ;
 
     List<Vehicle> getVehiclesByVehicleId(int id);
 
@@ -32,6 +24,4 @@ public interface TradeReadService {
     Vehicle getLatestMotTestByRegistration(String registration);
 
     Vehicle getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber);
-
-    //  List<Vehicle> getVehiclesByDatePageTest( Date date, Integer page, Integer pages ) ;
 }

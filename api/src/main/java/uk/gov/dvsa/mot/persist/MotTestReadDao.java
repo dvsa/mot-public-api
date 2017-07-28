@@ -134,22 +134,4 @@ public interface MotTestReadDao {
     MotTestStatus getMotTestStatusById(int id);
 
     WeightSourceLookup getWeightSourceLookupById(int id);
-
-    ReasonForRejectionType getReasonForRejectionType(String name);
-
-    MotTestStatus getMotTestStatus(String name);
-
-    MotTestType getMotTestType(String name);
-
-    // TODO belongs in vehicle service or reference service?
-    WeightSourceLookup getWeightSourceLookup(String name);
-
-    MotTestReasonForCancelLookup getMotTestReasonForCancelLookup(String name);
-
-    EmergencyReasonLookup getEmergencyReasonLookup(String name);
-
-    MotTestRfrLocationType getMotTestRfrLocationType(String lateral, String longitudinal, String vertical);
-
-    ReasonForRejection getReasonForRejection(String type, String text);
-
 }

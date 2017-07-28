@@ -1,6 +1,7 @@
 package uk.gov.dvsa.mot.app;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.util.CollectionUtils;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -75,7 +76,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for vehicle_id = " + request.getQueryParams().getVehicleId());
                 List<Vehicle> vehicles = tradeReadService.getVehiclesByVehicleId(request.getQueryParams().getVehicleId());
 
-                if (vehicles.isEmpty()) {
+                if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     logger.debug("getTradeMotTests for vehicle_id = " + request.getQueryParams().getVehicleId() + " found 0 ");
                     throw new InvalidResourceException("No MOT Tests found with vehicle id : " + request.getQueryParams().getVehicleId(),
                             context.getAwsRequestId());
@@ -89,7 +90,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for mot test number = " + request.getQueryParams().getNumber());
                 List<Vehicle> vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(request.getQueryParams().getNumber());
 
-                if (vehicles.isEmpty()) {
+                if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     logger.debug("getTradeMotTests for number = " + request.getQueryParams().getNumber() + " found 0");
                     throw new InvalidResourceException("No MOT Tests found with number : " + request.getQueryParams().getNumber(),
                             context.getAwsRequestId());
@@ -110,7 +111,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for registration = " + registration + " and make = " + make);
                 List<Vehicle> vehicles = tradeReadService.getVehiclesByRegistrationAndMake(registration, make);
 
-                if (vehicles.isEmpty()) {
+                if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException("No MOT Tests found with vehicle registration : " + registration + " and make " +
                             make, context.getAwsRequestId());
                 }
@@ -124,7 +125,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for date = " + date + " and page = " + request.getQueryParams().getPage());
                 List<Vehicle> vehicles = tradeReadService.getVehiclesByDatePage(date, request.getQueryParams().getPage());
 
-                if (vehicles.isEmpty()) {
+                if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException("No MOT Tests found for date : " + request.getQueryParams().getDate() + " page : " +
                             request.getQueryParams().getPage(), context.getAwsRequestId());
                 }
@@ -137,7 +138,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for page = " + request.getQueryParams().getPage());
                 List<Vehicle> vehicles = tradeReadService.getVehiclesByPage(request.getQueryParams().getPage());
 
-                if (vehicles.isEmpty()) {
+                if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException("No MOT Tests found for page: " + request.getQueryParams().getPage(), context
                             .getAwsRequestId());
                 }
@@ -203,7 +204,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API MOTH request for registration = " + registration + " and make = " + make);
                 List<DisplayMotTestItem> items = tradeReadService.getMotTestsByRegistrationAndMake(registration, make);
 
-                if (items.isEmpty()) {
+                if (CollectionUtils.isNullOrEmpty(items)) {
                     throw new InvalidResourceException("No MOT Tests found for registration : " + registration + " and make : " + make,
                             context.getAwsRequestId());
                 }
