@@ -1,6 +1,7 @@
 package uk.gov.dvsa.mot.app;
 
 import com.amazonaws.services.lambda.runtime.Context;
+
 import com.amazonaws.util.CollectionUtils;
 import com.google.inject.Inject;
 
@@ -247,7 +248,8 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 Vehicle vehicle = tradeReadService.getLatestMotTestByRegistration(registration);
 
                 if (vehicle == null) {
-                    throw new InvalidResourceException("No MOT Test found for registration " + registration, context.getAwsRequestId());
+                    throw new InvalidResourceException("No MOT Test or DVLA vehicle found for registration " + registration,
+                            context.getAwsRequestId());
                 }
 
                 logger.info("Trade API MOTR request for registration = " + registration + " returned 1 record");
@@ -308,6 +310,49 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             // log all unhandled exceptions and throw an internal server error
             logger.error(e);
             logger.trace("Exiting getLatestMotTestByMotTestNumber");
+            throw new InternalServerErrorException(e, context.getAwsRequestId());
+        }
+    }
+
+    /**
+     * Get the latest vehicle information and MOT test recorded for the vehicle specified by vehicle DVLA id.
+     *
+     * @param request Describes the request. For this method, we require only the dvla id as a path parameter.
+     * @param context AWS Lambda request context
+     * @return The vehicle and its latest MOT, if found.
+     * @throws TradeException If there is a retrieval error or the vehicle and test are not found.
+     */
+    public Vehicle getLatestMotTestByDvlaVehicleId(TradeServiceRequest request, Context context) throws TradeException {
+
+        Integer dvlaVehicleId = request.getPathParams().getDvlaVehicleId();
+
+        try {
+            logger.trace("Entering getLatestMotTestByDvlaVehicleId");
+            if (dvlaVehicleId != null) {
+                logger.info("Trade API MOTR request for DVLA id = " + dvlaVehicleId);
+
+                Vehicle vehicle = tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
+
+                if (vehicle == null) {
+                    throw new InvalidResourceException("No MOT Test or DVLA vehicle found for DVLA vehicle id " + dvlaVehicleId,
+                            context.getAwsRequestId());
+                }
+
+                logger.info("Trade API MOTR request for DVLA id = " + dvlaVehicleId + " returned 1 record");
+                logger.trace("Exiting getLatestMotTestByDvlaVehicleId");
+                return vehicle;
+            } else {
+                logger.trace("Exiting getLatestMotTestByDvlaVehicleId");
+                throw new BadRequestException("Invalid Parameters", context.getAwsRequestId());
+            }
+        } catch (TradeException e) {
+            // no need to log these errors, just throw them back
+            logger.trace("Exiting getLatestMotTestByDvlaVehicleId");
+            throw e;
+        } catch (Exception e) {
+            // log all unhandled exceptions and throw an internal server error
+            logger.error(e);
+            logger.trace("Exiting getLatestMotTestByDvlaVehicleId");
             throw new InternalServerErrorException(e, context.getAwsRequestId());
         }
     }

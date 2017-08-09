@@ -11,6 +11,7 @@ public class DvlaVehicle implements Serializable {
 
     private int id;
     private BodyType bodyType;
+    private String bodyTypeCode;
     private ColourLookup colour1;
     private ColourLookup colour2;
     private String ctRelatedMark;
@@ -27,6 +28,8 @@ public class DvlaVehicle implements Serializable {
     private Date manufactureDate;
     private int massInServiceWeight;
     private String modelCode;
+    private DvlaModel modelDetail;
+    private DvlaMake makeDetail;
     private FuelType propulsion;
     private String recentV5DocumentNumber;
     private String registration;
@@ -269,6 +272,26 @@ public class DvlaVehicle implements Serializable {
         this.modelCode = modelCode;
     }
 
+    public void setModelDetail(DvlaModel modelDetail) {
+
+        this.modelDetail = modelDetail;
+    }
+
+    public DvlaModel getModelDetail() {
+
+        return modelDetail;
+    }
+
+    public void setMakeDetail(DvlaMake makeDetail) {
+
+        this.makeDetail = makeDetail;
+    }
+
+    public DvlaMake getMakeDetail() {
+
+        return makeDetail;
+    }
+
     public FuelType getPropulsion() {
 
         return this.propulsion;
@@ -399,4 +422,11 @@ public class DvlaVehicle implements Serializable {
         this.vehicle = vehicle;
     }
 
+    public String getBodyTypeCode() {
+        return bodyTypeCode;
+    }
+
+    public void setBodyTypeCode(String bodyTypeCode) {
+        this.bodyTypeCode = bodyTypeCode;
+    }
 }

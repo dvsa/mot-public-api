@@ -13,6 +13,9 @@ import uk.gov.dvsa.mot.persist.model.BodyType;
 import uk.gov.dvsa.mot.persist.model.ColourLookup;
 import uk.gov.dvsa.mot.persist.model.CountryLookup;
 import uk.gov.dvsa.mot.persist.model.CountryOfRegistrationLookup;
+import uk.gov.dvsa.mot.persist.model.DvlaMake;
+import uk.gov.dvsa.mot.persist.model.DvlaModel;
+import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.persist.model.EmptyReasonMap;
 import uk.gov.dvsa.mot.persist.model.EmptyVinReasonLookup;
 import uk.gov.dvsa.mot.persist.model.EmptyVrmReasonLookup;
@@ -103,6 +106,33 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     }
 
     @Override
+    public List<Vehicle> getVehicleByDvlaVehicleId(Integer dvlaVehicleId) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<Vehicle> mapper = new VehicleRowMapper();
+
+        return runner.executeQueryForList(VehicleReadSql.queryGetVehicleByDvlaVehicleId, mapper, dvlaVehicleId);
+    }
+
+    @Override
+    public List<DvlaVehicle> getDvlaVehicleByFullRegistration(String registration) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<DvlaVehicle> mapper = new DvlaVehicleRowMapper();
+
+        return runner.executeQueryForList(DvlaVehicleReadSql.selectDvlaVehicleByRegistration, mapper, registration);
+    }
+
+    @Override
+    public List<DvlaVehicle> getDvlaVehicleByDvlaVehicleId(Integer dvlaVehicleId) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<DvlaVehicle> mapper = new DvlaVehicleRowMapper();
+
+        return runner.executeQueryForList(DvlaVehicleReadSql.selectDvlaVehicleById, mapper, dvlaVehicleId);
+    }
+
+    @Override
     public List<Vehicle> getVehiclesByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber) {
 
         DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
@@ -127,6 +157,24 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         ResultSetRowMapper<ModelDetail> mapper = new ModelDetailRowMapper();
 
         return runner.executeQuery(VehicleReadSql.queryGetModelDetailById, mapper, id);
+    }
+
+    @Override
+    public DvlaModel getDvlaModelDetailByCode(String code) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<DvlaModel> mapper = new DvlaModelDetailRowMapper();
+
+        return runner.executeQuery(DvlaVehicleReadSql.selectDvlaModelNameByCode, mapper, code);
+    }
+
+    @Override
+    public DvlaMake getDvlaMakeDetailByCode(String code) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<DvlaMake> mapper = new DvlaMakeDetailRowMapper();
+
+        return runner.executeQuery(DvlaVehicleReadSql.selectDvlaMakeNameByCode, mapper, code);
     }
 
     @Override
@@ -297,6 +345,15 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     }
 
     @Override
+    public BodyType getBodyTypeByCode(String code) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<BodyType> mapper = new BodyTypeByCodeRowMapper();
+
+        return runner.executeQuery(DvlaVehicleReadSql.selectBodyTypeByCode, mapper, code);
+    }
+
+    @Override
     public FuelType getFuelTypeById(int id) {
 
         DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
@@ -388,6 +445,15 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         };
 
         return runner.executeQuery(VehicleReadSql.queryGetColourLookupById, mapper, id);
+    }
+
+    @Override
+    public ColourLookup getColourLookupByCode(String code) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<ColourLookup> mapper = new ColourLookupByCodeRowMapper();
+
+        return runner.executeQuery(DvlaVehicleReadSql.selectColourLookupByCode, mapper, code);
     }
 
     @Override
@@ -503,6 +569,45 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         }
     }
 
+    private class DvlaVehicleRowMapper implements ResultSetRowMapper<DvlaVehicle> {
+
+        @Override
+        public DvlaVehicle mapRow(ResultSet rs) throws SQLException {
+
+            DvlaVehicle dvlaVehicle = new DvlaVehicle();
+
+            dvlaVehicle.setId(rs.getInt(1));
+            dvlaVehicle.setDvlaVehicleId(rs.getInt(2));
+            dvlaVehicle.setRegistration(rs.getString(3));
+
+            dvlaVehicle.setModelDetail(getDvlaModelDetailByCode(rs.getString(4)));
+
+            dvlaVehicle.setMakeDetail(getDvlaMakeDetailByCode(rs.getString(5)));
+
+            dvlaVehicle.setColour1(getColourLookupByCode(rs.getString(6)));
+            if (rs.getString(7) != null) {
+                dvlaVehicle.setColour2(getColourLookupByCode(rs.getString(7)));
+            } else {
+                ColourLookup notStated = new ColourLookup();
+                notStated.setCode("W");
+                dvlaVehicle.setColour2(notStated);
+            }
+            dvlaVehicle.setManufactureDate(rs.getDate(8));
+            if (rs.getDate(9) != null) {
+                dvlaVehicle.setFirstRegistrationDate(rs.getDate(9));
+            }
+            if (rs.getString(10) != null) {
+                dvlaVehicle.setEuClassification(rs.getString(10));
+            }
+            if (rs.getString(11) != null) {
+                dvlaVehicle.setBodyTypeCode(rs.getString(11));
+            }
+            dvlaVehicle.setLastUpdatedOn(rs.getDate(12));
+
+            return dvlaVehicle;
+        }
+    }
+
     private class MakeRowMapper implements ResultSetRowMapper<Make> {
 
         @Override
@@ -550,6 +655,64 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
             modelDetail.setVersion(rs.getInt(16));
 
             return modelDetail;
+        }
+    }
+
+    private class DvlaModelDetailRowMapper implements ResultSetRowMapper<DvlaModel> {
+
+        @Override
+        public DvlaModel mapRow(ResultSet rs) throws SQLException {
+
+            DvlaModel dvlaModel = new DvlaModel();
+
+            dvlaModel.setId(rs.getInt(1));
+            dvlaModel.setName(rs.getString(2));
+            dvlaModel.setCode(rs.getString(3));
+
+            return dvlaModel;
+        }
+    }
+
+    private class DvlaMakeDetailRowMapper implements ResultSetRowMapper<DvlaMake> {
+
+        @Override
+        public DvlaMake mapRow(ResultSet rs) throws SQLException {
+
+            DvlaMake dvlaMake = new DvlaMake();
+
+            dvlaMake.setId(rs.getInt(1));
+            dvlaMake.setName(rs.getString(2));
+            dvlaMake.setCode(rs.getString(3));
+
+            return dvlaMake;
+        }
+    }
+
+    private class ColourLookupByCodeRowMapper implements ResultSetRowMapper<ColourLookup> {
+
+        @Override
+        public ColourLookup mapRow(ResultSet rs) throws SQLException {
+
+            ColourLookup colourLookup = new ColourLookup();
+
+            colourLookup.setId(rs.getInt(1));
+            colourLookup.setName(rs.getString(2));
+
+            return colourLookup;
+        }
+    }
+
+    private class BodyTypeByCodeRowMapper implements ResultSetRowMapper<BodyType> {
+
+        @Override
+        public BodyType mapRow(ResultSet rs) throws SQLException {
+
+            BodyType bodyType = new BodyType();
+
+            bodyType.setId(rs.getInt(1));
+            bodyType.setName(rs.getString(2));
+
+            return bodyType;
         }
     }
 }
