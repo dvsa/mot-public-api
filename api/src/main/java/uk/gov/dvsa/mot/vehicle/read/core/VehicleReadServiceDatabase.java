@@ -71,9 +71,27 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
     @Override
     @ProvideDbConnection
-    public List<DvlaVehicle> findDvlaVehicleByRegistration(String registration) {
+    public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByDvlaVehicleId(Integer dvlaVehicleId) {
+
+        List<Vehicle> vehicles = vehicleReadDao.getVehicleByDvlaVehicleId(dvlaVehicleId);
+
+        return mapVehiclesSqltoJson(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> findDvlaVehicleByRegistration(String registration) {
 
         List<DvlaVehicle> vehicles = vehicleReadDao.getDvlaVehicleByFullRegistration(registration);
+
+        return mapDvlaVehiclesSqltoJson(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> findDvlaVehicleById(Integer dvlaVehicleId) {
+
+        List<DvlaVehicle> vehicles = vehicleReadDao.getDvlaVehicleByDvlaVehicleId(dvlaVehicleId);
 
         return mapDvlaVehiclesSqltoJson(vehicles);
     }
@@ -118,13 +136,13 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
         return vehicles;
     }
 
-    private List<DvlaVehicle> mapDvlaVehiclesSqltoJson(List<DvlaVehicle> storedVehicles) {
+    private List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> mapDvlaVehiclesSqltoJson(List<DvlaVehicle> storedVehicles) {
 
         if (storedVehicles == null) {
             return Arrays.asList();
         }
 
-        List<DvlaVehicle> vehicles = new ArrayList<>();
+        List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> vehicles = new ArrayList<>();
 
         for (DvlaVehicle vehicle : storedVehicles) {
             vehicles.add(mapDvlaVehicleSqltoJson(vehicle));
@@ -216,10 +234,10 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
         }
     }
 
-    protected DvlaVehicle mapDvlaVehicleSqltoJson(DvlaVehicle vehicle) {
+    protected uk.gov.dvsa.mot.trade.api.DvlaVehicle mapDvlaVehicleSqltoJson(DvlaVehicle vehicle) {
 
         if (vehicle != null) {
-            DvlaVehicle jsonVehicle = new DvlaVehicle();
+            uk.gov.dvsa.mot.trade.api.DvlaVehicle jsonVehicle = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
 
             jsonVehicle.setId(vehicle.getId());
             jsonVehicle.setRegistration(vehicle.getRegistration());
@@ -228,16 +246,16 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
             jsonVehicle.setFirstRegistrationDate(vehicle.getFirstRegistrationDate());
             jsonVehicle.setManufactureDate(vehicle.getManufactureDate());
-            jsonVehicle.setColour1(vehicle.getColour1());
+            jsonVehicle.setColour1(vehicle.getColour1().getName());
             if (vehicle.getColour2() != null) {
-                jsonVehicle.setColour2(vehicle.getColour2());
+                jsonVehicle.setColour2(vehicle.getColour2().getName());
             }
 
             if (vehicle.getModelDetail() != null) {
-                jsonVehicle.setModelDetail(vehicle.getModelDetail());
+                jsonVehicle.setModelDetail(vehicle.getModelDetail().getName());
 
                 if (vehicle.getMakeDetail() != null) {
-                    jsonVehicle.setMakeDetail(vehicle.getMakeDetail());
+                    jsonVehicle.setMakeDetail(vehicle.getMakeDetail().getName());
                 }
             }
 
