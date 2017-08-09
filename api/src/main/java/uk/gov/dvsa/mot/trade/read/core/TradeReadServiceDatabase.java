@@ -106,7 +106,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
 
         List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
 
-        if (vehicles.isEmpty()) {
+        if (CollectionUtils.isNullOrEmpty(vehicles)) {
             return getDvlaVehicleByRegistration(registration);
         }
 
@@ -120,6 +120,30 @@ public class TradeReadServiceDatabase implements TradeReadService {
         List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleByRegistration(registration);
 
         return getLatestDvlaVehicleAndMapToTradeVehicle(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public uk.gov.dvsa.mot.trade.api.Vehicle getDvlaVehicleById(Integer dvlaVehicleId) {
+
+        List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleById(dvlaVehicleId);
+
+        return getLatestDvlaVehicleAndMapToTradeVehicle(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByDvlaVehicleId(Integer dvlaVehicleId) {
+
+        List<Vehicle> vehicles = vehicleReadService.findByDvlaVehicleId(dvlaVehicleId);
+
+        uk.gov.dvsa.mot.trade.api.Vehicle vehicle = getLatestMotTestPassAndMapToTradeVehicle(vehicles);
+
+        if (vehicle == null) {
+            vehicle = getDvlaVehicleById(dvlaVehicleId);
+        }
+
+        return vehicle;
     }
 
     /*
@@ -282,10 +306,6 @@ public class TradeReadServiceDatabase implements TradeReadService {
 
         uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = null;
 
-        if (vehicles.isEmpty()) {
-            return null;
-        }
-
         if (!CollectionUtils.isNullOrEmpty(vehicles)) {
             DvlaVehicle dvlaVehicle = vehicles.get(0);
 
@@ -327,8 +347,6 @@ public class TradeReadServiceDatabase implements TradeReadService {
             tradeVehicle.setMotTestExpiryDate(
                     SDF_DATE_ISO_8601.format(firstMotDueDate));
         }
-
-
 
         return tradeVehicle;
     }

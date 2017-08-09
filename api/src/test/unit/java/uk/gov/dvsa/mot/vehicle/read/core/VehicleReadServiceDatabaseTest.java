@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import static uk.gov.dvsa.mot.test.utility.Matchers.hasSize;
 import static uk.gov.dvsa.mot.test.utility.Matchers.isEmpty;
 

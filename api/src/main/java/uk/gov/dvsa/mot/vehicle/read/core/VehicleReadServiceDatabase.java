@@ -71,11 +71,27 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
     @Override
     @ProvideDbConnection
+    public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByDvlaVehicleId(Integer dvlaVehicleId) {
+
+        List<Vehicle> vehicles = vehicleReadDao.getVehicleByDvlaVehicleId(dvlaVehicleId);
+
+        return mapVehiclesSqltoJson(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
     public List<DvlaVehicle> findDvlaVehicleByRegistration(String registration) {
 
         List<DvlaVehicle> vehicles = vehicleReadDao.getDvlaVehicleByFullRegistration(registration);
 
         return mapDvlaVehiclesSqltoJson(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public List<DvlaVehicle> findDvlaVehicleById(Integer dvlaVehicleId) {
+
+        return vehicleReadDao.getDvlaVehicleByDvlaVehicleId(dvlaVehicleId);
     }
 
     @Override

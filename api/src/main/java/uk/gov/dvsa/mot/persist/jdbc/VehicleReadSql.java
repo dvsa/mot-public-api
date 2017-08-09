@@ -153,6 +153,13 @@ class VehicleReadSql {
             + ", `vehicle`.`version` " + "FROM  `mot2`.`vehicle` ";
 
     static final String whereByFullRegistration = "WHERE registration = ? ";
+
+    static final String whereByDvlaVehicleId =
+            "JOIN  `mot2`.`model_detail` on `model_detail`.`id` = `vehicle`.`model_detail_id` "
+                    + "JOIN  `mot2`.`model` on `model`.`id` = `model_detail`.`model_id` "
+                    + "JOIN  `mot2`.`make` on `make`.`id` = `model`.`make_id` "
+                    + "WHERE `vehicle`.`dvla_vehicle_id` = ? ";
+
     static final String whereByFullRegAndMake =
             "JOIN  `mot2`.`model_detail` on `model_detail`.`id` = `vehicle`.`model_detail_id` "
                     + "JOIN  `mot2`.`model` on `model`.`id` = `model_detail`.`model_id` "
@@ -170,6 +177,7 @@ class VehicleReadSql {
     static final String queryGetVehicleByFullRegAndMake = selectGetVehicle + whereByFullRegAndMake;
     static final String queryGetVehiclesByMotTestNumberWithSameRegistrationAndVin =
             selectGetVehicle + whereByFullRegistrationAndVinEqualVehicleWithMotTestNumber;
+    static final String queryGetVehicleByDvlaVehicleId = selectGetVehicle + whereByDvlaVehicleId;
 
     static final String queryGetVehicleByIdAndVersion = "SELECT `vehicle`.`id` " + ", `vehicle`.`registration` "
             + ", `vehicle`.`registration_collapsed` " + ", `vehicle`.`vin` " + ", `vehicle`.`vin_collapsed` "
