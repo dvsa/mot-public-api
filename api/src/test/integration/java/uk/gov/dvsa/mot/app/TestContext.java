@@ -19,7 +19,7 @@ public class TestContext implements Context {
     private String logGroupName = "EXAMPLE";
     private String logStreamName = "EXAMPLE";
     private LambdaLogger logger = new TestLogger();
-    private int memoryLimitInMB = 128;
+    private int memoryLimitInMb = 128;
     private int remainingTimeInMillis = 15000;
 
     @Override
@@ -102,12 +102,12 @@ public class TestContext implements Context {
     @Override
     public int getMemoryLimitInMB() {
 
-        return memoryLimitInMB;
+        return memoryLimitInMb;
     }
 
-    public void setMemoryLimitInMB(int value) {
+    public void setMemoryLimitInMb(int value) {
 
-        memoryLimitInMB = value;
+        memoryLimitInMb = value;
     }
 
     @Override

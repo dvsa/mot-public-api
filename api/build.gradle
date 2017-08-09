@@ -35,12 +35,24 @@ checkstyle {
 }
 
 sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/test/integration/java')
+        }
+        resources.srcDir file('src/test/integration/java/resources')
+    }
     test {
         java {
-            // srcDir 'src/test/integration/java' // Removed until all tests are fixed
             srcDir 'src/test/unit/java'
         }
     }
+}
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
 }
 
 repositories {
@@ -77,6 +89,14 @@ task buildZip(type: Zip) {
     into('lib') {
         from configurations.runtime
     }
+}
+
+task integrationTest(type: Test) {
+
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+
+    systemProperties = (Map<String, String>) System.getProperties()
 }
 
 tasks.withType(Test) {

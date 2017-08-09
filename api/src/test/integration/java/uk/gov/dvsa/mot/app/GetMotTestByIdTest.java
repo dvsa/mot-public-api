@@ -1,17 +1,14 @@
 package uk.gov.dvsa.mot.app;
 
-import uk.gov.dvsa.mot.app.MotServiceRequestHandler;
-import uk.gov.dvsa.mot.mottest.api.MotTest;
-
 import com.amazonaws.services.lambda.runtime.Context;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.gov.dvsa.mot.mottest.api.MotTest;
+
 import java.io.IOException;
 
-//import java.util.List ;
-//import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem ;
 
 /**
  * A simple test harness for locally invoking your Lambda function handler.

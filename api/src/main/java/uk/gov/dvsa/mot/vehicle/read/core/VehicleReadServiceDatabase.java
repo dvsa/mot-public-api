@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 
 import uk.gov.dvsa.mot.persist.ProvideDbConnection;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
+import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.persist.model.Vehicle;
 
 import java.util.ArrayList;
@@ -70,6 +71,15 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
     @Override
     @ProvideDbConnection
+    public List<DvlaVehicle> findDvlaVehicleByRegistration(String registration) {
+
+        List<DvlaVehicle> vehicles = vehicleReadDao.getDvlaVehicleByFullRegistration(registration);
+
+        return mapDvlaVehiclesSqltoJson(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber) {
 
         List<Vehicle> vehicles = vehicleReadDao.getVehiclesByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
@@ -103,6 +113,21 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
         for (Vehicle vehicle : storedVehicles) {
             vehicles.add(mapVehicleSqltoJson(vehicle));
+        }
+
+        return vehicles;
+    }
+
+    private List<DvlaVehicle> mapDvlaVehiclesSqltoJson(List<DvlaVehicle> storedVehicles) {
+
+        if (storedVehicles == null) {
+            return Arrays.asList();
+        }
+
+        List<DvlaVehicle> vehicles = new ArrayList<>();
+
+        for (DvlaVehicle vehicle : storedVehicles) {
+            vehicles.add(mapDvlaVehicleSqltoJson(vehicle));
         }
 
         return vehicles;
@@ -184,6 +209,45 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
             jsonVehicle.setLastUpdatedBy(String.valueOf(vehicle.getLastUpdatedBy()));
             jsonVehicle.setLastUpdatedOn(vehicle.getLastUpdatedOn());
             jsonVehicle.setVersion(vehicle.getVersion());
+
+            return jsonVehicle;
+        } else {
+            return null;
+        }
+    }
+
+    protected DvlaVehicle mapDvlaVehicleSqltoJson(DvlaVehicle vehicle) {
+
+        if (vehicle != null) {
+            DvlaVehicle jsonVehicle = new DvlaVehicle();
+
+            jsonVehicle.setId(vehicle.getId());
+            jsonVehicle.setRegistration(vehicle.getRegistration());
+
+            jsonVehicle.setDvlaVehicleId(vehicle.getDvlaVehicleId());
+
+            jsonVehicle.setFirstRegistrationDate(vehicle.getFirstRegistrationDate());
+            jsonVehicle.setManufactureDate(vehicle.getManufactureDate());
+            jsonVehicle.setColour1(vehicle.getColour1());
+            if (vehicle.getColour2() != null) {
+                jsonVehicle.setColour2(vehicle.getColour2());
+            }
+
+            if (vehicle.getModelDetail() != null) {
+                jsonVehicle.setModelDetail(vehicle.getModelDetail());
+
+                if (vehicle.getMakeDetail() != null) {
+                    jsonVehicle.setMakeDetail(vehicle.getMakeDetail());
+                }
+            }
+
+            if (vehicle.getBodyTypeCode() != null) {
+                jsonVehicle.setBodyTypeCode(vehicle.getBodyTypeCode());
+            }
+
+            jsonVehicle.setEuClassification(vehicle.getEuClassification());
+
+            jsonVehicle.setLastUpdatedOn(vehicle.getLastUpdatedOn());
 
             return jsonVehicle;
         } else {

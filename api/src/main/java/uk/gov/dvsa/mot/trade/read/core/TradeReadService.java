@@ -23,5 +23,7 @@ public interface TradeReadService {
 
     Vehicle getLatestMotTestByRegistration(String registration);
 
+    Vehicle getDvlaVehicleByRegistration(String registration);
+
     Vehicle getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber);
 }

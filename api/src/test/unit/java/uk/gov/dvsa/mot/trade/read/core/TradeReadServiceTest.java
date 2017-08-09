@@ -170,7 +170,7 @@ public class TradeReadServiceTest {
 
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void getLatestMotTestByRegistration_ValidRegistration_VehicleNull() {
 
         final String registration = "AA00AAA";

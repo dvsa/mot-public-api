@@ -63,8 +63,13 @@ public class ConfigManager {
                 return value;
             }
         } else {
-            return getLocalConfigSetting(name);
+            return getConfigSettingsFromCommand(name);
         }
+    }
+
+    private static String getConfigSettingsFromCommand(String property) {
+
+        return System.getProperty(property, null);
     }
 
     /**

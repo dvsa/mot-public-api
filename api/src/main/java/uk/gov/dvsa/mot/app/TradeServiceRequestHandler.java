@@ -1,6 +1,7 @@
 package uk.gov.dvsa.mot.app;
 
 import com.amazonaws.services.lambda.runtime.Context;
+
 import com.amazonaws.util.CollectionUtils;
 import com.google.inject.Inject;
 
@@ -247,7 +248,8 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 Vehicle vehicle = tradeReadService.getLatestMotTestByRegistration(registration);
 
                 if (vehicle == null) {
-                    throw new InvalidResourceException("No MOT Test found for registration " + registration, context.getAwsRequestId());
+                    throw new InvalidResourceException("No MOT Test or DVLA vehicle found for registration " + registration,
+                                context.getAwsRequestId());
                 }
 
                 logger.info("Trade API MOTR request for registration = " + registration + " returned 1 record");

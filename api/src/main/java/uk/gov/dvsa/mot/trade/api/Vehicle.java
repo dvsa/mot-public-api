@@ -16,6 +16,7 @@ public class Vehicle {
     protected String motTestExpiryDate; // added for motr - latest mot test expiry date
     protected String motTestNumber;     // added for motr - latest mot test number (pass)
     protected List<MotTest> motTests;
+    protected Integer dvlaId;
 
     public String getRegistration() {
 
@@ -145,5 +146,15 @@ public class Vehicle {
     public void setMotTestNumber(String motTestNumber) {
 
         this.motTestNumber = motTestNumber;
+    }
+
+    public Integer getDvlaId() {
+
+        return dvlaId;
+    }
+
+    public void setDvlaId(Integer dvlaId) {
+
+        this.dvlaId = dvlaId;
     }
 }

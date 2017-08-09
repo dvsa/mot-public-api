@@ -1,35 +1,20 @@
 package uk.gov.dvsa.mot.app;
 
-import uk.gov.dvsa.mot.app.TradeServiceRequestHandler;
+import com.amazonaws.services.lambda.runtime.Context;
+
+import org.junit.Test;
+
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
 
-import com.amazonaws.services.lambda.runtime.Context;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.io.IOException;
 import java.util.List;
-
-//import java.util.List ;
 
 /**
  * A simple test harness for locally invoking your Lambda function handler.
  */
 public class GetTradeMotHistoryByVehicleId {
     private static TradeServiceRequest input = new TradeServiceRequest();
-
-    @BeforeClass
-    public static void createInput() throws IOException {
-
-        try {
-//      input.setVehicleId( 1 ) ;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private Context createContext() {
 
