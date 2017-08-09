@@ -1,6 +1,7 @@
 package uk.gov.dvsa.mot.trade.service;
 
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
+
+import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 
 import java.util.Calendar;
 import java.util.Date;

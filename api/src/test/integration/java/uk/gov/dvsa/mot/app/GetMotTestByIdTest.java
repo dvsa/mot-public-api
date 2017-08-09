@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.gov.dvsa.mot.app.MotServiceRequestHandler;
 import uk.gov.dvsa.mot.mottest.api.MotTest;
 
 import java.io.IOException;

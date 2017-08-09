@@ -1,14 +1,10 @@
 package uk.gov.dvsa.mot.persist.jdbc;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import uk.gov.dvsa.mot.persist.ConnectionFactory;
 import uk.gov.dvsa.mot.persist.TradeReadDao;
-import uk.gov.dvsa.mot.trade.api.InternalException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

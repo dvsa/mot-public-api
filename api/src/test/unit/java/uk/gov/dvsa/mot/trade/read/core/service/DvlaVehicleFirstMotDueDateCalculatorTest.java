@@ -3,7 +3,7 @@ package uk.gov.dvsa.mot.trade.read.core.service;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
+import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 import uk.gov.dvsa.mot.trade.service.DvlaVehicleFirstMotDueDateCalculator;
 
 import java.util.Calendar;
@@ -181,10 +181,10 @@ public class DvlaVehicleFirstMotDueDateCalculatorTest {
 
     @Test
     public void testLeapYearsAreHandledCorrectly() {
-        /**
-         * When a vehicle's manufactured date falls on a date that would result
-         * in its calculated MOT test due date falling on the 29th of February,
-         * the calculator should indeed correctly return the 29th of February.
+        /*
+          When a vehicle's manufactured date falls on a date that would result
+          in its calculated MOT test due date falling on the 29th of February,
+          the calculator should indeed correctly return the 29th of February.
          */
         when(dvlaVehicle.getBodyTypeCode()).thenReturn(BULLDOZER_BODY_TYPE);
         when(dvlaVehicle.getEuClassification()).thenReturn(M2);
