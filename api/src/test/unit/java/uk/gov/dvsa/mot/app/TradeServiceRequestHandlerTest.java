@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
@@ -85,6 +86,21 @@ public class TradeServiceRequestHandlerTest {
         sut.setTradeReadService(tradeReadService);
 
         return sut.getLatestMotTestByMotTestNumber(request, lambdaContext);
+    }
+
+    /**
+     * Convenience function for testing getLatestMotTestByDvlaVehicleId calls with less boilerplate
+     *
+     * @param request the request to pass to getLatestMotTestByDvlaVehicleId
+     * @return The return value of getLatestMotTestByDvlaVehicleId
+     * @throws TradeException if getLatestMotTestByDvlaVehicleId throws
+     */
+    private Vehicle createHandlerAndGetLatestMotTestByDvlaVehicleId(TradeServiceRequest request) throws TradeException {
+
+        TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
+        sut.setTradeReadService(tradeReadService);
+
+        return sut.getLatestMotTestByDvlaVehicleId(request, lambdaContext);
     }
 
     /**
@@ -614,6 +630,75 @@ public class TradeServiceRequestHandlerTest {
         Vehicle receivedVehicle = createHandlerAndGetLatestMotTestByMotTestNumber(request);
 
         assertEquals(vehicle, receivedVehicle);
+    }
+
+    /**
+     * If we don't provide an MOT number we should get an BadRequestException.
+     */
+    @Test(expected = BadRequestException.class)
+    public void getLatestMotTestByDvlaVehicleId_IncorrectParamsProvided() throws TradeException {
+
+        createHandlerAndGetLatestMotTestByDvlaVehicleId(request);
+    }
+
+    /**
+     * When you ask for a DVLA vehicle which doesn't exist you should get an InvalidResourceException
+     */
+    @Test(expected = InvalidResourceException.class)
+    public void getLatestMotTestByDvlaVehicleId_VehicleDoesNotExist() throws TradeException {
+
+        final int dvlaVehicleId = 42;
+        request.getPathParams().setDvlaVehicleId(dvlaVehicleId);
+
+        when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
+
+        createHandlerAndGetLatestMotTestByDvlaVehicleId(request);
+    }
+
+    /**
+     * If asked for a DVLA vehicle which does exist and does not have a valid MOT we expect to
+     * receive that vehicle's DVLA ID details and calculated expiry date
+     */
+    @Test
+    public void getLatestMotTestByDvlaVehicleId_ValidDvlaVehicleAndNoMot() throws TradeException {
+
+        final int dvlaVehicleId = 42;
+        request.getPathParams().setDvlaVehicleId(dvlaVehicleId);
+
+        final String registration = "XX89UIP";
+        final Vehicle vehicle = new Vehicle();
+        vehicle.setRegistration(registration);
+        vehicle.setDvlaId(Integer.toString(dvlaVehicleId));
+
+        when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(vehicle);
+
+        Vehicle receivedVehicle = createHandlerAndGetLatestMotTestByDvlaVehicleId(request);
+
+        assertEquals(vehicle, receivedVehicle);
+    }
+
+    /**
+     * If asked for a DVLA vehicle which does exist and has a valid MOT we expect to receive that vehicle's MOT details
+     * and no dvlaID
+     */
+    @Test
+    public void getLatestMotTestByMotTestNumber_ValidDvlaVehicleWithPassedMot() throws TradeException {
+
+        final int dvlaVehicleId = 42;
+        request.getPathParams().setDvlaVehicleId(dvlaVehicleId);
+
+        final String registration = "XX89UIP";
+        final String motNumber = "42";
+        final Vehicle vehicle = new Vehicle();
+        vehicle.setRegistration(registration);
+        vehicle.setMotTestNumber(motNumber);
+
+        when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(vehicle);
+
+        Vehicle receivedVehicle = createHandlerAndGetLatestMotTestByDvlaVehicleId(request);
+
+        assertEquals(vehicle, receivedVehicle);
+        assertNull(receivedVehicle.getDvlaId());
     }
 
     /**

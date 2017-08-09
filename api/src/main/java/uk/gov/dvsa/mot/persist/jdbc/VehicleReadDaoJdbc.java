@@ -106,12 +106,30 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     }
 
     @Override
+    public List<Vehicle> getVehicleByDvlaVehicleId(Integer dvlaVehicleId) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<Vehicle> mapper = new VehicleRowMapper();
+
+        return runner.executeQueryForList(VehicleReadSql.queryGetVehicleByDvlaVehicleId, mapper, dvlaVehicleId);
+    }
+
+    @Override
     public List<DvlaVehicle> getDvlaVehicleByFullRegistration(String registration) {
 
         DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
         ResultSetRowMapper<DvlaVehicle> mapper = new DvlaVehicleRowMapper();
 
         return runner.executeQueryForList(DvlaVehicleReadSql.selectDvlaVehicleByRegistration, mapper, registration);
+    }
+
+    @Override
+    public List<DvlaVehicle> getDvlaVehicleByDvlaVehicleId(Integer dvlaVehicleId) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<DvlaVehicle> mapper = new DvlaVehicleRowMapper();
+
+        return runner.executeQueryForList(DvlaVehicleReadSql.selectDvlaVehicleById, mapper, dvlaVehicleId);
     }
 
     @Override

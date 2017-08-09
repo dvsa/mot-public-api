@@ -1,6 +1,6 @@
 package uk.gov.dvsa.mot.vehicle.read.core;
 
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
+import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 
 import java.util.List;
@@ -15,7 +15,11 @@ public interface VehicleReadService {
 
     List<Vehicle> findByRegistration(String registration);
 
+    List<Vehicle> findByDvlaVehicleId(Integer dvlaVehicleId);
+
     List<DvlaVehicle> findDvlaVehicleByRegistration(String registration);
+
+    List<DvlaVehicle> findDvlaVehicleById(Integer dvlaVehicleId);
 
     List<Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber);
 
