@@ -11,8 +11,8 @@ import uk.gov.dvsa.mot.mottest.api.MotTestRfrMap;
 import uk.gov.dvsa.mot.mottest.read.core.MotTestReadService;
 import uk.gov.dvsa.mot.persist.ProvideDbConnection;
 import uk.gov.dvsa.mot.persist.TradeReadDao;
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
+import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 import uk.gov.dvsa.mot.trade.api.RfrAndAdvisoryItem;
 import uk.gov.dvsa.mot.trade.service.DvlaVehicleFirstMotDueDateCalculator;
 import uk.gov.dvsa.mot.vehicle.api.Vehicle;
@@ -319,13 +319,13 @@ public class TradeReadServiceDatabase implements TradeReadService {
             tradeVehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
 
             tradeVehicle.setRegistration(dvlaVehicle.getRegistration());
-            tradeVehicle.setMake(dvlaVehicle.getMakeDetail().getName());
-            tradeVehicle.setModel(dvlaVehicle.getModelDetail().getName());
-            tradeVehicle.setPrimaryColour(dvlaVehicle.getColour1().getName());
+            tradeVehicle.setMake(dvlaVehicle.getMakeDetail());
+            tradeVehicle.setModel(dvlaVehicle.getModelDetail());
+            tradeVehicle.setPrimaryColour(dvlaVehicle.getColour1());
             tradeVehicle.setDvlaId(dvlaVehicle.getDvlaVehicleId());
 
-            if (!"Not Stated".equalsIgnoreCase(dvlaVehicle.getColour2().getName())) {
-                tradeVehicle.setSecondaryColour(dvlaVehicle.getColour2().getName());
+            if (!"Not Stated".equalsIgnoreCase(dvlaVehicle.getColour2())) {
+                tradeVehicle.setSecondaryColour(dvlaVehicle.getColour2());
             }
 
             if (dvlaVehicle.getManufactureDate() != null) {

@@ -623,32 +623,19 @@ public class TradeReadServiceTest {
         final LocalDateTime manufactureDateTime = LocalDateTime.now().minus(5, ChronoUnit.YEARS);
         final int manufactureYear = manufactureDateTime.getYear();
         final Date manufactureDate = Date.from(manufactureDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        final long motTestNumber = 5672823;
         final String make = "MADEBY";
         final String model = "ETERNIA";
         final String primaryColour = "BLUE";
         final String secondaryColour = "WHITE";
 
-        DvlaVehicle dvlaVehicle = new DvlaVehicle();
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicle = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
         dvlaVehicle.setRegistration(registration);
         dvlaVehicle.setDvlaVehicleId(dvlaVehicleId);
 
-        DvlaMake dvlaMake = new DvlaMake();
-        dvlaMake.setName(make);
-
-        DvlaModel dvlaModel = new DvlaModel();
-        dvlaModel.setName(model);
-
-        ColourLookup colour1 = new ColourLookup();
-        colour1.setName(primaryColour);
-
-        ColourLookup colour2 = new ColourLookup();
-        colour2.setName(secondaryColour);
-
-        dvlaVehicle.setMakeDetail(dvlaMake);
-        dvlaVehicle.setModelDetail(dvlaModel);
-        dvlaVehicle.setColour1(colour1);
-        dvlaVehicle.setColour2(colour2);
+        dvlaVehicle.setMakeDetail(make);
+        dvlaVehicle.setModelDetail(model);
+        dvlaVehicle.setColour1(primaryColour);
+        dvlaVehicle.setColour2(secondaryColour);
         dvlaVehicle.setEuClassification("L6");
         dvlaVehicle.setFirstRegistrationDate(new Date());
         dvlaVehicle.setManufactureDate(manufactureDate);

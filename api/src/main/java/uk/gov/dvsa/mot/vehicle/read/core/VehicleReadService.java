@@ -1,6 +1,6 @@
 package uk.gov.dvsa.mot.vehicle.read.core;
 
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
+import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 
 import java.util.List;
