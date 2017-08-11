@@ -668,7 +668,7 @@ public class TradeServiceRequestHandlerTest {
         final String registration = "XX89UIP";
         final Vehicle vehicle = new Vehicle();
         vehicle.setRegistration(registration);
-        vehicle.setDvlaId(dvlaVehicleId);
+        vehicle.setDvlaId(Integer.toString(dvlaVehicleId));
 
         when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(vehicle);
 

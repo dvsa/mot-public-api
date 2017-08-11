@@ -322,7 +322,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
             tradeVehicle.setMake(dvlaVehicle.getMakeDetail());
             tradeVehicle.setModel(dvlaVehicle.getModelDetail());
             tradeVehicle.setPrimaryColour(dvlaVehicle.getColour1());
-            tradeVehicle.setDvlaId(dvlaVehicle.getDvlaVehicleId());
+            tradeVehicle.setDvlaId(Integer.toString(dvlaVehicle.getDvlaVehicleId()));
 
             if (!"Not Stated".equalsIgnoreCase(dvlaVehicle.getColour2())) {
                 tradeVehicle.setSecondaryColour(dvlaVehicle.getColour2());

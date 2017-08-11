@@ -657,7 +657,7 @@ public class TradeReadServiceTest {
         assertNotNull("Test expiry date is incorrect", apiVehicle.getMotTestExpiryDate());
         assertNull("Test number is incorrect", apiVehicle.getMotTestNumber());
         assertEquals("Primary colour is incorrect", primaryColour, apiVehicle.getPrimaryColour());
-        assertEquals("DvlaId is incorrect", dvlaVehicleId, apiVehicle.getDvlaId());
+        assertEquals("DvlaId is incorrect", Integer.toString(dvlaVehicleId), apiVehicle.getDvlaId());
         assertEquals("Secondary colour is incorrect", secondaryColour, apiVehicle.getSecondaryColour());
     }
 
