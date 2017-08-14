@@ -158,7 +158,8 @@ class VehicleReadSql {
             "JOIN  `mot2`.`model_detail` on `model_detail`.`id` = `vehicle`.`model_detail_id` "
                     + "JOIN  `mot2`.`model` on `model`.`id` = `model_detail`.`model_id` "
                     + "JOIN  `mot2`.`make` on `make`.`id` = `model`.`make_id` "
-                    + "WHERE `vehicle`.`dvla_vehicle_id` = ? ";
+                    + "JOIN  `mot2`.`dvla_vehicle` on `vehicle`.`id` = `dvla_vehicle`.`vehicle_id` "
+                    + "WHERE `dvla_vehicle`.`dvla_vehicle_id` = ? ";
 
     static final String whereByFullRegAndMake =
             "JOIN  `mot2`.`model_detail` on `model_detail`.`id` = `vehicle`.`model_detail_id` "

@@ -648,7 +648,7 @@ public class TradeServiceRequestHandlerTest {
     public void getLatestMotTestByDvlaVehicleId_VehicleDoesNotExist() throws TradeException {
 
         final int dvlaVehicleId = 42;
-        request.getPathParams().setDvlaVehicleId(dvlaVehicleId);
+        request.getPathParams().setDvlaId(dvlaVehicleId);
 
         when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
 
@@ -663,7 +663,7 @@ public class TradeServiceRequestHandlerTest {
     public void getLatestMotTestByDvlaVehicleId_ValidDvlaVehicleAndNoMot() throws TradeException {
 
         final int dvlaVehicleId = 42;
-        request.getPathParams().setDvlaVehicleId(dvlaVehicleId);
+        request.getPathParams().setDvlaId(dvlaVehicleId);
 
         final String registration = "XX89UIP";
         final Vehicle vehicle = new Vehicle();
@@ -685,7 +685,7 @@ public class TradeServiceRequestHandlerTest {
     public void getLatestMotTestByMotTestNumber_ValidDvlaVehicleWithPassedMot() throws TradeException {
 
         final int dvlaVehicleId = 42;
-        request.getPathParams().setDvlaVehicleId(dvlaVehicleId);
+        request.getPathParams().setDvlaId(dvlaVehicleId);
 
         final String registration = "XX89UIP";
         final String motNumber = "42";

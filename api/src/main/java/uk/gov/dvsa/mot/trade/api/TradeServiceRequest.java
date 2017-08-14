@@ -272,7 +272,7 @@ public class TradeServiceRequest {
 
     public class MotTestPathParams {
         private Long id;
-        private Integer dvlaVehicleId;
+        private Integer dvlaId;
         private Long number;
         private String registration;
         private String make;
@@ -287,14 +287,14 @@ public class TradeServiceRequest {
             this.id = id;
         }
 
-        public Integer getDvlaVehicleId() {
+        public Integer getDvlaId() {
 
-            return dvlaVehicleId;
+            return dvlaId;
         }
 
-        public void setDvlaVehicleId(Integer dvlaVehicleId) {
+        public void setDvlaId(Integer dvlaId) {
 
-            this.dvlaVehicleId = dvlaVehicleId;
+            this.dvlaId = dvlaId;
         }
 
         public String getRegistration() {
@@ -332,7 +332,7 @@ public class TradeServiceRequest {
 
             return "MotTestPathParams{" +
                     "id=" + id +
-                    ", dvlaVehicleId=" + dvlaVehicleId +
+                    ", dvlaId=" + dvlaId +
                     ", number=" + number +
                     ", registration='" + registration + '\'' +
                     ", make='" + make + '\'' +
