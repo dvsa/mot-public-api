@@ -6,10 +6,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.OngoingStubbing;
 
 import uk.gov.dvsa.mot.mottest.api.MotTest;
 import uk.gov.dvsa.mot.mottest.read.core.MotTestReadService;
 import uk.gov.dvsa.mot.persist.TradeReadDao;
+import uk.gov.dvsa.mot.persist.model.ColourLookup;
+import uk.gov.dvsa.mot.persist.model.DvlaMake;
+import uk.gov.dvsa.mot.persist.model.DvlaModel;
+import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 import uk.gov.dvsa.mot.vehicle.read.core.VehicleReadService;
 
@@ -561,6 +566,114 @@ public class TradeReadServiceTest {
         assertEquals("Test number is incorrect", Long.toString(motTestNumber), apiVehicle.getMotTestNumber());
         assertEquals("Primary colour is incorrect", primaryColour, apiVehicle.getPrimaryColour());
         assertEquals("Secondary colour is incorrect", secondaryColour, apiVehicle.getSecondaryColour());
+    }
+
+    @Test
+    public void getLatestMotTestByDvlaVehicleId_ReturnsVehicle_FullyPopulated_WhenMotTestExists() {
+
+        final Integer dvlaVehicleId = 123;
+        final String registration = "AA00AAA";
+        final LocalDateTime expiryDateTime = LocalDateTime.now().plus(Period.ofMonths(6));
+        final Date expiryDate = Date.from(expiryDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        final LocalDateTime manufactureDateTime = LocalDateTime.now().minus(5, ChronoUnit.YEARS);
+        final int manufactureYear = manufactureDateTime.getYear();
+        final Date manufactureDate = Date.from(manufactureDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        final long motTestNumber = 5672823;
+        final String make = "MADEBY";
+        final String model = "ETERNIA";
+        final String primaryColour = "BLUE";
+        final String secondaryColour = "WHITE";
+
+        final Vehicle backendVehicle = new Vehicle();
+        backendVehicle.setRegistration(registration);
+        backendVehicle.setManufactureDate(manufactureDate);
+        backendVehicle.setMake(make);
+        backendVehicle.setModel(model);
+        backendVehicle.setPrimaryColour(primaryColour);
+        backendVehicle.setSecondaryColour(secondaryColour);
+
+        final MotTest backendTest = new MotTest();
+        backendTest.setExpiryDate(expiryDate);
+        backendTest.setNumber(motTestNumber);
+
+        when(vehicleReadServiceMock.findByDvlaVehicleId(dvlaVehicleId)).thenReturn(Arrays.asList(backendVehicle));
+        when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(backendTest);
+
+        uk.gov.dvsa.mot.trade.api.Vehicle apiVehicle =
+                tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
+
+        assertNotNull("Returned vehicle is null", apiVehicle);
+        assertEquals("Registration is incorrect", registration, apiVehicle.getRegistration());
+        assertEquals("Make is incorrect", make, apiVehicle.getMake());
+        assertEquals("Model is incorrect", model, apiVehicle.getModel());
+        assertEquals("Manufacturing year is incorrect", Integer.toString(manufactureYear),
+                apiVehicle.getManufactureYear());
+        assertEquals("Test expiry date is incorrect", expiryDateTime.format(DateTimeFormatter.ISO_DATE),
+                apiVehicle.getMotTestExpiryDate());
+        assertEquals("Test number is incorrect", Long.toString(motTestNumber), apiVehicle.getMotTestNumber());
+        assertEquals("Primary colour is incorrect", primaryColour, apiVehicle.getPrimaryColour());
+        assertEquals("Secondary colour is incorrect", secondaryColour, apiVehicle.getSecondaryColour());
+    }
+
+    @Test
+    public void getLatestMotTestByDvlaVehicleId_VehicleDoesNotExist_DvlaVehicleDoes() {
+
+        final Integer dvlaVehicleId = 123;
+        final String registration = "AA00AAA";
+        final LocalDateTime manufactureDateTime = LocalDateTime.now().minus(5, ChronoUnit.YEARS);
+        final int manufactureYear = manufactureDateTime.getYear();
+        final Date manufactureDate = Date.from(manufactureDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        final String make = "MADEBY";
+        final String model = "ETERNIA";
+        final String primaryColour = "BLUE";
+        final String secondaryColour = "WHITE";
+
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicle = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
+        dvlaVehicle.setRegistration(registration);
+        dvlaVehicle.setDvlaVehicleId(dvlaVehicleId);
+
+        dvlaVehicle.setMakeDetail(make);
+        dvlaVehicle.setModelDetail(model);
+        dvlaVehicle.setColour1(primaryColour);
+        dvlaVehicle.setColour2(secondaryColour);
+        dvlaVehicle.setEuClassification("L6");
+        dvlaVehicle.setFirstRegistrationDate(new Date());
+        dvlaVehicle.setManufactureDate(manufactureDate);
+        dvlaVehicle.setLastUpdatedOn(new Date());
+
+        when(vehicleReadServiceMock.findByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
+
+        when(vehicleReadServiceMock.findDvlaVehicleById(dvlaVehicleId)).thenReturn(Arrays.asList(dvlaVehicle));
+
+        uk.gov.dvsa.mot.trade.api.Vehicle apiVehicle =
+                tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
+
+        assertNotNull("Returned vehicle is null", apiVehicle);
+        assertEquals("Registration is incorrect", registration, apiVehicle.getRegistration());
+        assertEquals("Make is incorrect", make, apiVehicle.getMake());
+        assertEquals("Model is incorrect", model, apiVehicle.getModel());
+        assertEquals("Manufacturing year is incorrect", Integer.toString(manufactureYear),
+                apiVehicle.getManufactureYear());
+        assertNotNull("Test expiry date is incorrect", apiVehicle.getMotTestExpiryDate());
+        assertNull("Test number is incorrect", apiVehicle.getMotTestNumber());
+        assertEquals("Primary colour is incorrect", primaryColour, apiVehicle.getPrimaryColour());
+        assertEquals("DvlaId is incorrect", Integer.toString(dvlaVehicleId), apiVehicle.getDvlaId());
+        assertEquals("Secondary colour is incorrect", secondaryColour, apiVehicle.getSecondaryColour());
+    }
+
+    @Test
+    public void getLatestMotTestByDvlaVehicleId_VehicleDoesNotExist_DvlaVehicleDoesNotExist() {
+
+        final Integer dvlaVehicleId = 123;
+
+        when(vehicleReadServiceMock.findByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
+
+        when(vehicleReadServiceMock.findDvlaVehicleById(dvlaVehicleId)).thenReturn(null);
+
+        uk.gov.dvsa.mot.trade.api.Vehicle apiVehicle =
+                tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
+
+        assertNull("Returned vehicle is not null", apiVehicle);
     }
 
     /**

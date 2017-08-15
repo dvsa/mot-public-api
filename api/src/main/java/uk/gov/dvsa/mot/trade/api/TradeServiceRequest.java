@@ -1,5 +1,7 @@
 package uk.gov.dvsa.mot.trade.api;
 
+import java.util.Arrays;
+
 public class TradeServiceRequest {
     private String method;
     private Header[] header;
@@ -9,11 +11,12 @@ public class TradeServiceRequest {
     @Override
     public String toString() {
 
-        return "{ " + "\"method\": \"" + method + "\"" + ", \"queryParams\": { " + "\"id\": " + queryParams.id + ", \"number\": " +
-                queryParams.number + ", \"vehicleId\": " + queryParams.vehicleId + ", \"registration\": " +
-                queryParams.registration + ", \"make\": " + queryParams.make + ", \"date\": " + queryParams.date +
-                ", \"page\": " + queryParams.page + ", \"pages\": " + queryParams.pages + " }" + ", \"pathParams\": { " +
-                "\"id\": " + pathParams.id + " }" + " }";
+        return "TradeServiceRequest{" +
+                "method='" + method + '\'' +
+                ", header=" + Arrays.toString(header) +
+                ", queryParams=" + queryParams +
+                ", pathParams=" + pathParams +
+                '}';
     }
 
     public String getMethod() {
@@ -250,10 +253,26 @@ public class TradeServiceRequest {
 
             this.pages = pages;
         }
+
+        @Override
+        public String toString() {
+
+            return "MotTestQueryParams{" +
+                    "id=" + id +
+                    ", number=" + number +
+                    ", vehicleId=" + vehicleId +
+                    ", registration='" + registration + '\'' +
+                    ", make='" + make + '\'' +
+                    ", date='" + date + '\'' +
+                    ", page=" + page +
+                    ", pages=" + pages +
+                    '}';
+        }
     }
 
     public class MotTestPathParams {
         private Long id;
+        private Integer dvlaId;
         private Long number;
         private String registration;
         private String make;
@@ -266,6 +285,16 @@ public class TradeServiceRequest {
         public void setId(Long id) {
 
             this.id = id;
+        }
+
+        public Integer getDvlaId() {
+
+            return dvlaId;
+        }
+
+        public void setDvlaId(Integer dvlaId) {
+
+            this.dvlaId = dvlaId;
         }
 
         public String getRegistration() {
@@ -296,6 +325,18 @@ public class TradeServiceRequest {
         public void setNumber(Long number) {
 
             this.number = number;
+        }
+
+        @Override
+        public String toString() {
+
+            return "MotTestPathParams{" +
+                    "id=" + id +
+                    ", dvlaId=" + dvlaId +
+                    ", number=" + number +
+                    ", registration='" + registration + '\'' +
+                    ", make='" + make + '\'' +
+                    '}';
         }
     }
 }

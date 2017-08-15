@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 
 import uk.gov.dvsa.mot.persist.ProvideDbConnection;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
+import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.persist.model.Vehicle;
 
 import java.util.ArrayList;
@@ -70,6 +71,33 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
     @Override
     @ProvideDbConnection
+    public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByDvlaVehicleId(Integer dvlaVehicleId) {
+
+        List<Vehicle> vehicles = vehicleReadDao.getVehicleByDvlaVehicleId(dvlaVehicleId);
+
+        return mapVehiclesSqltoJson(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> findDvlaVehicleByRegistration(String registration) {
+
+        List<DvlaVehicle> vehicles = vehicleReadDao.getDvlaVehicleByFullRegistration(registration);
+
+        return mapDvlaVehiclesSqltoJson(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> findDvlaVehicleById(Integer dvlaVehicleId) {
+
+        List<DvlaVehicle> vehicles = vehicleReadDao.getDvlaVehicleByDvlaVehicleId(dvlaVehicleId);
+
+        return mapDvlaVehiclesSqltoJson(vehicles);
+    }
+
+    @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber) {
 
         List<Vehicle> vehicles = vehicleReadDao.getVehiclesByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
@@ -103,6 +131,21 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
         for (Vehicle vehicle : storedVehicles) {
             vehicles.add(mapVehicleSqltoJson(vehicle));
+        }
+
+        return vehicles;
+    }
+
+    private List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> mapDvlaVehiclesSqltoJson(List<DvlaVehicle> storedVehicles) {
+
+        if (storedVehicles == null) {
+            return Arrays.asList();
+        }
+
+        List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> vehicles = new ArrayList<>();
+
+        for (DvlaVehicle vehicle : storedVehicles) {
+            vehicles.add(mapDvlaVehicleSqltoJson(vehicle));
         }
 
         return vehicles;
@@ -184,6 +227,45 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
             jsonVehicle.setLastUpdatedBy(String.valueOf(vehicle.getLastUpdatedBy()));
             jsonVehicle.setLastUpdatedOn(vehicle.getLastUpdatedOn());
             jsonVehicle.setVersion(vehicle.getVersion());
+
+            return jsonVehicle;
+        } else {
+            return null;
+        }
+    }
+
+    protected uk.gov.dvsa.mot.trade.api.DvlaVehicle mapDvlaVehicleSqltoJson(DvlaVehicle vehicle) {
+
+        if (vehicle != null) {
+            uk.gov.dvsa.mot.trade.api.DvlaVehicle jsonVehicle = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
+
+            jsonVehicle.setId(vehicle.getId());
+            jsonVehicle.setRegistration(vehicle.getRegistration());
+
+            jsonVehicle.setDvlaVehicleId(vehicle.getDvlaVehicleId());
+
+            jsonVehicle.setFirstRegistrationDate(vehicle.getFirstRegistrationDate());
+            jsonVehicle.setManufactureDate(vehicle.getManufactureDate());
+            jsonVehicle.setColour1(vehicle.getColour1().getName());
+            if (vehicle.getColour2() != null) {
+                jsonVehicle.setColour2(vehicle.getColour2().getName());
+            }
+
+            if (vehicle.getModelDetail() != null) {
+                jsonVehicle.setModelDetail(vehicle.getModelDetail().getName());
+
+                if (vehicle.getMakeDetail() != null) {
+                    jsonVehicle.setMakeDetail(vehicle.getMakeDetail().getName());
+                }
+            }
+
+            if (vehicle.getBodyTypeCode() != null) {
+                jsonVehicle.setBodyTypeCode(vehicle.getBodyTypeCode());
+            }
+
+            jsonVehicle.setEuClassification(vehicle.getEuClassification());
+
+            jsonVehicle.setLastUpdatedOn(vehicle.getLastUpdatedOn());
 
             return jsonVehicle;
         } else {
