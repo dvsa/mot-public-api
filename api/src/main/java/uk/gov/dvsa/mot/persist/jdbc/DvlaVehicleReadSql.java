@@ -18,8 +18,9 @@ public class DvlaVehicleReadSql {
 
     static final String selectDvlaModelNameByCode = "SELECT `dvla_model`.`id`, `dvla_model`.`name`, " +
             "`dvla_model`.`code` " +
-            "FROM `mot2`.`dvla_model`" +
-            "WHERE `dvla_model`.`code` = ?";
+            "FROM `mot2`.`dvla_model` " +
+            "WHERE `dvla_model`.`code` = ? " +
+            "AND `dvla_model`.`make_code` = ?";
 
     static final String selectDvlaMakeNameByCode = "SELECT `dvla_make`.`id`, `dvla_make`.`name`, `dvla_make`.`code` " +
             "FROM `mot2`.`dvla_make` " +

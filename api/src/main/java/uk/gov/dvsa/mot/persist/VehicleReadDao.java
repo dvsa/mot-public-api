@@ -49,7 +49,7 @@ public interface VehicleReadDao {
 
     ModelDetail getModelDetailById(int id);
 
-    DvlaModel getDvlaModelDetailByCode(String code);
+    DvlaModel getDvlaModelDetailByCode(String modelCode, String makeCode);
 
     DvlaMake getDvlaMakeDetailByCode(String code);
 

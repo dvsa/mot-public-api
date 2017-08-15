@@ -160,12 +160,12 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     }
 
     @Override
-    public DvlaModel getDvlaModelDetailByCode(String code) {
+    public DvlaModel getDvlaModelDetailByCode(String modelCode, String makeCode) {
 
         DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
         ResultSetRowMapper<DvlaModel> mapper = new DvlaModelDetailRowMapper();
 
-        return runner.executeQuery(DvlaVehicleReadSql.selectDvlaModelNameByCode, mapper, code);
+        return runner.executeQuery(DvlaVehicleReadSql.selectDvlaModelNameByCode, mapper, modelCode, makeCode);
     }
 
     @Override
@@ -580,7 +580,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
             dvlaVehicle.setDvlaVehicleId(rs.getInt(2));
             dvlaVehicle.setRegistration(rs.getString(3));
 
-            dvlaVehicle.setModelDetail(getDvlaModelDetailByCode(rs.getString(4)));
+            dvlaVehicle.setModelDetail(getDvlaModelDetailByCode(rs.getString(4), rs.getString(5)));
 
             dvlaVehicle.setMakeDetail(getDvlaMakeDetailByCode(rs.getString(5)));
 
