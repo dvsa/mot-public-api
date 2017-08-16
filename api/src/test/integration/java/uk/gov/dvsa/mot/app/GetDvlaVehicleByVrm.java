@@ -18,7 +18,7 @@ public class GetDvlaVehicleByVrm {
     @BeforeClass
     public static void createInput() throws IOException {
 
-        String input = "YH51ACU";
+        String input = "AF16MMO";
         TradeServiceRequest.MotTestPathParams pathParams = new TradeServiceRequest().new MotTestPathParams();
         pathParams.setRegistration(input);
         tradeServiceRequest.setPathParams(pathParams);

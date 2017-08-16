@@ -309,10 +309,12 @@ public class TradeReadServiceDatabase implements TradeReadService {
         if (!CollectionUtils.isNullOrEmpty(vehicles)) {
             DvlaVehicle dvlaVehicle = vehicles.get(0);
 
-            for (DvlaVehicle dvlaVehicle1 : vehicles) {
+            if (vehicles.size() > 1 && dvlaVehicle.getLastUpdatedOn() != null) {
+                for (DvlaVehicle dvlaVehicle1 : vehicles) {
 
-                if (dvlaVehicle1.getLastUpdatedOn().after(dvlaVehicle.getLastUpdatedOn())) {
-                    dvlaVehicle = dvlaVehicle1;
+                    if (dvlaVehicle1.getLastUpdatedOn() != null && dvlaVehicle1.getLastUpdatedOn().after(dvlaVehicle.getLastUpdatedOn())) {
+                        dvlaVehicle = dvlaVehicle1;
+                    }
                 }
             }
 
