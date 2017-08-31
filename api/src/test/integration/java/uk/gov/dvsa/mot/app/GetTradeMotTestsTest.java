@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.gov.dvsa.mot.app.TradeServiceRequestHandler;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
@@ -24,6 +23,9 @@ public class GetTradeMotTestsTest {
     public static void createInput() throws IOException {
         // input.setId( 729084574L ) ;
         input.setId(900000000L);
+        TradeServiceRequest.MotTestPathParams pathParams = new TradeServiceRequest().new MotTestPathParams();
+        pathParams.setRegistration("REGI");
+        input.setPathParams(pathParams);
     }
 
     private Context createContext() {

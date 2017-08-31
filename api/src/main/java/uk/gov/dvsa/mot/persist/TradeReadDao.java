@@ -11,7 +11,10 @@ public interface TradeReadDao {
 
     List<Vehicle> getVehiclesMotTestsByMotTestNumber(long number);
 
+    @Deprecated
     List<Vehicle> getVehiclesMotTestsByRegistrationAndMake(String registration, String make);
+
+    List<Vehicle> getVehiclesMotTestsByRegistration(String registration);
 
     List<Vehicle> getVehiclesMotTestsByDateRange(Date startDate, Date endDate);
 

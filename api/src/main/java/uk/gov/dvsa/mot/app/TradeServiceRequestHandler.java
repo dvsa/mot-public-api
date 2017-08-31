@@ -101,23 +101,19 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                         .size() + " records");
                 logger.trace("Exiting getTradeMotTests");
                 return vehicles;
-            } else if ((request.getQueryParams().getRegistration() != null) && (request.getQueryParams().getMake() != null)) {
+            } else if ((request.getQueryParams().getRegistration() != null)) {
                 String registration = URLDecoder.decode(request.getQueryParams().getRegistration(), "UTF-8");
-                String make = URLDecoder.decode(request.getQueryParams().getMake(), "UTF-8");
 
-                if ((make.equals("")) || (make.contains("%")) || (make.contains("_"))) {
-                    throw new BadRequestException("The make is missing or invalid", context.getAwsRequestId());
-                }
-
-                logger.info("Trade API request for registration = " + registration + " and make = " + make);
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByRegistrationAndMake(registration, make);
+                logger.info("Trade API request for registration = " + registration);
+                List<Vehicle> vehicles = tradeReadService.getVehiclesByRegistration(registration);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    throw new InvalidResourceException("No MOT Tests found with vehicle registration : " + registration + " and make " +
-                            make, context.getAwsRequestId());
+                    logger.debug("getTradeMotTests for registration = " + request.getQueryParams().getNumber() + " found 0");
+                    throw new InvalidResourceException("No MOT Tests found with vehicle registration : " + registration,
+                            context.getAwsRequestId());
                 }
 
-                logger.info("Trade API request for registration = " + registration + " and make = " + make + " returned " +
+                logger.info("Trade API request for registration = " + registration + " returned " +
                         vehicles.size() + " records");
                 logger.trace("Exiting getTradeMotTests");
                 return vehicles;

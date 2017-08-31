@@ -17,6 +17,8 @@ public interface TradeReadService {
 
     List<Vehicle> getVehiclesByRegistrationAndMake(String registration, String make);
 
+    List<Vehicle> getVehiclesByRegistration(String registration);
+
     List<Vehicle> getVehiclesByPage(int page);
 
     List<Vehicle> getVehiclesByDatePage(Date date, Integer page);

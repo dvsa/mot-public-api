@@ -16,8 +16,6 @@ import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -285,19 +283,6 @@ public class TradeServiceRequestHandlerTest {
     }
 
     /**
-     * If we provide only the registration, this should result in a BadRequestException as Registration has to come with Make
-     */
-    @Test(expected = BadRequestException.class)
-    public void getTradeMotTests_Registration_BadRequest() throws TradeException {
-
-        String registration = "AK99AUJ";
-
-        request.setRegistration(registration);
-
-        createHandlerAndGetTradeMotTests(request);
-    }
-
-    /**
      * If we provide only the make, this should result in a BadRequestException as Registration has to come with Make
      */
     @Test(expected = BadRequestException.class)
@@ -305,56 +290,24 @@ public class TradeServiceRequestHandlerTest {
 
         String make = "TESLA";
 
-        request.setRegistration(make);
+        request.setMake(make);
 
         createHandlerAndGetTradeMotTests(request);
     }
 
-
     /**
-     * If the Make has %, _ or is empty (after decoding) then we expect a BadRequestException
+     * If we ask for a registration which exist, we expect to find the vehicle
      */
     @Test
-    public void getTradeMotTests_RegistrationMake_BadRequest() throws TradeException, UnsupportedEncodingException {
-
-        List<String> badMakes = Arrays.asList(
-                URLEncoder.encode("", "UTF-8"),
-                URLEncoder.encode("%", "UTF-8"),
-                URLEncoder.encode("_", "UTF-8"));
-
-        int exceptionsCaught = 0;
-
-        for (String badMake : badMakes) {
-            TradeServiceRequest request = new TradeServiceRequest();
-            request.setRegistration("IRRELEVANT");
-            request.setMake(badMake);
-
-            try {
-                createHandlerAndGetTradeMotTests(request);
-            } catch (BadRequestException e) {
-                ++exceptionsCaught;
-            }
-        }
-
-        assertEquals("The expected number of BadRequestExceptions were caught", badMakes.size(), exceptionsCaught);
-    }
-
-    /**
-     * If we ask for a registration and make which exist, we expect to find the vehicle
-     */
-    @Test
-    public void getTradeMotTests_RegistrationMake_VehicleExists() throws TradeException {
+    public void getTradeMotTests_Registration_VehicleExists() throws TradeException {
 
         final String registration = "AA44VBG";
-        final String make = "ACME";
         final Vehicle vehicle = new Vehicle();
-        vehicle.setMake(make);
         vehicle.setRegistration(registration);
 
-        when(tradeReadService.getVehiclesByRegistrationAndMake(registration, make)).thenReturn(Arrays.asList(vehicle));
+        when(tradeReadService.getVehiclesByRegistration(registration)).thenReturn(Arrays.asList(vehicle));
 
         request.setRegistration(registration);
-        request.setMake(make);
 
         List<Vehicle> retrievedVehicles = createHandlerAndGetTradeMotTests(request);
 
@@ -386,12 +339,10 @@ public class TradeServiceRequestHandlerTest {
     public void getTradeMotTests_RegistrationMake_DatabaseError() throws TradeException {
 
         final String registration = "AA44VBG";
-        final String make = "ACME";
 
-        when(tradeReadService.getVehiclesByRegistrationAndMake(registration, make)).thenThrow(new ArithmeticException());
+        when(tradeReadService.getVehiclesByRegistration(registration)).thenThrow(new ArithmeticException());
 
         request.setRegistration(registration);
-        request.setMake(make);
 
         createHandlerAndGetTradeMotTests(request);
     }
