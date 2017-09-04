@@ -60,6 +60,7 @@ public class TradeReadDaoJdbc implements TradeReadDao {
     }
 
     @Override
+    @Deprecated
     public List<Vehicle> getVehiclesMotTestsByRegistrationAndMake(String registration, String make) {
 
         String wildMake = "%" + make + "%";
@@ -70,6 +71,28 @@ public class TradeReadDaoJdbc implements TradeReadDao {
         List<Vehicle> results =
                 runner.executeQuery(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_REGISTRATION_AND_MAKE, mapper, registration, wildMake,
                         registration, wildMake);
+
+        if (results == null) {
+            return Collections.emptyList();
+        }
+
+        return results;
+    }
+
+    @Override
+    public List<Vehicle> getVehiclesMotTestsByRegistration(String registration) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetExtractor<List<Vehicle>> mapper = new VehicleResultSetExtractor();
+
+        //passing registration thrice as there are no named params in runner and we need to use registration in three parts of query
+        List<Vehicle> results = runner.executeQuery(
+                TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_REGISTRATION,
+                mapper,
+                registration,
+                registration,
+                registration
+        );
 
         if (results == null) {
             return Collections.emptyList();

@@ -66,6 +66,31 @@ public class TradeReadSql {
                     + "JOIN    `mot2`.`colour_lookup` AS `colour1` ON `colour1`.`id` = `vehicle`.`primary_colour_id` "
                     + "LEFT JOIN `mot2`.`colour_lookup` AS `colour2` ON `colour2`.`id` = `vehicle`.`secondary_colour_id` ";
 
+    static final String JOIN_VEHICLE_WITH_LATEST_MOT_TEST_WHEN_THERE_ARE_DUPLICATES_MOT_TEST_CURRENT =
+            "JOIN (SELECT registration, vin "
+                    + "FROM vehicle "
+                    + "JOIN mot_test_current on vehicle.id = mot_test_current.vehicle_id "
+                    + "WHERE vehicle.registration = ? "
+                    + "ORDER BY mot_test_current.completed_date desc "
+                    + "LIMIT 1 "
+                    + ") candidate_vehicles ON candidate_vehicles.vin = vehicle.vin AND "
+                    + "candidate_vehicles.registration = vehicle.registration ";
+
+    static final String JOIN_VEHICLE_WITH_LATEST_MOT_TEST_WHEN_THERE_ARE_DUPLICATES_MOT_TEST_HISTORY =
+            "JOIN ( SELECT completed_date, registration, vin "
+                    + "FROM vehicle "
+                    + "JOIN mot_test_current on vehicle.id = mot_test_current.vehicle_id "
+                    + "WHERE vehicle.registration = ? "
+                    + "UNION "
+                    + "SELECT completed_date, registration, vin "
+                    + "FROM vehicle "
+                    + "JOIN mot_test_history on vehicle.id = mot_test_history.vehicle_id "
+                    + "WHERE vehicle.registration = ? "
+                    + "ORDER BY completed_date desc "
+                    + "LIMIT 1 "
+                    + ") candidate_vehicles ON candidate_vehicles.vin = vehicle.vin AND "
+                    + "candidate_vehicles.registration = vehicle.registration ";
+
     /* standard SQL Keywords */
     static final String WHERE = "WHERE ";
     static final String AND = "AND ";
@@ -129,6 +154,24 @@ public class TradeReadSql {
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + VEHICLE_REGISTRATION_EQUALS
                     + AND + MAKE_NAME_LIKE
+                    + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
+
+    static final String QUERY_GET_VEHICLES_MOT_TESTS_BY_REGISTRATION =
+            SELECT_VEHICLES_MOT_TESTS
+                    + FROM_MOT_TEST_CURRENT
+                    + JOIN_MOT_TEST_CURRENT_RFR_MAP
+                    + JOIN_MOT_TEST_AND_RFR_MAP_DIMENSIONS
+                    + JOIN_VEHICLE_WITH_LATEST_MOT_TEST_WHEN_THERE_ARE_DUPLICATES_MOT_TEST_CURRENT
+                    + WHERE + MOT_TEST_TYPE_IS_PUBLIC
+                    + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
+                    + UNION_ALL
+                    + SELECT_VEHICLES_MOT_TESTS
+                    + FROM_MOT_TEST_HISTORY
+                    + JOIN_MOT_TEST_HISTORY_RFR_MAP
+                    + JOIN_MOT_TEST_AND_RFR_MAP_DIMENSIONS
+                    + JOIN_VEHICLE_WITH_LATEST_MOT_TEST_WHEN_THERE_ARE_DUPLICATES_MOT_TEST_HISTORY
+                    + WHERE + MOT_TEST_TYPE_IS_PUBLIC
+                    + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
 
     static final String QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE =
