@@ -6,15 +6,15 @@ public class IntegrationEnvVehicleProvider implements VehicleProvider {
 
     public Vehicle getClass4Vehicle() {
         Vehicle vehicle = new Vehicle();
-        vehicle.setRegistration("FNZ6110");
-        vehicle.setMake("RENAULT");
+        vehicle.setRegistration("AC94MHS");
+        vehicle.setMake("TOYOTA");
 
         return vehicle;
     }
 
     public Vehicle getDvlaVehicle() {
         Vehicle vehicle = new Vehicle();
-        vehicle.setRegistration("F50GGP");
+        vehicle.setRegistration("FI50VJW");
 
         return vehicle;
     }

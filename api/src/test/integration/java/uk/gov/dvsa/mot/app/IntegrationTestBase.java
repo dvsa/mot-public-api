@@ -24,7 +24,11 @@ public class IntegrationTestBase {
         }
 
         private boolean isIntegrationEnvironment() {
-            return false;
+            return this.getEnv() != null && this.getEnv().equals("integration");
+        }
+
+        private String getEnv() {
+            return System.getProperty("ENV", null);
         }
     });
 

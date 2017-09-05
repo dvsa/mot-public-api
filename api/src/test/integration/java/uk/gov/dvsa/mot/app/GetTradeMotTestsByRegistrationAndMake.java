@@ -67,7 +67,8 @@ public class GetTradeMotTestsByRegistrationAndMake extends IntegrationTestBase{
         TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
         Context ctx = createContext();
 
-        TradeServiceRequest input = createInput("FNZ6110", null);
+        Vehicle vehicle = this.vehicleProvider.getClass4Vehicle();
+        TradeServiceRequest input = createInput(vehicle.getRegistration(), null);
 
         List<Vehicle> output = tradeServiceRequestHandler.getTradeMotTests(input, ctx);
 
