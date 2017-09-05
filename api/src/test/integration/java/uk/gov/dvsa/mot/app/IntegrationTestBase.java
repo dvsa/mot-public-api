@@ -1,14 +1,14 @@
 package uk.gov.dvsa.mot.app;
 
-import uk.gov.dvsa.mot.dataprovider.IntegrationEnvVehicleProvider;
-import uk.gov.dvsa.mot.dataprovider.LocalEnvVehicleProvider;
-import uk.gov.dvsa.mot.dataprovider.VehicleProvider;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import org.junit.Before;
+
+import uk.gov.dvsa.mot.dataprovider.IntegrationEnvVehicleProvider;
+import uk.gov.dvsa.mot.dataprovider.LocalEnvVehicleProvider;
+import uk.gov.dvsa.mot.dataprovider.VehicleProvider;
 
 public class IntegrationTestBase {
     protected Injector injector = Guice.createInjector(new AbstractModule() {
@@ -16,7 +16,7 @@ public class IntegrationTestBase {
         protected void configure() {
 
             //can't bind factory, so this part of code servers purpose of factory
-            if(isIntegrationEnvironment()) {
+            if (isIntegrationEnvironment()) {
                 bind(VehicleProvider.class).to(IntegrationEnvVehicleProvider.class);
             } else {
                 bind(VehicleProvider.class).to(LocalEnvVehicleProvider.class);
@@ -33,7 +33,7 @@ public class IntegrationTestBase {
     });
 
     @Before
-    public void setup () {
+    public void setup() {
         injector.injectMembers(this);
     }
 }

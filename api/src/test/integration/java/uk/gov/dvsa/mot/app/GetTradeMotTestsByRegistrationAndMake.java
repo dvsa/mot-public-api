@@ -16,10 +16,10 @@ import java.util.List;
 /**
  * A simple test harness for locally invoking your Lambda function handler.
  */
-public class GetTradeMotTestsByRegistrationAndMake extends IntegrationTestBase{
+public class GetTradeMotTestsByRegistrationAndMake extends IntegrationTestBase {
 
     @Inject
-    private final VehicleProvider vehicleProvider=null;
+    private final VehicleProvider vehicleProvider = null;
 
     private TradeServiceRequest createInput(String registration, String make) throws IOException {
         TradeServiceRequest input = new TradeServiceRequest();
