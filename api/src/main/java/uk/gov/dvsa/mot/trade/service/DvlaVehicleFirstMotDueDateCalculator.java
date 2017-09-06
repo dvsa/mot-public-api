@@ -64,6 +64,10 @@ public class DvlaVehicleFirstMotDueDateCalculator {
      */
     public static Date calculateFirstMotDueDate(final DvlaVehicle dvlaVehicle) {
 
+        if (dvlaVehicle.getEuClassification() == null) {
+            return null;
+        }
+
         switch (dvlaVehicle.getEuClassification()) {
             case M1:
                 return euClassM1(dvlaVehicle);
