@@ -13,6 +13,8 @@ import uk.gov.dvsa.mot.trade.api.Vehicle;
 import java.io.IOException;
 import java.util.List;
 
+import static junit.framework.Assert.assertEquals;
+
 /**
  * A simple test harness for locally invoking your Lambda function handler.
  */
@@ -45,7 +47,6 @@ public class GetTradeMotTestsByRegistrationAndMake extends IntegrationTestBase {
         return ctx;
     }
 
-    //integration tests fail on INT environment, but are still useful locally, so I will leave them ignored
     @Test
     public void testGetTradeMotTestsReturnsResultsWhenRegistrationAndMakeProvided() throws TradeException, IOException {
         TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
@@ -59,9 +60,13 @@ public class GetTradeMotTestsByRegistrationAndMake extends IntegrationTestBase {
         if (output != null) {
             System.out.println(output.toString());
         }
+
+        assertEquals(1, output.size());
+        Vehicle resultVehicle = output.get(0);
+        assertEquals(vehicle.getRegistration(), resultVehicle.getRegistration());
+
     }
 
-    //integration tests fail on INT environment, but are still useful locally, so I will leave them ignored
     @Test
     public void testGetTradeMotTestsReturnsResultsWhenOnlyRegistrationIsProvided() throws TradeException, IOException {
         TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
@@ -75,5 +80,9 @@ public class GetTradeMotTestsByRegistrationAndMake extends IntegrationTestBase {
         if (output != null) {
             System.out.println(output.toString());
         }
+
+        assertEquals(1, output.size());
+        Vehicle resultVehicle = output.get(0);
+        assertEquals(vehicle.getRegistration(), resultVehicle.getRegistration());
     }
 }
