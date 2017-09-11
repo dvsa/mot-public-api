@@ -8,9 +8,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
+import uk.gov.dvsa.mot.persist.model.BodyType;
 import uk.gov.dvsa.mot.persist.model.ColourLookup;
+import uk.gov.dvsa.mot.persist.model.DvlaMake;
+import uk.gov.dvsa.mot.persist.model.DvlaModel;
+import uk.gov.dvsa.mot.persist.model.FuelType;
 import uk.gov.dvsa.mot.persist.model.Make;
 import uk.gov.dvsa.mot.persist.model.ModelDetail;
+import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 
 import java.util.ArrayList;
@@ -20,6 +25,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -34,6 +40,15 @@ import static uk.gov.dvsa.mot.test.utility.Matchers.isEmpty;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VehicleReadServiceDatabaseTest {
+
+    private static final Integer DEFAULT_VEHICLE_ID = 1234567;
+    private static final String DEFAULT_REGISTRATION = "ABC123DE";
+    private static final String DEFAULT_BODY_TYPE_CODE = "testBodyTypeCode";
+    private static final String DEFAULT_COLOR_NAME = "testColor";
+    private static final String DEFAULT_FUEL_TYPE_NAME = "testFuelType";
+    private static final String DEFAULT_MODEL_DETAIL_NAME = "testModelDetail";
+    private static final String DEFAULT_MAKE_NAME = "testMakeName";
+
 
     VehicleReadServiceDatabase vehicleReadServiceDatabase;
     uk.gov.dvsa.mot.persist.model.Vehicle testVehicle;
@@ -349,5 +364,135 @@ public class VehicleReadServiceDatabaseTest {
 
         assertThat(actual, notNullValue());
         assertThat(actual, isEmpty());
+    }
+
+    @Test
+    public void getDvlaVehicleByRegistration_ReturnsMappedDvlaVehicle() {
+
+        uk.gov.dvsa.mot.persist.model.DvlaVehicle persistedDvlaVehicle = createPersistedDvlaVehicle();
+
+        when(vehicleReadDaoMock.getDvlaVehicleByRegistration(DEFAULT_REGISTRATION)).thenReturn(persistedDvlaVehicle);
+
+        DvlaVehicle dvlaVehicle = vehicleReadServiceDatabase.getDvlaVehicleByRegistration(DEFAULT_REGISTRATION);
+
+        assertNotNull("Returns an mapped object", dvlaVehicle);
+        assertEquals(dvlaVehicle.getRegistration(), DEFAULT_REGISTRATION);
+        assertEquals(dvlaVehicle.getColour1(), DEFAULT_COLOR_NAME);
+        assertEquals(dvlaVehicle.getColour2(), DEFAULT_COLOR_NAME);
+        assertEquals(dvlaVehicle.getFuelType(), DEFAULT_FUEL_TYPE_NAME);
+        assertEquals(dvlaVehicle.getBodyTypeCode(), DEFAULT_BODY_TYPE_CODE);
+        assertEquals(dvlaVehicle.getModelDetail(), DEFAULT_MODEL_DETAIL_NAME);
+        assertEquals(dvlaVehicle.getMakeDetail(), DEFAULT_MAKE_NAME);
+    }
+
+    @Test
+    public void getDvlaVehicleByRegistration_ReturnsNullWhenNoDvlaVehicleWasFound() {
+
+        final String registration = "ABC123DE";
+
+        when(vehicleReadDaoMock.getDvlaVehicleByRegistration(registration)).thenReturn(null);
+
+        DvlaVehicle dvlaVehicle = vehicleReadServiceDatabase.getDvlaVehicleByRegistration(registration);
+
+        assertNull("No DvlaVehicle found", dvlaVehicle);
+    }
+
+    @Test
+    public void findDvlaVehicleById_ReturnsListOfMappedDvlaVehicle() {
+
+        uk.gov.dvsa.mot.persist.model.DvlaVehicle persistedDvlaVehicle = createPersistedDvlaVehicle();
+        List<uk.gov.dvsa.mot.persist.model.DvlaVehicle> persistedDvlaVehicles = Arrays.asList(persistedDvlaVehicle);
+
+        when(vehicleReadDaoMock.getDvlaVehicleByDvlaVehicleId(DEFAULT_VEHICLE_ID)).thenReturn(persistedDvlaVehicles);
+
+        List<DvlaVehicle> dvlaVehicles = vehicleReadServiceDatabase.findDvlaVehicleById(DEFAULT_VEHICLE_ID);
+
+        assertEquals("Returns a list of mapped dvla vehicles", dvlaVehicles.size(), persistedDvlaVehicles.size());
+
+        DvlaVehicle dvlaVehicle = dvlaVehicles.get(0);
+        assertEquals(dvlaVehicle.getRegistration(), DEFAULT_REGISTRATION);
+        assertEquals(dvlaVehicle.getColour1(), DEFAULT_COLOR_NAME);
+        assertEquals(dvlaVehicle.getColour2(), DEFAULT_COLOR_NAME);
+        assertEquals(dvlaVehicle.getFuelType(), DEFAULT_FUEL_TYPE_NAME);
+        assertEquals(dvlaVehicle.getBodyTypeCode(), DEFAULT_BODY_TYPE_CODE);
+        assertEquals(dvlaVehicle.getModelDetail(), DEFAULT_MODEL_DETAIL_NAME);
+        assertEquals(dvlaVehicle.getMakeDetail(), DEFAULT_MAKE_NAME);
+    }
+
+    @Test
+    public void findDvlaVehicleById_ReturnsEmptyListIfNoDvlaVehiclesWereFound() {
+
+        when(vehicleReadDaoMock.getDvlaVehicleByDvlaVehicleId(DEFAULT_VEHICLE_ID)).thenReturn(null);
+
+        List<DvlaVehicle> dvlaVehicles = vehicleReadServiceDatabase.findDvlaVehicleById(DEFAULT_VEHICLE_ID);
+
+        assertEquals("Empty list is returned",0, dvlaVehicles.size());
+    }
+
+    @Test
+    public void  findDvlaVehicleByRegistration_ReturnsListOfMappedDvlaVehicles() {
+
+        uk.gov.dvsa.mot.persist.model.DvlaVehicle persistedDvlaVehicle = createPersistedDvlaVehicle();
+        List<uk.gov.dvsa.mot.persist.model.DvlaVehicle> persistedDvlaVehicles = Arrays.asList(persistedDvlaVehicle);
+
+        when(vehicleReadDaoMock.getDvlaVehicleByFullRegistration(DEFAULT_REGISTRATION)).thenReturn(persistedDvlaVehicles);
+
+        List<DvlaVehicle> dvlaVehicles = vehicleReadServiceDatabase.findDvlaVehicleByRegistration(DEFAULT_REGISTRATION);
+
+        assertEquals("Returns a list of mapped dvla vehicles", dvlaVehicles.size(), persistedDvlaVehicles.size());
+
+        DvlaVehicle dvlaVehicle = dvlaVehicles.get(0);
+        assertEquals(dvlaVehicle.getRegistration(), DEFAULT_REGISTRATION);
+        assertEquals(dvlaVehicle.getColour1(), DEFAULT_COLOR_NAME);
+        assertEquals(dvlaVehicle.getColour2(), DEFAULT_COLOR_NAME);
+        assertEquals(dvlaVehicle.getFuelType(), DEFAULT_FUEL_TYPE_NAME);
+        assertEquals(dvlaVehicle.getBodyTypeCode(), DEFAULT_BODY_TYPE_CODE);
+        assertEquals(dvlaVehicle.getModelDetail(), DEFAULT_MODEL_DETAIL_NAME);
+        assertEquals(dvlaVehicle.getMakeDetail(), DEFAULT_MAKE_NAME);
+    }
+
+    @Test
+    public void findDvlaVehicleByRegistration_ReturnsEmptyListWhenNoDvlaVehiclesWereFound() {
+
+        when(vehicleReadDaoMock.getDvlaVehicleByFullRegistration(DEFAULT_REGISTRATION)).thenReturn(null);
+
+        List<DvlaVehicle> dvlaVehicles = vehicleReadServiceDatabase.findDvlaVehicleByRegistration(DEFAULT_REGISTRATION);
+
+        assertEquals("Returns a empty list", 0, dvlaVehicles.size());
+    }
+
+    @Test
+    public void findByDvlaVehicleId_ReturnsEmptyListWhenNoVehiclesWereFound() {
+
+        when(vehicleReadDaoMock.getVehicleByDvlaVehicleId(DEFAULT_VEHICLE_ID)).thenReturn(null);
+
+        List<Vehicle> vehicles = vehicleReadServiceDatabase.findByDvlaVehicleId(DEFAULT_VEHICLE_ID);
+
+        assertEquals("Returns a empty list", 0, vehicles.size());
+    }
+
+    private uk.gov.dvsa.mot.persist.model.DvlaVehicle createPersistedDvlaVehicle() {
+
+        final ColourLookup color = new ColourLookup();
+        final FuelType fuelType = new FuelType();
+        final DvlaModel dvlaModel = new DvlaModel();
+        final DvlaMake dvlaMake = new DvlaMake();
+
+        color.setName(DEFAULT_COLOR_NAME);
+        fuelType.setName(DEFAULT_FUEL_TYPE_NAME);
+        dvlaModel.setName(DEFAULT_MODEL_DETAIL_NAME);
+        dvlaMake.setName(DEFAULT_MAKE_NAME);
+
+        uk.gov.dvsa.mot.persist.model.DvlaVehicle persistedDvlaVehicle = new uk.gov.dvsa.mot.persist.model.DvlaVehicle();
+        persistedDvlaVehicle.setId(DEFAULT_VEHICLE_ID);
+        persistedDvlaVehicle.setRegistration(DEFAULT_REGISTRATION);
+        persistedDvlaVehicle.setColour1(color);
+        persistedDvlaVehicle.setColour2(color);
+        persistedDvlaVehicle.setPropulsion(fuelType);
+        persistedDvlaVehicle.setBodyTypeCode(DEFAULT_BODY_TYPE_CODE);
+        persistedDvlaVehicle.setModelDetail(dvlaModel);
+        persistedDvlaVehicle.setMakeDetail(dvlaMake);
+
+        return persistedDvlaVehicle;
     }
 }
