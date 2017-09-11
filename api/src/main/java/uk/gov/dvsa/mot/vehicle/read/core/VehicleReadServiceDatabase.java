@@ -89,6 +89,15 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
     @Override
     @ProvideDbConnection
+    public uk.gov.dvsa.mot.trade.api.DvlaVehicle getDvlaVehicleByRegistration(String registration) {
+
+        DvlaVehicle dvlaVehicle = vehicleReadDao.getDvlaVehicleByRegistration(registration);
+
+        return mapDvlaVehicleSqltoJson(dvlaVehicle);
+    }
+
+    @Override
+    @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> findDvlaVehicleById(Integer dvlaVehicleId) {
 
         List<DvlaVehicle> vehicles = vehicleReadDao.getDvlaVehicleByDvlaVehicleId(dvlaVehicleId);
@@ -234,42 +243,46 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
         }
     }
 
-    protected uk.gov.dvsa.mot.trade.api.DvlaVehicle mapDvlaVehicleSqltoJson(DvlaVehicle vehicle) {
+    public uk.gov.dvsa.mot.trade.api.DvlaVehicle mapDvlaVehicleSqltoJson(DvlaVehicle vehicle) {
 
-        if (vehicle != null) {
-            uk.gov.dvsa.mot.trade.api.DvlaVehicle jsonVehicle = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
-
-            jsonVehicle.setId(vehicle.getId());
-            jsonVehicle.setRegistration(vehicle.getRegistration());
-
-            jsonVehicle.setDvlaVehicleId(vehicle.getDvlaVehicleId());
-
-            jsonVehicle.setFirstRegistrationDate(vehicle.getFirstRegistrationDate());
-            jsonVehicle.setManufactureDate(vehicle.getManufactureDate());
-            jsonVehicle.setColour1(vehicle.getColour1().getName());
-            if (vehicle.getColour2() != null) {
-                jsonVehicle.setColour2(vehicle.getColour2().getName());
-            }
-
-            if (vehicle.getModelDetail() != null) {
-                jsonVehicle.setModelDetail(vehicle.getModelDetail().getName());
-
-                if (vehicle.getMakeDetail() != null) {
-                    jsonVehicle.setMakeDetail(vehicle.getMakeDetail().getName());
-                }
-            }
-
-            if (vehicle.getBodyTypeCode() != null) {
-                jsonVehicle.setBodyTypeCode(vehicle.getBodyTypeCode());
-            }
-
-            jsonVehicle.setEuClassification(vehicle.getEuClassification());
-
-            jsonVehicle.setLastUpdatedOn(vehicle.getLastUpdatedOn());
-
-            return jsonVehicle;
-        } else {
+        if (vehicle == null) {
             return null;
         }
+
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle jsonVehicle = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
+
+        jsonVehicle.setId(vehicle.getId());
+        jsonVehicle.setRegistration(vehicle.getRegistration());
+
+        jsonVehicle.setDvlaVehicleId(vehicle.getDvlaVehicleId());
+
+        jsonVehicle.setFirstRegistrationDate(vehicle.getFirstRegistrationDate());
+        jsonVehicle.setManufactureDate(vehicle.getManufactureDate());
+        jsonVehicle.setColour1(vehicle.getColour1().getName());
+        if (vehicle.getColour2() != null) {
+            jsonVehicle.setColour2(vehicle.getColour2().getName());
+        }
+
+        if (vehicle.getModelDetail() != null) {
+            jsonVehicle.setModelDetail(vehicle.getModelDetail().getName());
+
+            if (vehicle.getMakeDetail() != null) {
+                jsonVehicle.setMakeDetail(vehicle.getMakeDetail().getName());
+            }
+        }
+
+        if (vehicle.getBodyTypeCode() != null) {
+            jsonVehicle.setBodyTypeCode(vehicle.getBodyTypeCode());
+        }
+
+        jsonVehicle.setEuClassification(vehicle.getEuClassification());
+
+        jsonVehicle.setLastUpdatedOn(vehicle.getLastUpdatedOn());
+
+        if (vehicle.getPropulsion() != null) {
+            jsonVehicle.setFuelType(vehicle.getPropulsion().getName());
+        }
+
+        return jsonVehicle;
     }
 }

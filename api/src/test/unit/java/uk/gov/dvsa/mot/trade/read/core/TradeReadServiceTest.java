@@ -24,6 +24,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -807,6 +808,65 @@ public class TradeReadServiceTest {
         tradeReadService.getVehiclesByRegistrationAndMake(registration, make);
 
         verify(tradeReadDaoMock).getVehiclesMotTestsByRegistrationAndMake(registration, make);
+    }
+
+    @Test
+    public void getVehiclesByRegistration_GetsVehicleFromDvsaTable() {
+
+        final String registration = "XX99XXX";
+        final uk.gov.dvsa.mot.trade.api.Vehicle vehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
+        vehicle.setRegistration(registration);
+
+        final List<uk.gov.dvsa.mot.trade.api.Vehicle> expectedVehicles = Arrays.asList(vehicle);
+
+        when(tradeReadDaoMock.getVehiclesMotTestsByRegistration(registration)).thenReturn(expectedVehicles);
+
+        List<uk.gov.dvsa.mot.trade.api.Vehicle> returnedVehicles = tradeReadService.getVehiclesByRegistration(registration);
+
+        verify(tradeReadDaoMock).getVehiclesMotTestsByRegistration(registration);
+        assertEquals("It returns one vehicle",returnedVehicles.size(), expectedVehicles.size());
+        assertEquals("It contains vehicle with specified registration",
+                returnedVehicles.get(0).getRegistration(), expectedVehicles.get(0).getRegistration());
+    }
+
+    @Test
+    public void getVehiclesByRegistration_GetsVehicleFromDvlaTable() {
+
+        final String registration = "XX99XXX";
+
+        uk.gov.dvsa.mot.trade.api.Vehicle vehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
+        vehicle.setRegistration(registration);
+
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicle = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
+        dvlaVehicle.setRegistration(registration);
+
+        final List<uk.gov.dvsa.mot.trade.api.Vehicle> expectedVehicles = Arrays.asList(vehicle);
+
+        when(tradeReadDaoMock.getVehiclesMotTestsByRegistration(registration)).thenReturn(Collections.emptyList());
+        when(vehicleReadServiceMock.getDvlaVehicleByRegistration(registration)).thenReturn(dvlaVehicle);
+
+        List<uk.gov.dvsa.mot.trade.api.Vehicle> returnedVehicles = tradeReadService.getVehiclesByRegistration(registration);
+
+        verify(tradeReadDaoMock).getVehiclesMotTestsByRegistration(registration);
+        verify(vehicleReadServiceMock).getDvlaVehicleByRegistration(registration);
+        assertEquals("It returns one vehicle",returnedVehicles.size(), expectedVehicles.size());
+        assertEquals("It contains vehicle with specified registration",
+                returnedVehicles.get(0).getRegistration(), expectedVehicles.get(0).getRegistration());
+    }
+
+    @Test
+    public void getVehiclesByRegistration_NoVehicleFoundInBothTables() {
+
+        final String registration = "XX99XXX";
+
+        final List<uk.gov.dvsa.mot.trade.api.Vehicle> expectedVehicles = Collections.emptyList();
+
+        when(tradeReadDaoMock.getVehiclesMotTestsByRegistration(registration)).thenReturn(Collections.emptyList());
+        when(vehicleReadServiceMock.getDvlaVehicleByRegistration(registration)).thenReturn(null);
+
+        List<uk.gov.dvsa.mot.trade.api.Vehicle> returnedVehicles = tradeReadService.getVehiclesByRegistration(registration);
+
+        assertEquals("It returns no vehicle",returnedVehicles.size(), expectedVehicles.size());
     }
 
     /**

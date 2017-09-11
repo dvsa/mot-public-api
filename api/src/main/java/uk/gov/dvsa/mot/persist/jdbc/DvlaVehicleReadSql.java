@@ -9,6 +9,17 @@ public class DvlaVehicleReadSql {
             "FROM `mot2`.`dvla_vehicle` " +
             "WHERE `dvla_vehicle`.`registration` = ?";
 
+    static final String selectSingleDvlaVehicleByRegistration = "SELECT `dvla_vehicle`.`id`, `dvla_vehicle`.`dvla_vehicle_id`, " +
+            "`dvla_vehicle`.`registration`, `dvla_vehicle`.`model_code`, `dvla_vehicle`.`make_code`, `dvla_vehicle`.`colour_1_code`, " +
+            "`dvla_vehicle`.`colour_2_code`, `dvla_vehicle`.`manufacture_date`, `dvla_vehicle`.`first_registration_date`, " +
+            "`dvla_vehicle`.`eu_classification`, `dvla_vehicle`.`body_type_code`, `dvla_vehicle`.`last_updated_on`, `fuel_type`.`name` " +
+            "FROM `mot2`.`dvla_vehicle` " +
+            "  JOIN `fuel_type` ON `dvla_vehicle`.`propulsion_code` = `fuel_type`.`dvla_propulsion_code` " +
+            "WHERE `dvla_vehicle`.`registration` = ? " +
+            "  AND `dvla_vehicle`.`vehicle_id` IS NULL " +
+            "ORDER BY `dvla_vehicle`.`last_updated_on` DESC " +
+            "LIMIT 1";
+
     static final String selectDvlaVehicleById = "SELECT `dvla_vehicle`.`id`, `dvla_vehicle`.`dvla_vehicle_id`, " +
             "`dvla_vehicle`.`registration`, `dvla_vehicle`.`model_code`, `dvla_vehicle`.`make_code`, `dvla_vehicle`.`colour_1_code`, " +
             "`dvla_vehicle`.`colour_2_code`, `dvla_vehicle`.`manufacture_date`, `dvla_vehicle`.`first_registration_date`, " +

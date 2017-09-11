@@ -124,6 +124,15 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     }
 
     @Override
+    public DvlaVehicle getDvlaVehicleByRegistration(String registration) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<DvlaVehicle> mapper = new DvlaVehicleWithFuelTypeRowMapper();
+
+        return runner.executeQuery(DvlaVehicleReadSql.selectSingleDvlaVehicleByRegistration, mapper, registration);
+    }
+
+    @Override
     public List<DvlaVehicle> getDvlaVehicleByDvlaVehicleId(Integer dvlaVehicleId) {
 
         DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
@@ -574,6 +583,10 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         @Override
         public DvlaVehicle mapRow(ResultSet rs) throws SQLException {
 
+            return mapResultSetToDvlaVehicle(rs);
+        }
+
+        protected DvlaVehicle mapResultSetToDvlaVehicle(ResultSet rs) throws SQLException {
             DvlaVehicle dvlaVehicle = new DvlaVehicle();
 
             dvlaVehicle.setId(rs.getInt(1));
@@ -603,6 +616,20 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
                 dvlaVehicle.setBodyTypeCode(rs.getString(11));
             }
             dvlaVehicle.setLastUpdatedOn(rs.getDate(12));
+
+            return dvlaVehicle;
+        }
+    }
+
+    private class DvlaVehicleWithFuelTypeRowMapper extends DvlaVehicleRowMapper implements ResultSetRowMapper<DvlaVehicle> {
+
+        @Override
+        public DvlaVehicle mapRow(ResultSet rs) throws SQLException {
+
+            DvlaVehicle dvlaVehicle = mapResultSetToDvlaVehicle(rs);
+            FuelType fuelType = new FuelType();
+            fuelType.setName(rs.getString(13));
+            dvlaVehicle.setPropulsion(fuelType);
 
             return dvlaVehicle;
         }

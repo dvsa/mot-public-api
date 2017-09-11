@@ -23,6 +23,7 @@ public class DvlaVehicle {
     private int lastUpdatedBy;
     private Date lastUpdatedOn;
     private int version;
+    private String fuelType;
 
     public int getId() {
 
@@ -180,5 +181,15 @@ public class DvlaVehicle {
 
     public void setBodyTypeCode(String bodyTypeCode) {
         this.bodyTypeCode = bodyTypeCode;
+    }
+
+    public String getFuelType() {
+
+        return fuelType;
+    }
+
+    public void setFuelType(String fuelType) {
+
+        this.fuelType = fuelType;
     }
 }

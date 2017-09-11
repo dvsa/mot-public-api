@@ -72,4 +72,20 @@ public class GetTradeMotTestsByRegistrationAndMake {
             System.out.println(output.toString());
         }
     }
+
+    //integration tests fail on INT environment, but are still useful locally, so I will leave them ignored
+    @Test
+    @Ignore
+    public void testGetTradeMotTestsReturnsDvlaVehicleWhenThereIsNoDvlaVehicle() throws TradeException, IOException {
+        TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
+        Context ctx = createContext();
+
+        TradeServiceRequest input = createInput("REG12X7", null);
+
+        List<Vehicle> output = tradeServiceRequestHandler.getTradeMotTests(input, ctx);
+
+        if (output != null) {
+            System.out.println(output.toString());
+        }
+    }
 }

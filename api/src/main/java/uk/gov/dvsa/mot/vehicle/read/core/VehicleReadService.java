@@ -19,6 +19,8 @@ public interface VehicleReadService {
 
     List<DvlaVehicle> findDvlaVehicleByRegistration(String registration);
 
+    DvlaVehicle getDvlaVehicleByRegistration(String registration);
+
     List<DvlaVehicle> findDvlaVehicleById(Integer dvlaVehicleId);
 
     List<Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber);
