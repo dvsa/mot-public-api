@@ -30,6 +30,8 @@ public class DvlaVehicle implements Serializable {
     private String modelCode;
     private DvlaModel modelDetail;
     private DvlaMake makeDetail;
+    private String dvsaMake;
+    private String dvsaModel;
     private FuelType propulsion;
     private String recentV5DocumentNumber;
     private String registration;
@@ -290,6 +292,26 @@ public class DvlaVehicle implements Serializable {
     public DvlaMake getMakeDetail() {
 
         return makeDetail;
+    }
+
+    public String getDvsaMake() {
+
+        return dvsaMake;
+    }
+
+    public void setDvsaMake(String dvsaMake) {
+
+        this.dvsaMake = dvsaMake;
+    }
+
+    public String getDvsaModel() {
+
+        return dvsaModel;
+    }
+
+    public void setDvsaModel(String dvsaModel) {
+
+        this.dvsaModel = dvsaModel;
     }
 
     public FuelType getPropulsion() {

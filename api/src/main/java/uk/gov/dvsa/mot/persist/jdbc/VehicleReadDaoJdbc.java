@@ -1,5 +1,6 @@
 package uk.gov.dvsa.mot.persist.jdbc;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -593,29 +594,40 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
             dvlaVehicle.setDvlaVehicleId(rs.getInt(2));
             dvlaVehicle.setRegistration(rs.getString(3));
 
-            dvlaVehicle.setModelDetail(getDvlaModelDetailByCode(rs.getString(4), rs.getString(5)));
+            String modelCode = rs.getString(4);
+            String makeCode = rs.getString(5);
 
-            dvlaVehicle.setMakeDetail(getDvlaMakeDetailByCode(rs.getString(5)));
+            if (!Strings.isNullOrEmpty(makeCode)) {
+                dvlaVehicle.setMakeDetail(getDvlaMakeDetailByCode(makeCode));
 
-            dvlaVehicle.setColour1(getColourLookupByCode(rs.getString(6)));
-            if (rs.getString(7) != null) {
-                dvlaVehicle.setColour2(getColourLookupByCode(rs.getString(7)));
+                if (!Strings.isNullOrEmpty(modelCode)) {
+                    dvlaVehicle.setModelDetail(getDvlaModelDetailByCode(modelCode, makeCode));
+                }
+            }
+
+            dvlaVehicle.setDvsaModel(rs.getString(6));
+            dvlaVehicle.setDvsaMake(rs.getString(7));
+            dvlaVehicle.setMakeInFull(rs.getString(8));
+
+            dvlaVehicle.setColour1(getColourLookupByCode(rs.getString(9)));
+            if (rs.getString(10) != null) {
+                dvlaVehicle.setColour2(getColourLookupByCode(rs.getString(10)));
             } else {
                 ColourLookup notStated = new ColourLookup();
                 notStated.setCode("W");
                 dvlaVehicle.setColour2(notStated);
             }
-            dvlaVehicle.setManufactureDate(rs.getDate(8));
-            if (rs.getDate(9) != null) {
-                dvlaVehicle.setFirstRegistrationDate(rs.getDate(9));
+            dvlaVehicle.setManufactureDate(rs.getDate(11));
+            if (rs.getDate(12) != null) {
+                dvlaVehicle.setFirstRegistrationDate(rs.getDate(12));
             }
-            if (rs.getString(10) != null) {
-                dvlaVehicle.setEuClassification(rs.getString(10));
+            if (rs.getString(13) != null) {
+                dvlaVehicle.setEuClassification(rs.getString(13));
             }
-            if (rs.getString(11) != null) {
-                dvlaVehicle.setBodyTypeCode(rs.getString(11));
+            if (rs.getString(14) != null) {
+                dvlaVehicle.setBodyTypeCode(rs.getString(14));
             }
-            dvlaVehicle.setLastUpdatedOn(rs.getDate(12));
+            dvlaVehicle.setLastUpdatedOn(rs.getDate(15));
 
             return dvlaVehicle;
         }
