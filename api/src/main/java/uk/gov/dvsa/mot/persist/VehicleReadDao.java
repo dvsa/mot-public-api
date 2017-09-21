@@ -37,13 +37,13 @@ public interface VehicleReadDao {
 
     List<Vehicle> getVehicleByFullRegistration(String registration);
 
-    List<Vehicle> getVehicleByDvlaVehicleId(Integer dvlaVehicleId);
+    List<Vehicle> getVehicleByDvlaVehicleId(Long dvlaVehicleId);
 
     List<DvlaVehicle> getDvlaVehicleByFullRegistration(String registration);
 
     DvlaVehicle getDvlaVehicleByRegistration(String registration);
 
-    List<DvlaVehicle> getDvlaVehicleByDvlaVehicleId(Integer dvlaVehicleId);
+    List<DvlaVehicle> getDvlaVehicleByDvlaVehicleId(Long dvlaVehicleId);
 
     List<Vehicle> getVehiclesByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber);
 

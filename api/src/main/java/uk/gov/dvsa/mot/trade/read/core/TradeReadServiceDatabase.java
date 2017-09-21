@@ -159,7 +159,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
 
     @Override
     @ProvideDbConnection
-    public uk.gov.dvsa.mot.trade.api.Vehicle getDvlaVehicleById(Integer dvlaVehicleId) {
+    public uk.gov.dvsa.mot.trade.api.Vehicle getDvlaVehicleById(Long dvlaVehicleId) {
 
         List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleById(dvlaVehicleId);
 
@@ -168,7 +168,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
 
     @Override
     @ProvideDbConnection
-    public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByDvlaVehicleId(Integer dvlaVehicleId) {
+    public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByDvlaVehicleId(Long dvlaVehicleId) {
 
         List<Vehicle> vehicles = vehicleReadService.findByDvlaVehicleId(dvlaVehicleId);
 
@@ -408,7 +408,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
         tradeVehicle.setMake(dvlaVehicle.getMakeDetail());
         tradeVehicle.setModel(dvlaVehicle.getModelDetail());
         tradeVehicle.setPrimaryColour(dvlaVehicle.getColour1());
-        tradeVehicle.setDvlaId(Integer.toString(dvlaVehicle.getDvlaVehicleId()));
+        tradeVehicle.setDvlaId(Long.toString(dvlaVehicle.getDvlaVehicleId()));
 
         if (!"Not Stated".equalsIgnoreCase(dvlaVehicle.getColour2())) {
             tradeVehicle.setSecondaryColour(dvlaVehicle.getColour2());

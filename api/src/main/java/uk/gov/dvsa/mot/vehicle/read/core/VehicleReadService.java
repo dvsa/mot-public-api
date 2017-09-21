@@ -15,13 +15,13 @@ public interface VehicleReadService {
 
     List<Vehicle> findByRegistration(String registration);
 
-    List<Vehicle> findByDvlaVehicleId(Integer dvlaVehicleId);
+    List<Vehicle> findByDvlaVehicleId(Long dvlaVehicleId);
 
     List<DvlaVehicle> findDvlaVehicleByRegistration(String registration);
 
     DvlaVehicle getDvlaVehicleByRegistration(String registration);
 
-    List<DvlaVehicle> findDvlaVehicleById(Integer dvlaVehicleId);
+    List<DvlaVehicle> findDvlaVehicleById(Long dvlaVehicleId);
 
     List<Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber);
 

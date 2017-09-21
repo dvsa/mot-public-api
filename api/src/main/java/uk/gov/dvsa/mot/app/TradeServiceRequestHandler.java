@@ -320,7 +320,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
      */
     public Vehicle getLatestMotTestByDvlaVehicleId(TradeServiceRequest request, Context context) throws TradeException {
 
-        Integer dvlaVehicleId = request.getPathParams().getDvlaId();
+        Long dvlaVehicleId = request.getPathParams().getDvlaId();
 
         try {
             logger.trace("Entering getLatestMotTestByDvlaVehicleId");
