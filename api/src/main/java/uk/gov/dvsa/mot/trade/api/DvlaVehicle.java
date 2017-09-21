@@ -7,11 +7,11 @@ import java.util.Date;
  */
 public class DvlaVehicle {
 
-    private int id;
+    private long id;
     private String bodyTypeCode;
     private String colour1;
     private String colour2;
-    private int dvlaVehicleId;
+    private long dvlaVehicleId;
     private String euClassification;
     private Date firstRegistrationDate;
     private Date manufactureDate;
@@ -25,12 +25,12 @@ public class DvlaVehicle {
     private int version;
     private String fuelType;
 
-    public int getId() {
+    public long getId() {
 
         return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
 
         this.id = id;
     }
@@ -75,12 +75,12 @@ public class DvlaVehicle {
         this.createdOn = createdOn;
     }
 
-    public int getDvlaVehicleId() {
+    public long getDvlaVehicleId() {
 
         return this.dvlaVehicleId;
     }
 
-    public void setDvlaVehicleId(int dvlaVehicleId) {
+    public void setDvlaVehicleId(long dvlaVehicleId) {
 
         this.dvlaVehicleId = dvlaVehicleId;
     }

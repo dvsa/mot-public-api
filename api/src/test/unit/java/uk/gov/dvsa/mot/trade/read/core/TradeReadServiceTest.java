@@ -572,7 +572,7 @@ public class TradeReadServiceTest {
     @Test
     public void getLatestMotTestByDvlaVehicleId_ReturnsVehicle_FullyPopulated_WhenMotTestExists() {
 
-        final Integer dvlaVehicleId = 123;
+        final Long dvlaVehicleId = 123L;
         final String registration = "AA00AAA";
         final LocalDateTime expiryDateTime = LocalDateTime.now().plus(Period.ofMonths(6));
         final Date expiryDate = Date.from(expiryDateTime.atZone(ZoneId.systemDefault()).toInstant());
@@ -619,7 +619,7 @@ public class TradeReadServiceTest {
     @Test
     public void getLatestMotTestByDvlaVehicleId_VehicleDoesNotExist_DvlaVehicleDoes() {
 
-        final Integer dvlaVehicleId = 123;
+        final Long dvlaVehicleId = 123L;
         final String registration = "AA00AAA";
         final LocalDateTime manufactureDateTime = LocalDateTime.now().minus(5, ChronoUnit.YEARS);
         final int manufactureYear = manufactureDateTime.getYear();
@@ -658,14 +658,14 @@ public class TradeReadServiceTest {
         assertNotNull("Test expiry date is incorrect", apiVehicle.getMotTestExpiryDate());
         assertNull("Test number is incorrect", apiVehicle.getMotTestNumber());
         assertEquals("Primary colour is incorrect", primaryColour, apiVehicle.getPrimaryColour());
-        assertEquals("DvlaId is incorrect", Integer.toString(dvlaVehicleId), apiVehicle.getDvlaId());
+        assertEquals("DvlaId is incorrect", Long.toString(dvlaVehicleId), apiVehicle.getDvlaId());
         assertEquals("Secondary colour is incorrect", secondaryColour, apiVehicle.getSecondaryColour());
     }
 
     @Test
     public void getLatestMotTestByDvlaVehicleId_VehicleDoesNotExist_DvlaVehicleDoesNotExist() {
 
-        final Integer dvlaVehicleId = 123;
+        final Long dvlaVehicleId = 123L;
 
         when(vehicleReadServiceMock.findByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
 

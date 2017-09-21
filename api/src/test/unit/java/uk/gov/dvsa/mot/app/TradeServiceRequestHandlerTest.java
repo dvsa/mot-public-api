@@ -598,7 +598,7 @@ public class TradeServiceRequestHandlerTest {
     @Test(expected = InvalidResourceException.class)
     public void getLatestMotTestByDvlaVehicleId_VehicleDoesNotExist() throws TradeException {
 
-        final int dvlaVehicleId = 42;
+        final long dvlaVehicleId = 42;
         request.getPathParams().setDvlaId(dvlaVehicleId);
 
         when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
@@ -613,13 +613,13 @@ public class TradeServiceRequestHandlerTest {
     @Test
     public void getLatestMotTestByDvlaVehicleId_ValidDvlaVehicleAndNoMot() throws TradeException {
 
-        final int dvlaVehicleId = 42;
+        final long dvlaVehicleId = 42;
         request.getPathParams().setDvlaId(dvlaVehicleId);
 
         final String registration = "XX89UIP";
         final Vehicle vehicle = new Vehicle();
         vehicle.setRegistration(registration);
-        vehicle.setDvlaId(Integer.toString(dvlaVehicleId));
+        vehicle.setDvlaId(Long.toString(dvlaVehicleId));
 
         when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(vehicle);
 
@@ -635,7 +635,7 @@ public class TradeServiceRequestHandlerTest {
     @Test
     public void getLatestMotTestByMotTestNumber_ValidDvlaVehicleWithPassedMot() throws TradeException {
 
-        final int dvlaVehicleId = 42;
+        final long dvlaVehicleId = 42;
         request.getPathParams().setDvlaId(dvlaVehicleId);
 
         final String registration = "XX89UIP";

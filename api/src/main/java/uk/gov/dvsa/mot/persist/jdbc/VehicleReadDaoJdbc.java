@@ -106,7 +106,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     }
 
     @Override
-    public List<Vehicle> getVehicleByDvlaVehicleId(Integer dvlaVehicleId) {
+    public List<Vehicle> getVehicleByDvlaVehicleId(Long dvlaVehicleId) {
 
         DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
         ResultSetRowMapper<Vehicle> mapper = new VehicleRowMapper();
@@ -133,7 +133,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     }
 
     @Override
-    public List<DvlaVehicle> getDvlaVehicleByDvlaVehicleId(Integer dvlaVehicleId) {
+    public List<DvlaVehicle> getDvlaVehicleByDvlaVehicleId(Long dvlaVehicleId) {
 
         DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
         ResultSetRowMapper<DvlaVehicle> mapper = new DvlaVehicleRowMapper();

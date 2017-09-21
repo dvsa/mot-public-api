@@ -41,7 +41,7 @@ import static uk.gov.dvsa.mot.test.utility.Matchers.isEmpty;
 @RunWith(MockitoJUnitRunner.class)
 public class VehicleReadServiceDatabaseTest {
 
-    private static final Integer DEFAULT_VEHICLE_ID = 1234567;
+    private static final Long DEFAULT_VEHICLE_ID = 1234567L;
     private static final String DEFAULT_REGISTRATION = "ABC123DE";
     private static final String DEFAULT_BODY_TYPE_CODE = "testBodyTypeCode";
     private static final String DEFAULT_COLOR_NAME = "testColor";

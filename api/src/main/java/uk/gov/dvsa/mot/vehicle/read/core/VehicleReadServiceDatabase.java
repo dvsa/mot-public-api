@@ -71,7 +71,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
     @Override
     @ProvideDbConnection
-    public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByDvlaVehicleId(Integer dvlaVehicleId) {
+    public List<uk.gov.dvsa.mot.vehicle.api.Vehicle> findByDvlaVehicleId(Long dvlaVehicleId) {
 
         List<Vehicle> vehicles = vehicleReadDao.getVehicleByDvlaVehicleId(dvlaVehicleId);
 
@@ -98,7 +98,7 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
 
     @Override
     @ProvideDbConnection
-    public List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> findDvlaVehicleById(Integer dvlaVehicleId) {
+    public List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> findDvlaVehicleById(Long dvlaVehicleId) {
 
         List<DvlaVehicle> vehicles = vehicleReadDao.getDvlaVehicleByDvlaVehicleId(dvlaVehicleId);
 
