@@ -407,6 +407,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
         tradeVehicle.setRegistration(dvlaVehicle.getRegistration());
         tradeVehicle.setMake(dvlaVehicle.getMakeDetail());
         tradeVehicle.setModel(dvlaVehicle.getModelDetail());
+        tradeVehicle.setMakeInFull(dvlaVehicle.getMakeInFull());
         tradeVehicle.setPrimaryColour(dvlaVehicle.getColour1());
         tradeVehicle.setDvlaId(Integer.toString(dvlaVehicle.getDvlaVehicleId()));
 

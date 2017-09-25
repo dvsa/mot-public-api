@@ -7,6 +7,7 @@ public class Vehicle {
     protected String registration;
     protected String make;
     protected String model;
+    protected String makeInFull;
     protected String firstUsedDate;
     protected String manufactureDate;
     protected String manufactureYear; // added for motr
@@ -46,6 +47,16 @@ public class Vehicle {
     public void setModel(String model) {
 
         this.model = model;
+    }
+
+    public String getMakeInFull() {
+
+        return makeInFull;
+    }
+
+    public void setMakeInFull(String makeInFull) {
+
+        this.makeInFull = makeInFull;
     }
 
     public String getFirstUsedDate() {

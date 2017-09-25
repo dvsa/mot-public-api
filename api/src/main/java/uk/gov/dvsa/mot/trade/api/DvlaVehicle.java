@@ -17,6 +17,7 @@ public class DvlaVehicle {
     private Date manufactureDate;
     private String modelDetail;
     private String makeDetail;
+    private String makeInFull;
     private String registration;
     private int createdBy;
     private Date createdOn;
@@ -153,6 +154,16 @@ public class DvlaVehicle {
     public String getMakeDetail() {
 
         return makeDetail;
+    }
+
+    public String getMakeInFull() {
+
+        return makeInFull;
+    }
+
+    public void setMakeInFull(String makeInFull) {
+
+        this.makeInFull = makeInFull;
     }
 
     public String getRegistration() {

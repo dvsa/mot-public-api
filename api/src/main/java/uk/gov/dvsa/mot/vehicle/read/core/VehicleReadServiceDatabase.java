@@ -1,5 +1,6 @@
 package uk.gov.dvsa.mot.vehicle.read.core;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
 import uk.gov.dvsa.mot.persist.ProvideDbConnection;
@@ -16,6 +17,9 @@ import javax.annotation.Resource;
 
 @Resource
 public class VehicleReadServiceDatabase implements VehicleReadService {
+    
+    public static final String UNKNOWN_VALUE = "unknown";
+
     private final VehicleReadDao vehicleReadDao;
 
     @Inject
@@ -263,12 +267,22 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
             jsonVehicle.setColour2(vehicle.getColour2().getName());
         }
 
-        if (vehicle.getModelDetail() != null) {
-            jsonVehicle.setModelDetail(vehicle.getModelDetail().getName());
+        if (!Strings.isNullOrEmpty(vehicle.getDvsaMake()) && !Strings.isNullOrEmpty(vehicle.getDvsaModel())) {
+            jsonVehicle.setMakeDetail(vehicle.getDvsaMake());
+            jsonVehicle.setModelDetail(vehicle.getDvsaModel());
 
+        } else {
             if (vehicle.getMakeDetail() != null) {
                 jsonVehicle.setMakeDetail(vehicle.getMakeDetail().getName());
             }
+
+            if (vehicle.getModelDetail() != null) {
+                jsonVehicle.setModelDetail(vehicle.getModelDetail().getName());
+            }
+        }
+
+        if (isValueNullOrUnknown(jsonVehicle.getMakeDetail()) && isValueNullOrUnknown(jsonVehicle.getModelDetail())) {
+            jsonVehicle.setMakeInFull(vehicle.getMakeInFull());
         }
 
         if (vehicle.getBodyTypeCode() != null) {
@@ -284,5 +298,14 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
         }
 
         return jsonVehicle;
+    }
+
+    private boolean isValueNullOrUnknown(String value) {
+
+        if (value == null) {
+            return true;
+        }
+
+        return UNKNOWN_VALUE.equalsIgnoreCase(value.trim());
     }
 }
