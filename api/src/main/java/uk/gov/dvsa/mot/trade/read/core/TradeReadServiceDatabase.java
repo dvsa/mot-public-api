@@ -42,7 +42,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
 
     @Inject
     public TradeReadServiceDatabase(MotTestReadService motTestReadService, VehicleReadService vehicleReadService,
-            TradeReadDao tradeReadDao) {
+                                    TradeReadDao tradeReadDao) {
 
         this.vehicleReadService = vehicleReadService;
         this.motTestReadService = motTestReadService;
@@ -130,12 +130,13 @@ public class TradeReadServiceDatabase implements TradeReadService {
     public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByRegistration(String registration) {
 
         List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
+        VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
 
-        if (CollectionUtils.isNullOrEmpty(vehicles)) {
+        if (vehicleAndLatestMot == null || !vehicleAndLatestMot.hasMotTest()) {
             return getDvlaVehicleByRegistration(registration);
         }
 
-        return getLatestMotTestPassAndMapToTradeVehicle(vehicles);
+        return mapToTradeVehicle(vehicleAndLatestMot);
     }
 
     @Override
@@ -171,14 +172,13 @@ public class TradeReadServiceDatabase implements TradeReadService {
     public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByDvlaVehicleId(Integer dvlaVehicleId) {
 
         List<Vehicle> vehicles = vehicleReadService.findByDvlaVehicleId(dvlaVehicleId);
+        VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
 
-        uk.gov.dvsa.mot.trade.api.Vehicle vehicle = getLatestMotTestPassAndMapToTradeVehicle(vehicles);
-
-        if (vehicle == null) {
-            vehicle = getDvlaVehicleById(dvlaVehicleId);
+        if (vehicleAndLatestMot == null || !vehicleAndLatestMot.hasMotTest()) {
+            return getDvlaVehicleById(dvlaVehicleId);
         }
 
-        return vehicle;
+        return mapToTradeVehicle(vehicleAndLatestMot);
     }
 
     /*
@@ -192,8 +192,11 @@ public class TradeReadServiceDatabase implements TradeReadService {
     public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber) {
 
         List<Vehicle> vehicles = vehicleReadService.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
-
-        return getLatestMotTestPassAndMapToTradeVehicle(vehicles);
+        VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
+        if (vehicleAndLatestMot == null) {
+            return null;
+        }
+        return mapToTradeVehicle(vehicleAndLatestMot);
     }
 
     /*
@@ -422,53 +425,93 @@ public class TradeReadServiceDatabase implements TradeReadService {
         return tradeVehicle;
     }
 
-    private uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestPassAndMapToTradeVehicle(List<Vehicle> vehicles) {
+    private VehicleAndLatestMot getVehicleAndLatestMotTestPass(List<Vehicle> vehicles) {
 
-        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = null;
+        if (CollectionUtils.isNullOrEmpty(vehicles)) {
+            return null;
+        }
 
-        if (!CollectionUtils.isNullOrEmpty(vehicles)) {
-            Vehicle vehicle = null;
-            MotTest motTest = null;
+        Vehicle vehicle = null;
+        MotTest motTest = null;
 
-            for (Vehicle v : vehicles) {
-                MotTest mt = motTestReadService.getLatestMotTestPassByVehicle(v);
+        for (Vehicle v : vehicles) {
+            MotTest mt = motTestReadService.getLatestMotTestPassByVehicle(v);
 
-                // If the vehicle or MOT hasn't been set yet
-                // or the latest expiryDate is after the current Expiry date
-                if ((vehicle == null || motTest == null || motTest.getExpiryDate() == null)
-                        || (mt != null && (mt.getExpiryDate() != null && mt.getExpiryDate().after(motTest.getExpiryDate())))) {
-                    vehicle = v;
-                    motTest = mt;
-                }
+            // If the vehicle or MOT hasn't been set yet
+            // or the latest expiryDate is after the current Expiry date
+            if ((vehicle == null || motTest == null || motTest.getExpiryDate() == null)
+                    || (mt != null && (mt.getExpiryDate() != null && mt.getExpiryDate().after(motTest.getExpiryDate())))) {
+                vehicle = v;
+                motTest = mt;
+            }
+        }
+
+        return new VehicleAndLatestMot(vehicle, motTest);
+    }
+
+    private uk.gov.dvsa.mot.trade.api.Vehicle mapToTradeVehicle(VehicleAndLatestMot vehicleAndLatestMot) {
+
+        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
+        Vehicle vehicle = vehicleAndLatestMot.getVehicle();
+        MotTest motTest = vehicleAndLatestMot.getMotTest();
+
+        if (vehicle != null) {
+            tradeVehicle.setRegistration(vehicle.getRegistration());
+            tradeVehicle.setMake(vehicle.getMake());
+            tradeVehicle.setModel(vehicle.getModel());
+            tradeVehicle.setPrimaryColour(vehicle.getPrimaryColour());
+
+            if (!"Not Stated".equalsIgnoreCase(vehicle.getSecondaryColour())) {
+                tradeVehicle.setSecondaryColour(vehicle.getSecondaryColour());
             }
 
-            tradeVehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
-
-            if (vehicle != null) {
-                tradeVehicle.setRegistration(vehicle.getRegistration());
-                tradeVehicle.setMake(vehicle.getMake());
-                tradeVehicle.setModel(vehicle.getModel());
-                tradeVehicle.setPrimaryColour(vehicle.getPrimaryColour());
-
-                if (!"Not Stated".equalsIgnoreCase(vehicle.getSecondaryColour())) {
-                    tradeVehicle.setSecondaryColour(vehicle.getSecondaryColour());
-                }
-
-                if (vehicle.getManufactureDate() != null) {
-                    tradeVehicle.setManufactureYear(SDF_YEAR.format(vehicle.getManufactureDate()));
-                }
+            if (vehicle.getManufactureDate() != null) {
+                tradeVehicle.setManufactureYear(SDF_YEAR.format(vehicle.getManufactureDate()));
             }
+        }
 
-            if (motTest != null) {
-                if (motTest.getExpiryDate() != null) {
-                    tradeVehicle.setMotTestExpiryDate(SDF_DATE_ISO_8601.format(motTest.getExpiryDate()));
-                }
-                if (motTest.getNumber() != null) {
-                    tradeVehicle.setMotTestNumber(motTest.getNumber().toString());
-                }
+        if (motTest != null) {
+            if (motTest.getExpiryDate() != null) {
+                tradeVehicle.setMotTestExpiryDate(SDF_DATE_ISO_8601.format(motTest.getExpiryDate()));
+            }
+            if (motTest.getNumber() != null) {
+                tradeVehicle.setMotTestNumber(motTest.getNumber().toString());
             }
         }
 
         return tradeVehicle;
+    }
+
+    private class VehicleAndLatestMot {
+
+        private Vehicle vehicle;
+        private MotTest mot;
+
+        public VehicleAndLatestMot(Vehicle vehicle, MotTest mot) {
+            this.vehicle = vehicle;
+            this.mot = mot;
+        }
+
+        public VehicleAndLatestMot setVehicle(Vehicle vehicle) {
+            this.vehicle = vehicle;
+            return this;
+        }
+
+        public VehicleAndLatestMot setMot(MotTest mot) {
+            this.mot = mot;
+            return this;
+        }
+
+        public Vehicle getVehicle() {
+            return vehicle;
+        }
+
+        public MotTest getMotTest() {
+            return mot;
+        }
+
+        public boolean hasMotTest() {
+            return mot != null;
+        }
     }
 }
