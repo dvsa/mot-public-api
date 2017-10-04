@@ -498,7 +498,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         ResultSetRowMapper<MotTestRfrMapCustomDescription> mapper = rs -> {
             MotTestRfrMapCustomDescription motTestRfrMapCustomDescription = new MotTestRfrMapCustomDescription();
 
-            motTestRfrMapCustomDescription.setId(rs.getInt(1));
+            motTestRfrMapCustomDescription.setId(rs.getLong(1));
             motTestRfrMapCustomDescription.setMotTestCurrentRfrMap(parent);
             motTestRfrMapCustomDescription.setCustomDescription(rs.getString(2));
             motTestRfrMapCustomDescription.setCreatedBy(rs.getInt(3));
