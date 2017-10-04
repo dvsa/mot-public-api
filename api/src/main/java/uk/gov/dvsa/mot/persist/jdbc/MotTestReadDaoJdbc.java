@@ -476,7 +476,7 @@ public class MotTestReadDaoJdbc implements MotTestReadDao {
         ResultSetRowMapper<MotTestRfrMapComment> mapper = rs -> {
             MotTestRfrMapComment motTestRfrMapComment = new MotTestRfrMapComment();
 
-            motTestRfrMapComment.setId(rs.getInt(1));
+            motTestRfrMapComment.setId(rs.getLong(1));
             motTestRfrMapComment.setMotTestCurrentRfrMap(parent);
             motTestRfrMapComment.setComment(rs.getString(2));
             motTestRfrMapComment.setCreatedBy(rs.getInt(3));
