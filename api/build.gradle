@@ -5,13 +5,15 @@ group 'uk.gov.dvsa.mot'
 
 buildscript {
     repositories {
+        mavenCentral()
+        mavenLocal()
         maven {
-            url "https://maven.eveoh.nl/content/repositories/releases"
+            url "https://plugins.gradle.org/m2/"
         }
     }
 
     dependencies {
-        classpath "nl.eveoh:gradle-aspectj:1.6"
+        classpath "gradle.plugin.aspectj:gradle-aspectj:0.1.6"
     }
 }
 
@@ -19,7 +21,7 @@ project.ext {
     aspectjVersion = '1.8.10'
 }
 
-apply plugin: 'aspectj'
+apply plugin: 'aspectj.gradle'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
