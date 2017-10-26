@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -26,23 +27,29 @@ import static org.mockito.Mockito.when;
 import static uk.gov.dvsa.mot.test.utility.Matchers.hasSize;
 
 public class VehicleResultSetExtractorTest {
-    private final int vehicleIdIndex = 1;
-    private final int motTestIdIndex = 2;
-    private final int motTestRfrMapIdIndex = 3;
-    private final int registrationIndex = 4;
-    private final int makeIndex = 5;
-    private final int modelIndex = 6;
-    private final int firstUsedDateIndex = 7;
-    private final int fuelTypeIndex = 8;
-    private final int primaryColourIndex = 9;
-    private final int motCompletionDateIndex = 12;
-    private final int testResultIndex = 13;
-    private final int motExpiryDateIndex = 14;
-    private final int odometerReadingIndex = 15;
-    private final int odometerUnitIndex = 16;
-    private final int motTestNumberIndex = 18;
-    private final int rfrTypeIndex = 19;
-    private final int rfrTextIndex = 20;
+
+    private static final String VEHICLE_ID = "vehicle_id";
+    private static final String MOT_TEST_ID = "mot_test_id";
+    private static final String RFR_MAP_ID = "rfrmap_id";
+    private static final String REGISTRATION = "registration";
+    private static final String MAKE = "make_name";
+    private static final String MODEL = "model_name";
+    private static final String FIRST_USED_DATE = "first_used_date";
+    private static final String FUEL_TYPE = "fuel_type";
+    private static final String PRIMARY_COLOUR = "primary_colour";
+    private static final String SECONDARY_COLOUR = "secondary_colour";
+    private static final String MOT_START_DATE = "started_date";
+    private static final String MOT_COMPLETED_DATE = "mot_test_completed_date";
+    private static final String MOT_TEST_RESULT = "test_result";
+    private static final String MOT_EXPIRY_DATE = "expiry_date";
+    private static final String ODOMETER_VALUE = "odometer_value";
+    private static final String ODOMETER_UNIT = "odometer_unit";
+    private static final String ODOMETER_RESULT_TYPE = "odometer_result_type";
+    private static final String MOT_TEST_NUMBER = "mot_test_number";
+    private static final String RFR_TYPE = "rfr_type";
+    private static final String RFR_TEXT = "rfr_and_comments";
+    private static final String RFR_DANGEROUS = "rfr_dangerous";
+
     private final int vehicleId1 = 234; // 1
     private final int vehicleId2 = 822; // 1
     private final long motTestId1 = 7891234; // 2
@@ -68,6 +75,7 @@ public class VehicleResultSetExtractorTest {
     private final BigDecimal motTestNumber = BigDecimal.valueOf(89723948L); // 18
     private final String rfrType = "ADVISORY"; // 19
     private final String rfrText = "Too shiny"; // 20
+    private final boolean rfrDangerous = true; // 21
 
     {
         LocalDateTime firstUsedDateTime = LocalDateTime.now().minusYears(5);
@@ -158,6 +166,7 @@ public class VehicleResultSetExtractorTest {
         RfrAndAdvisoryItem rfr = test.getRfrAndComments().get(0);
         assertThat(rfr.getType(), equalTo(rfrType));
         assertThat(rfr.getText(), equalTo(rfrText));
+        assertThat(rfr.isDangerous(), equalTo(rfrDangerous));
     }
 
     private void assertMinimalVehicleIsCorrect(Vehicle vehicle) {
@@ -190,26 +199,27 @@ public class VehicleResultSetExtractorTest {
 
         // but each one can be the same, for simplicity, except vehicleID because
         // there's logic around that in the mapper
-        when(mockResultSet.getInt(vehicleIdIndex)).thenReturn(vehicleId1).thenReturn(vehicleId2);
-        when(mockResultSet.getLong(motTestIdIndex)).thenReturn(motTestId1).thenReturn(motTestId2);
-        when(mockResultSet.getLong(motTestRfrMapIdIndex)).thenReturn(motTestRfrMapId);
-        when(mockResultSet.getString(registrationIndex)).thenReturn(registration);
-        when(mockResultSet.getString(makeIndex)).thenReturn(make);
-        when(mockResultSet.getString(modelIndex)).thenReturn(model);
-        when(mockResultSet.getDate(firstUsedDateIndex)).thenReturn(firstUsedDate);
-        when(mockResultSet.getTimestamp(firstUsedDateIndex)).thenReturn(firstUsedTimestamp);
-        when(mockResultSet.getString(fuelTypeIndex)).thenReturn(fuelType);
-        when(mockResultSet.getString(primaryColourIndex)).thenReturn(primaryColour);
-        when(mockResultSet.getTimestamp(motCompletionDateIndex)).thenReturn(motCompletionTimestamp);
-        when(mockResultSet.getDate(motCompletionDateIndex)).thenReturn(motCompletionDate);
-        when(mockResultSet.getString(testResultIndex)).thenReturn(testResult);
-        when(mockResultSet.getTimestamp(motExpiryDateIndex)).thenReturn(motExpiryTimestamp);
-        when(mockResultSet.getDate(motExpiryDateIndex)).thenReturn(motExpiryDate);
-        when(mockResultSet.getInt(odometerReadingIndex)).thenReturn(odometerReading);
-        when(mockResultSet.getString(odometerUnitIndex)).thenReturn(odometerUnit);
-        when(mockResultSet.getBigDecimal(motTestNumberIndex)).thenReturn(motTestNumber);
-        when(mockResultSet.getString(rfrTypeIndex)).thenReturn(rfrType);
-        when(mockResultSet.getString(rfrTextIndex)).thenReturn(rfrText);
+        when(mockResultSet.getInt(VEHICLE_ID)).thenReturn(vehicleId1).thenReturn(vehicleId2);
+        when(mockResultSet.getLong(MOT_TEST_ID)).thenReturn(motTestId1).thenReturn(motTestId2);
+        when(mockResultSet.getLong(RFR_MAP_ID)).thenReturn(motTestRfrMapId);
+        when(mockResultSet.getString(REGISTRATION)).thenReturn(registration);
+        when(mockResultSet.getString(MAKE)).thenReturn(make);
+        when(mockResultSet.getString(MODEL)).thenReturn(model);
+        when(mockResultSet.getDate(FIRST_USED_DATE)).thenReturn(firstUsedDate);
+        when(mockResultSet.getTimestamp(FIRST_USED_DATE)).thenReturn(firstUsedTimestamp);
+        when(mockResultSet.getString(FUEL_TYPE)).thenReturn(fuelType);
+        when(mockResultSet.getString(PRIMARY_COLOUR)).thenReturn(primaryColour);
+        when(mockResultSet.getTimestamp(MOT_COMPLETED_DATE)).thenReturn(motCompletionTimestamp);
+        when(mockResultSet.getDate(MOT_COMPLETED_DATE)).thenReturn(motCompletionDate);
+        when(mockResultSet.getString(MOT_TEST_RESULT)).thenReturn(testResult);
+        when(mockResultSet.getTimestamp(MOT_EXPIRY_DATE)).thenReturn(motExpiryTimestamp);
+        when(mockResultSet.getDate(MOT_EXPIRY_DATE)).thenReturn(motExpiryDate);
+        when(mockResultSet.getInt(ODOMETER_VALUE)).thenReturn(odometerReading);
+        when(mockResultSet.getString(ODOMETER_UNIT)).thenReturn(odometerUnit);
+        when(mockResultSet.getBigDecimal(MOT_TEST_NUMBER)).thenReturn(motTestNumber);
+        when(mockResultSet.getString(RFR_TYPE)).thenReturn(rfrType);
+        when(mockResultSet.getString(RFR_TEXT)).thenReturn(rfrText);
+        when(mockResultSet.getBoolean(RFR_DANGEROUS)).thenReturn(rfrDangerous);
 
         return mockResultSet;
     }
@@ -223,20 +233,21 @@ public class VehicleResultSetExtractorTest {
 
         // but each one can be the same, for simplicity, except vehicleID because
         // there's logic around that in the mapper
-        when(mockResultSet.getInt(vehicleIdIndex)).thenReturn(vehicleId1).thenReturn(vehicleId2);
-        when(mockResultSet.getLong(motTestIdIndex)).thenReturn(motTestId1).thenReturn(motTestId2);
-        when(mockResultSet.getLong(motTestRfrMapIdIndex)).thenReturn(0L);
-        when(mockResultSet.getString(registrationIndex)).thenReturn(registration);
-        when(mockResultSet.getString(makeIndex)).thenReturn(make);
-        when(mockResultSet.getString(modelIndex)).thenReturn(model);
-        when(mockResultSet.getString(fuelTypeIndex)).thenReturn(fuelType);
-        when(mockResultSet.getString(primaryColourIndex)).thenReturn(primaryColour);
-        when(mockResultSet.getString(testResultIndex)).thenReturn(testResult);
-        when(mockResultSet.getInt(odometerReadingIndex)).thenReturn(odometerReading);
-        when(mockResultSet.getString(odometerUnitIndex)).thenReturn(odometerUnit);
-        when(mockResultSet.getBigDecimal(motTestNumberIndex)).thenReturn(motTestNumber);
-        when(mockResultSet.getString(rfrTypeIndex)).thenReturn(rfrType);
-        when(mockResultSet.getString(rfrTextIndex)).thenReturn(rfrText);
+        when(mockResultSet.getInt(VEHICLE_ID)).thenReturn(vehicleId1).thenReturn(vehicleId2);
+        when(mockResultSet.getLong(MOT_TEST_ID)).thenReturn(motTestId1).thenReturn(motTestId2);
+        when(mockResultSet.getLong(RFR_MAP_ID)).thenReturn(0L);
+        when(mockResultSet.getString(REGISTRATION)).thenReturn(registration);
+        when(mockResultSet.getString(MAKE)).thenReturn(make);
+        when(mockResultSet.getString(MODEL)).thenReturn(model);
+        when(mockResultSet.getString(FUEL_TYPE)).thenReturn(fuelType);
+        when(mockResultSet.getString(PRIMARY_COLOUR)).thenReturn(primaryColour);
+        when(mockResultSet.getString(MOT_TEST_RESULT)).thenReturn(testResult);
+        when(mockResultSet.getInt(ODOMETER_VALUE)).thenReturn(odometerReading);
+        when(mockResultSet.getString(ODOMETER_UNIT)).thenReturn(odometerUnit);
+        when(mockResultSet.getBigDecimal(MOT_TEST_NUMBER)).thenReturn(motTestNumber);
+        when(mockResultSet.getString(RFR_TYPE)).thenReturn(rfrType);
+        when(mockResultSet.getString(RFR_TEXT)).thenReturn(rfrText);
+        when(mockResultSet.getBoolean(RFR_DANGEROUS)).thenReturn(rfrDangerous);
 
         return mockResultSet;
     }

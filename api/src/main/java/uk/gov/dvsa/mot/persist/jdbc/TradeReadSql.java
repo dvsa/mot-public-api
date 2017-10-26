@@ -36,7 +36,8 @@ public class TradeReadSql {
                     + "  COALESCE(`rfrmap_comment`.`comment`, ''))), "
                     + "  CASE "
                     + "  WHEN `rfr`.`inspection_manual_reference` IS NOT NULL THEN "
-                    + "  CONCAT(' (', `rfr`.`inspection_manual_reference`, ')') ELSE ' ' END)) `rfr_and_comments` ";
+                    + "  CONCAT(' (', `rfr`.`inspection_manual_reference`, ')') ELSE ' ' END)) `rfr_and_comments` "
+                    + ", `rfrmap`.`failure_dangerous` AS `rfr_dangerous` ";
 
     static final String FROM_MOT_TEST_CURRENT = "FROM    `mot2`.`mot_test_current` AS `mot_test` ";
     static final String JOIN_MOT_TEST_CURRENT_RFR_MAP = "LEFT JOIN `mot2`.`mot_test_current_rfr_map` AS `rfrmap` ON `rfrmap`" +
