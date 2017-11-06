@@ -4,6 +4,7 @@ public class RfrAndAdvisoryItem {
 
     private String text;
     private String type;
+    private boolean dangerous;
 
     public RfrAndAdvisoryItem() {
 
@@ -28,6 +29,17 @@ public class RfrAndAdvisoryItem {
     public RfrAndAdvisoryItem setType(String type) {
 
         this.type = type;
+        return this;
+    }
+
+    public boolean isDangerous() {
+
+        return dangerous;
+    }
+
+    public RfrAndAdvisoryItem setDangerous(boolean dangerous) {
+
+        this.dangerous = dangerous;
         return this;
     }
 }

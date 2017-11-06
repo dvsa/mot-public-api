@@ -11,6 +11,7 @@ public class MotTest {
     protected String expiryDate;
     protected String odometerValue;
     protected String odometerUnit;
+    protected String odometerResultType;
     protected String motTestNumber;
     protected List<RfrAndAdvisoryItem> rfrAndComments;
 
@@ -62,6 +63,16 @@ public class MotTest {
     public void setOdometerUnit(String odometerUnit) {
 
         this.odometerUnit = odometerUnit;
+    }
+
+    public String getOdometerResultType() {
+
+        return odometerResultType;
+    }
+
+    public void setOdometerResultType(String odometerResultType) {
+
+        this.odometerResultType = odometerResultType;
     }
 
     public String getMotTestNumber() {

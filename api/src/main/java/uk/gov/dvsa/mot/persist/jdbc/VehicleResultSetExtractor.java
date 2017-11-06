@@ -10,11 +10,44 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VehicleResultSetExtractor implements ResultSetExtractor<List<Vehicle>> {
     private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy.MM.dd");
     private static final SimpleDateFormat SDF_DATE_TIME = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+
+    private static final Map<String, String> ODOMETER_RESULT_TYPE_MAP;
+    
+    static {
+        ODOMETER_RESULT_TYPE_MAP = new HashMap<>();
+        ODOMETER_RESULT_TYPE_MAP.put("OK", "READ");
+        ODOMETER_RESULT_TYPE_MAP.put("NOT_READ", "UNREADABLE");
+        ODOMETER_RESULT_TYPE_MAP.put("NO_METER", "NO_ODOMETER");
+    }
+
+    private static final String VEHICLE_ID = "vehicle_id";
+    private static final String MOT_TEST_ID = "mot_test_id";
+    private static final String RFR_MAP_ID = "rfrmap_id";
+    private static final String REGISTRATION = "registration";
+    private static final String MAKE = "make_name";
+    private static final String MODEL = "model_name";
+    private static final String FIRST_USED_DATE = "first_used_date";
+    private static final String FUEL_TYPE = "fuel_type";
+    private static final String PRIMARY_COLOUR = "primary_colour";
+    private static final String SECONDARY_COLOUR = "secondary_colour";
+    private static final String MOT_START_DATE = "started_date";
+    private static final String MOT_COMPLETED_DATE = "mot_test_completed_date";
+    private static final String MOT_TEST_RESULT = "test_result";
+    private static final String MOT_EXPIRY_DATE = "expiry_date";
+    private static final String ODOMETER_VALUE = "odometer_value";
+    private static final String ODOMETER_UNIT = "odometer_unit";
+    private static final String ODOMETER_RESULT_TYPE = "odometer_result_type";
+    private static final String MOT_TEST_NUMBER = "mot_test_number";
+    private static final String RFR_TYPE = "rfr_type";
+    private static final String RFR_TEXT = "rfr_and_comments";
+    private static final String RFR_DANGEROUS = "rfr_dangerous";
 
     @Override
     public List<Vehicle> extractData(ResultSet rs) throws SQLException {
@@ -30,9 +63,9 @@ public class VehicleResultSetExtractor implements ResultSetExtractor<List<Vehicl
 
         try {
             while (rs.next()) {
-                int currVehicleId = rs.getInt(1);
-                long currMotTestId = rs.getLong(2);
-                long currMotTestRfrMapId = rs.getLong(3);
+                int currVehicleId = rs.getInt(VEHICLE_ID);
+                long currMotTestId = rs.getLong(MOT_TEST_ID);
+                long currMotTestRfrMapId = rs.getLong(RFR_MAP_ID);
 
                 if (currVehicleId != vehicleId) {
                     vehicleId = currVehicleId;
@@ -43,16 +76,14 @@ public class VehicleResultSetExtractor implements ResultSetExtractor<List<Vehicl
 
                     vehicles.add(vehicle);
 
-                    // vehicle.setId( vehicleId );
-                    vehicle.setRegistration(rs.getString(4));
-                    vehicle.setMake(rs.getString(5));
-                    vehicle.setModel(rs.getString(6));
-                    if (rs.getDate(7) != null) {
-                        vehicle.setFirstUsedDate(SDF_DATE.format(rs.getTimestamp(7)));
+                    vehicle.setRegistration(rs.getString(REGISTRATION));
+                    vehicle.setMake(rs.getString(MAKE));
+                    vehicle.setModel(rs.getString(MODEL));
+                    if (rs.getDate(FIRST_USED_DATE) != null) {
+                        vehicle.setFirstUsedDate(SDF_DATE.format(rs.getTimestamp(FIRST_USED_DATE)));
                     }
-                    vehicle.setFuelType(rs.getString(8));
-                    vehicle.setPrimaryColour(rs.getString(9));
-                    // field 10 secondary colour not used
+                    vehicle.setFuelType(rs.getString(FUEL_TYPE));
+                    vehicle.setPrimaryColour(rs.getString(PRIMARY_COLOUR));
                 }
 
                 if (currMotTestId != motTestId) {
@@ -63,26 +94,27 @@ public class VehicleResultSetExtractor implements ResultSetExtractor<List<Vehicl
                     motTest.setRfrAndComments(rfrAndAdvisoryItems);
 
                     motTests.add(motTest);
-
-                    // motTest.setId( currMotTestId ) ;
-                    // field 11 - started date not used
-                    if (rs.getDate(12) != null) {
-                        motTest.setCompletedDate(SDF_DATE_TIME.format(rs.getTimestamp(12)));
+                    
+                    if (rs.getDate(MOT_COMPLETED_DATE) != null) {
+                        motTest.setCompletedDate(SDF_DATE_TIME.format(rs.getTimestamp(MOT_COMPLETED_DATE)));
                     }
-                    motTest.setTestResult(rs.getString(13));
-                    if (rs.getDate(14) != null) {
-                        motTest.setExpiryDate(SDF_DATE.format(rs.getTimestamp(14)));
+                    motTest.setTestResult(rs.getString(MOT_TEST_RESULT));
+                    if (rs.getDate(MOT_EXPIRY_DATE) != null) {
+                        motTest.setExpiryDate(SDF_DATE.format(rs.getTimestamp(MOT_EXPIRY_DATE)));
                     }
-                    motTest.setOdometerValue(String.valueOf(rs.getInt(15)));
-                    motTest.setOdometerUnit(rs.getString(16));
-                    // field 17 - odometer result type not used
-                    motTest.setMotTestNumber(String.valueOf(rs.getBigDecimal(18)));
+                    motTest.setOdometerValue(String.valueOf(rs.getInt(ODOMETER_VALUE)));
+                    motTest.setOdometerUnit(rs.getString(ODOMETER_UNIT));
+                    if (rs.getString(ODOMETER_RESULT_TYPE) != null) {
+                        motTest.setOdometerResultType(ODOMETER_RESULT_TYPE_MAP.get(rs.getString(ODOMETER_RESULT_TYPE)));
+                    }
+                    motTest.setMotTestNumber(String.valueOf(rs.getBigDecimal(MOT_TEST_NUMBER)));
                 }
 
                 if (currMotTestRfrMapId != 0) {
                     RfrAndAdvisoryItem rfrAndAdvisoryItem = new RfrAndAdvisoryItem();
-                    rfrAndAdvisoryItem.setType(rs.getString(19));
-                    rfrAndAdvisoryItem.setText(rs.getString(20));
+                    rfrAndAdvisoryItem.setType(rs.getString(RFR_TYPE));
+                    rfrAndAdvisoryItem.setText(rs.getString(RFR_TEXT));
+                    rfrAndAdvisoryItem.setDangerous(rs.getBoolean(RFR_DANGEROUS));
                     rfrAndAdvisoryItems.add(rfrAndAdvisoryItem);
                 }
             }
