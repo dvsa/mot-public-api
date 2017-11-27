@@ -1,5 +1,7 @@
 package uk.gov.dvsa.mot.trade.api;
 
+import com.google.common.base.Strings;
+
 import java.util.Arrays;
 
 public class TradeServiceRequest {
@@ -7,6 +9,8 @@ public class TradeServiceRequest {
     private Header[] header;
     private MotTestQueryParams queryParams = new MotTestQueryParams();
     private MotTestPathParams pathParams = new MotTestPathParams();
+
+    private String requestId;
 
     @Override
     public String toString() {
@@ -18,6 +22,36 @@ public class TradeServiceRequest {
                 ", pathParams=" + pathParams +
                 '}';
     }
+
+    public Long confirmValidLong(String longString, String message) throws BadRequestException {
+
+        if (Strings.isNullOrEmpty(longString)) {
+            return null;
+        }
+        try {
+            return Long.parseLong(longString);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException(message + ": " + longString, requestId);
+        }
+    }
+
+    public Integer confirmValidInteger(String integerString, String message) throws BadRequestException {
+
+        if (Strings.isNullOrEmpty(integerString)) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(integerString);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException(message + ": " + integerString, requestId);
+        }
+    }
+
+    public void setRequestId(String requestId) {
+
+        this.requestId = requestId;
+    }
+
 
     public String getMethod() {
 
@@ -69,24 +103,31 @@ public class TradeServiceRequest {
         queryParams.id = id;
     }
 
-    public Long getNumber() {
+    public Long getNumber() throws BadRequestException {
 
-        return queryParams.number;
+        return confirmValidLong(queryParams.number, "Invalid MOT number");
+
+    }
+
+    public Long getPathNumber() throws BadRequestException {
+
+        return confirmValidLong(pathParams.number, "Invalid MOT number");
+
     }
 
     public void setNumber(Long number) {
 
-        queryParams.number = number;
+        queryParams.number = number.toString();
     }
 
-    public Integer getVehicleId() {
+    public Integer getVehicleId() throws BadRequestException {
 
-        return queryParams.vehicleId;
+        return confirmValidInteger(queryParams.vehicleId, "Invalid vehicle id");
     }
 
     public void setVehicleId(Integer vehicleId) {
 
-        queryParams.vehicleId = vehicleId;
+        queryParams.vehicleId = vehicleId.toString();
     }
 
     public String getRegistration() {
@@ -119,14 +160,14 @@ public class TradeServiceRequest {
         queryParams.date = date;
     }
 
-    public Integer getPage() {
+    public Integer getPage() throws BadRequestException {
 
-        return queryParams.page;
+        return confirmValidInteger(queryParams.page, "Invalid page");
     }
 
     public void setPage(Integer page) {
 
-        queryParams.page = page;
+        queryParams.page = page.toString();
     }
 
     public Integer getPages() {
@@ -165,13 +206,14 @@ public class TradeServiceRequest {
     }
 
     public class MotTestQueryParams {
+
         private Long id;
-        private Long number;
-        private Integer vehicleId;
+        private String number;
+        private String vehicleId;
         private String registration;
         private String make;
         private String date;
-        private Integer page;
+        private String page;
         private Integer pages;
 
         public Long getId() {
@@ -184,22 +226,22 @@ public class TradeServiceRequest {
             this.id = id;
         }
 
-        public Long getNumber() {
+        public String getNumber() {
 
             return number;
         }
 
-        public void setNumber(Long number) {
+        public void setNumber(String number) {
 
             this.number = number;
         }
 
-        public Integer getVehicleId() {
+        public String getVehicleId() {
 
             return vehicleId;
         }
 
-        public void setVehicleId(Integer vehicleId) {
+        public void setVehicleId(String vehicleId) {
 
             this.vehicleId = vehicleId;
         }
@@ -234,12 +276,12 @@ public class TradeServiceRequest {
             this.date = date;
         }
 
-        public Integer getPage() {
+        public String getPage() {
 
             return page;
         }
 
-        public void setPage(Integer page) {
+        public void setPage(String page) {
 
             this.page = page;
         }
@@ -273,7 +315,7 @@ public class TradeServiceRequest {
     public class MotTestPathParams {
         private Long id;
         private Integer dvlaId;
-        private Long number;
+        private String number;
         private String registration;
         private String make;
 
@@ -317,12 +359,12 @@ public class TradeServiceRequest {
             this.make = make;
         }
 
-        public Long getNumber() {
+        public String getNumber() {
 
             return number;
         }
 
-        public void setNumber(Long number) {
+        public void setNumber(String number) {
 
             this.number = number;
         }

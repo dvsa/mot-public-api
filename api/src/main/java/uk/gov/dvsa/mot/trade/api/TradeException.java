@@ -61,7 +61,12 @@ public class TradeException extends Exception {
     @Override
     public String getMessage() {
 
-        return "{ \"httpStatus\": \"" + httpStatus + "\", \"errorMessage\": \"" + super.getMessage() + "\", \"awsRequestId\": \"" +
-                requestId + "\" }";
+        String message = "{ \"httpStatus\": \"" + httpStatus + "\", \"errorMessage\": \"" + super.getMessage() + "\"";
+
+        if (this.requestId != null) {
+            message += ", \"awsRequestId\": \"" + requestId + "\"";
+        }
+
+        return message + "}";
     }
 }

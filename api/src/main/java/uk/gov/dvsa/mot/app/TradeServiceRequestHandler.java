@@ -72,43 +72,50 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
 
         try {
             logger.trace("Entering getTradeMotTests");
+            request.setRequestId(context.getAwsRequestId());
 
-            if (request.getQueryParams().getVehicleId() != null) {
-                logger.info("Trade API request for vehicle_id = " + request.getQueryParams().getVehicleId());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByVehicleId(request.getQueryParams().getVehicleId());
+            if (request.getVehicleId() != null) {
+
+                logger.info("Trade API request for vehicle_id = " + request.getVehicleId());
+                List<Vehicle> vehicles = tradeReadService.getVehiclesByVehicleId(request.getVehicleId());
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    logger.debug("getTradeMotTests for vehicle_id = " + request.getQueryParams().getVehicleId() + " found 0 ");
-                    throw new InvalidResourceException("No MOT Tests found with vehicle id : " + request.getQueryParams().getVehicleId(),
+                    logger.debug("getTradeMotTests for vehicle_id = " + request.getVehicleId() + " found 0 ");
+                    throw new InvalidResourceException(
+                            "No MOT Tests found with vehicle id : " + request.getVehicleId(),
                             context.getAwsRequestId());
                 }
 
-                logger.info("Trade API request for vehicle_id = " + request.getQueryParams().getVehicleId() + " returned " + vehicles
+                logger.info("Trade API request for vehicle_id = " + request.getVehicleId() + " returned " + vehicles
                         .size() + " records");
                 logger.trace("Exiting getTradeMotTests");
                 return vehicles;
-            } else if (request.getQueryParams().getNumber() != null) {
-                logger.info("Trade API request for mot test number = " + request.getQueryParams().getNumber());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(request.getQueryParams().getNumber());
+
+            } else if (request.getNumber() != null) {
+
+                logger.info("Trade API request for mot test number = " + request.getNumber());
+                List<Vehicle> vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(request.getNumber());
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    logger.debug("getTradeMotTests for number = " + request.getQueryParams().getNumber() + " found 0");
-                    throw new InvalidResourceException("No MOT Tests found with number : " + request.getQueryParams().getNumber(),
+                    logger.debug("getTradeMotTests for number = " + request.getNumber() + " found 0");
+                    throw new InvalidResourceException("No MOT Tests found with number : " + request.getNumber(),
                             context.getAwsRequestId());
                 }
 
-                logger.info("Trade API request for mot test number = " + request.getQueryParams().getNumber() + " returned " + vehicles
+                logger.info("Trade API request for mot test number = " + request.getNumber() + " returned " + vehicles
                         .size() + " records");
                 logger.trace("Exiting getTradeMotTests");
                 return vehicles;
-            } else if ((request.getQueryParams().getRegistration() != null)) {
-                String registration = URLDecoder.decode(request.getQueryParams().getRegistration(), "UTF-8");
+
+            } else if ((request.getRegistration() != null)) {
+
+                String registration = URLDecoder.decode(request.getRegistration(), "UTF-8");
 
                 logger.info("Trade API request for registration = " + registration);
                 List<Vehicle> vehicles = tradeReadService.getVehiclesByRegistration(registration);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    logger.debug("getTradeMotTests for registration = " + request.getQueryParams().getNumber() + " found 0");
+                    logger.debug("getTradeMotTests for registration = " + request.getNumber() + " found 0");
                     throw new InvalidResourceException("No MOT Tests found with vehicle registration : " + registration,
                             context.getAwsRequestId());
                 }
@@ -117,34 +124,40 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                         vehicles.size() + " records");
                 logger.trace("Exiting getTradeMotTests");
                 return vehicles;
-            } else if (request.getQueryParams().getDate() != null) {
-                Date date = sdfDate.parse(request.getQueryParams().getDate());
-                logger.info("Trade API request for date = " + date + " and page = " + request.getQueryParams().getPage());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByDatePage(date, request.getQueryParams().getPage());
+
+            } else if (request.getDate() != null) {
+
+                Date date = sdfDate.parse(request.getDate());
+                logger.info("Trade API request for date = " + date + " and page = " + request.getPage());
+                List<Vehicle> vehicles = tradeReadService.getVehiclesByDatePage(date, request.getPage());
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    throw new InvalidResourceException("No MOT Tests found for date : " + request.getQueryParams().getDate() + " page : " +
-                            request.getQueryParams().getPage(), context.getAwsRequestId());
+                    throw new InvalidResourceException("No MOT Tests found for date : " + request.getDate() + " page : " +
+                            request.getPage(), context.getAwsRequestId());
                 }
 
-                logger.info("Trade API request for date = " + date + " and page = " + request.getQueryParams().getPage() + " returned " +
+                logger.info("Trade API request for date = " + date + " and page = " + request.getPage() + " returned " +
                         vehicles.size() + " records");
                 logger.trace("Exiting getTradeMotTests");
                 return vehicles;
-            } else if (request.getQueryParams().getPage() != null) {
-                logger.info("Trade API request for page = " + request.getQueryParams().getPage());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByPage(request.getQueryParams().getPage());
+
+            } else if (request.getPage() != null) {
+
+                logger.info("Trade API request for page = " + request.getPage());
+                List<Vehicle> vehicles = tradeReadService.getVehiclesByPage(request.getPage());
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    throw new InvalidResourceException("No MOT Tests found for page: " + request.getQueryParams().getPage(), context
+                    throw new InvalidResourceException("No MOT Tests found for page: " + request.getPage(), context
                             .getAwsRequestId());
                 }
 
-                logger.info("Trade API request for page = " + request.getQueryParams().getPage() + " returned " + vehicles.size() + " " +
+                logger.info("Trade API request for page = " + request.getPage() + " returned " + vehicles.size() + " " +
                         "records");
                 logger.trace("Exiting getTradeMotTests");
                 return vehicles;
+
             } else {
+
                 logger.trace("Exiting getTradeMotTests");
                 throw new BadRequestException("Unrecognised parameter set", context.getAwsRequestId());
             }
@@ -270,7 +283,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     /**
      * Get the latest vehicle information and MOT test recorded for the vehicle specified by MOT Test Number.
      *
-     * @param request Describes the request. For this method, we require only the registration as a path parameter.
+     * @param request Describes the request. For this method, we require only the MOT test number as a path parameter.
      * @param context AWS Lambda request context
      * @return The vehicle and its latest MOT, if found.
      * @throws TradeException If there is a retrieval error or the vehicle and test are not found.
@@ -279,19 +292,21 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
 
         try {
             logger.trace("Entering getLatestMotTestByMotTestNumber");
-            if (request.getPathParams().getNumber() != null) {
-                logger.info("Trade API MOTR request for mot test number = " + request.getPathParams().getNumber());
+            request.setRequestId(context.getAwsRequestId());
+
+            if (request.getPathNumber() != null) {
+                logger.info("Trade API MOTR request for mot test number = " + request.getPathNumber());
 
                 Vehicle vehicle =
-                        tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(request.getPathParams().getNumber());
+                        tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(request.getPathNumber());
 
                 if (vehicle == null) {
-                    logger.debug("getLatestMotTestByMotTestNumber for number = " + request.getPathParams().getNumber() + " found 0");
-                    throw new InvalidResourceException("No MOT Tests found with number : " + request.getPathParams().getNumber(),
+                    logger.debug("getLatestMotTestByMotTestNumber for number = " + request.getPathNumber() + " found 0");
+                    throw new InvalidResourceException("No MOT Tests found with number : " + request.getPathNumber(),
                             context.getAwsRequestId());
                 }
 
-                logger.info("Trade API MOTR request for mot test number = " + request.getPathParams().getNumber() + " returned 1 record");
+                logger.info("Trade API MOTR request for mot test number = " + request.getPathNumber() + " returned 1 record");
                 logger.trace("Exiting getLatestMotTestByMotTestNumber");
                 return vehicle;
             } else {
