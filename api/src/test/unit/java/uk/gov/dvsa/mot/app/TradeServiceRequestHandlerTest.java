@@ -553,10 +553,10 @@ public class TradeServiceRequestHandlerTest {
     @Test(expected = InvalidResourceException.class)
     public void getLatestMotTestByMotTestNumber_VehicleHasNoMot() throws TradeException {
 
-        final long motNumber = 42;
+        final String motNumber = "42";
         request.getPathParams().setNumber(motNumber);
 
-        when(tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motNumber)).thenReturn(null);
+        when(tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long.parseLong(motNumber))).thenReturn(null);
 
         createHandlerAndGetLatestMotTestByMotTestNumber(request);
     }
@@ -567,7 +567,7 @@ public class TradeServiceRequestHandlerTest {
     @Test
     public void getLatestMotTestByMotTestNumber_ValidRegistrationAndMot() throws TradeException {
 
-        final long motNumber = 42;
+        final String motNumber = "42";
         request.getPathParams().setNumber(motNumber);
 
         final String registration = "XX89UIP";
@@ -576,7 +576,7 @@ public class TradeServiceRequestHandlerTest {
         final Vehicle vehicle = new Vehicle();
         vehicle.setRegistration(registration);
 
-        when(tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motNumber)).thenReturn(vehicle);
+        when(tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long.parseLong(motNumber))).thenReturn(vehicle);
 
         Vehicle receivedVehicle = createHandlerAndGetLatestMotTestByMotTestNumber(request);
 
