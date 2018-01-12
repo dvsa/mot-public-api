@@ -1,6 +1,7 @@
 package uk.gov.dvsa.mot.trade.read.core;
 
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
+import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
 
 import java.util.Date;
@@ -22,16 +23,4 @@ public interface TradeReadService {
     List<Vehicle> getVehiclesByPage(int page);
 
     List<Vehicle> getVehiclesByDatePage(Date date, Integer page);
-
-    Vehicle getLatestMotTestByRegistration(String registration);
-
-    Vehicle getDvlaVehicleByRegistration(String registration);
-
-    Vehicle getDvlaVehicleByRegistrationForMoth(String registration);
-
-    Vehicle getDvlaVehicleById(Integer dvlaVehicleId);
-
-    Vehicle getLatestMotTestByDvlaVehicleId(Integer dvlaVehicleId);
-
-    Vehicle getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber);
 }

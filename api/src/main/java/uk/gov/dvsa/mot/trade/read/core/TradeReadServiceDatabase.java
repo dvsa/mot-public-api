@@ -109,7 +109,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
         List<uk.gov.dvsa.mot.trade.api.Vehicle> vehicles = tradeReadDao.getVehiclesMotTestsByRegistration(registration);
 
         if (CollectionUtils.isNullOrEmpty(vehicles)) {
-            uk.gov.dvsa.mot.trade.api.Vehicle vehicle = getDvlaVehicleByRegistrationForMoth(registration);
+            uk.gov.dvsa.mot.trade.api.Vehicle vehicle = getDvlaVehicleByRegistration(registration);
 
             if (vehicle != null) {
                 vehicles = Arrays.asList(vehicle);
@@ -117,86 +117,6 @@ public class TradeReadServiceDatabase implements TradeReadService {
         }
 
         return vehicles;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see uk.gov.dvsa.mot.trade.read.core.TradeReadServiceInterface#
-     * getVehiclesByRegistartionAndMake(String,String)
-     */
-    @Override
-    @ProvideDbConnection
-    public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByRegistration(String registration) {
-
-        List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
-        VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
-
-        if (vehicleAndLatestMot == null || !vehicleAndLatestMot.hasMotTest()) {
-            return getDvlaVehicleByRegistration(registration);
-        }
-
-        return mapToTradeVehicle(vehicleAndLatestMot);
-    }
-
-    @Override
-    @ProvideDbConnection
-    public uk.gov.dvsa.mot.trade.api.Vehicle getDvlaVehicleByRegistration(String registration) {
-
-        List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleByRegistration(registration);
-
-        return getLatestDvlaVehicleAndMapToTradeVehicle(vehicles);
-    }
-
-
-    @Override
-    @ProvideDbConnection
-    public uk.gov.dvsa.mot.trade.api.Vehicle getDvlaVehicleByRegistrationForMoth(String registration) {
-
-        DvlaVehicle vehicle = vehicleReadService.getDvlaVehicleByRegistration(registration);
-
-        return getDvlaVehicleAndMapToTradeVehicle(vehicle);
-    }
-
-    @Override
-    @ProvideDbConnection
-    public uk.gov.dvsa.mot.trade.api.Vehicle getDvlaVehicleById(Integer dvlaVehicleId) {
-
-        List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleById(dvlaVehicleId);
-
-        return getLatestDvlaVehicleAndMapToTradeVehicle(vehicles);
-    }
-
-    @Override
-    @ProvideDbConnection
-    public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByDvlaVehicleId(Integer dvlaVehicleId) {
-
-        List<Vehicle> vehicles = vehicleReadService.findByDvlaVehicleId(dvlaVehicleId);
-        VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
-
-        if (vehicleAndLatestMot == null || !vehicleAndLatestMot.hasMotTest()) {
-            return getDvlaVehicleById(dvlaVehicleId);
-        }
-
-        return mapToTradeVehicle(vehicleAndLatestMot);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see uk.gov.dvsa.mot.trade.read.core.TradeReadServiceInterface#
-     * getVehiclesByRegistartionAndMake(String,String)
-     */
-    @Override
-    @ProvideDbConnection
-    public uk.gov.dvsa.mot.trade.api.Vehicle getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber) {
-
-        List<Vehicle> vehicles = vehicleReadService.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
-        VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
-        if (vehicleAndLatestMot == null) {
-            return null;
-        }
-        return mapToTradeVehicle(vehicleAndLatestMot);
     }
 
     /*
@@ -270,6 +190,13 @@ public class TradeReadServiceDatabase implements TradeReadService {
         return displayMotTestItems;
     }
 
+    private uk.gov.dvsa.mot.trade.api.Vehicle getDvlaVehicleByRegistration(String registration) {
+
+        DvlaVehicle vehicle = vehicleReadService.getDvlaVehicleByRegistration(registration);
+
+        return createTradeVehicleFromDvlaVehicle(vehicle);
+    }
+
     private DisplayMotTestItem mapMotTestToDisplayMotTestItem(MotTest motTest, Vehicle vehicle) {
 
         DisplayMotTestItem displayMotTestItem = new DisplayMotTestItem();
@@ -340,70 +267,11 @@ public class TradeReadServiceDatabase implements TradeReadService {
         return displayMotTestItem;
     }
 
-    private uk.gov.dvsa.mot.trade.api.Vehicle getDvlaVehicleAndMapToTradeVehicle(DvlaVehicle dvlaVehicle) {
+    private uk.gov.dvsa.mot.trade.api.Vehicle createTradeVehicleFromDvlaVehicle(DvlaVehicle dvlaVehicle) {
 
         if (dvlaVehicle == null) {
             return null;
         }
-
-        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = createTradeVehicleOutOfDvlaVehicle(dvlaVehicle);
-        tradeVehicle.setFuelType(dvlaVehicle.getFuelType());
-
-        Date firstMotDueDate = DvlaVehicleFirstMotDueDateCalculator.calculateFirstMotDueDate(dvlaVehicle);
-
-        if (firstMotDueDate != null) {
-            tradeVehicle.setMotTestExpiryDate(
-                    SDF_DATE_ISO_8601.format(firstMotDueDate));
-        }
-
-        return tradeVehicle;
-    }
-
-    private uk.gov.dvsa.mot.trade.api.Vehicle getLatestDvlaVehicleAndMapToTradeVehicle(List<DvlaVehicle> vehicles) {
-
-        if (CollectionUtils.isNullOrEmpty(vehicles)) {
-            return null;
-        }
-
-        DvlaVehicle dvlaVehicle = selectMostRecentDvlaVehicle(vehicles);
-        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = createTradeVehicleOutOfDvlaVehicle(dvlaVehicle);
-
-        if (dvlaVehicle.getEuClassification() == null
-                || dvlaVehicle.getEuClassification().equals("N2")
-                || dvlaVehicle.getEuClassification().equals("N3")) {
-            return null;
-        }
-
-        Date firstMotDueDate = DvlaVehicleFirstMotDueDateCalculator.calculateFirstMotDueDate(dvlaVehicle);
-
-        if (firstMotDueDate == null) {
-            return null;
-        }
-
-        tradeVehicle.setMotTestExpiryDate(
-                SDF_DATE_ISO_8601.format(firstMotDueDate));
-
-        return tradeVehicle;
-    }
-
-    // This should be taken care of in sql query not in code - extracted to method and kept for backward compatibility with MOTR query
-    private DvlaVehicle selectMostRecentDvlaVehicle(List<DvlaVehicle> vehicles) {
-
-        DvlaVehicle dvlaVehicle = vehicles.get(0);
-
-        if (vehicles.size() > 1 && dvlaVehicle.getLastUpdatedOn() != null) {
-            for (DvlaVehicle dvlaVehicle1 : vehicles) {
-
-                if (dvlaVehicle1.getLastUpdatedOn() != null && dvlaVehicle1.getLastUpdatedOn().after(dvlaVehicle.getLastUpdatedOn())) {
-                    dvlaVehicle = dvlaVehicle1;
-                }
-            }
-        }
-
-        return dvlaVehicle;
-    }
-
-    private uk.gov.dvsa.mot.trade.api.Vehicle createTradeVehicleOutOfDvlaVehicle(DvlaVehicle dvlaVehicle) {
 
         uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
 
@@ -412,6 +280,7 @@ public class TradeReadServiceDatabase implements TradeReadService {
         tradeVehicle.setModel(dvlaVehicle.getModelDetail());
         tradeVehicle.setMakeInFull(dvlaVehicle.getMakeInFull());
         tradeVehicle.setPrimaryColour(dvlaVehicle.getColour1());
+        tradeVehicle.setFuelType(dvlaVehicle.getFuelType());
         tradeVehicle.setDvlaId(Integer.toString(dvlaVehicle.getDvlaVehicleId()));
 
         if (!"Not Stated".equalsIgnoreCase(dvlaVehicle.getColour2())) {
@@ -422,96 +291,13 @@ public class TradeReadServiceDatabase implements TradeReadService {
             tradeVehicle.setManufactureYear(SDF_YEAR.format(dvlaVehicle.getManufactureDate()));
         }
 
-        return tradeVehicle;
-    }
+        Date firstMotDueDate = DvlaVehicleFirstMotDueDateCalculator.calculateFirstMotDueDate(dvlaVehicle);
 
-    private VehicleAndLatestMot getVehicleAndLatestMotTestPass(List<Vehicle> vehicles) {
-
-        if (CollectionUtils.isNullOrEmpty(vehicles)) {
-            return null;
-        }
-
-        Vehicle vehicle = null;
-        MotTest motTest = null;
-
-        for (Vehicle v : vehicles) {
-            MotTest mt = motTestReadService.getLatestMotTestPassByVehicle(v);
-
-            // If the vehicle or MOT hasn't been set yet
-            // or the latest expiryDate is after the current Expiry date
-            if ((vehicle == null || motTest == null || motTest.getExpiryDate() == null)
-                    || (mt != null && (mt.getExpiryDate() != null && mt.getExpiryDate().after(motTest.getExpiryDate())))) {
-                vehicle = v;
-                motTest = mt;
-            }
-        }
-
-        return new VehicleAndLatestMot(vehicle, motTest);
-    }
-
-    private uk.gov.dvsa.mot.trade.api.Vehicle mapToTradeVehicle(VehicleAndLatestMot vehicleAndLatestMot) {
-
-        uk.gov.dvsa.mot.trade.api.Vehicle tradeVehicle = new uk.gov.dvsa.mot.trade.api.Vehicle();
-        Vehicle vehicle = vehicleAndLatestMot.getVehicle();
-        MotTest motTest = vehicleAndLatestMot.getMotTest();
-
-        if (vehicle != null) {
-            tradeVehicle.setRegistration(vehicle.getRegistration());
-            tradeVehicle.setMake(vehicle.getMake());
-            tradeVehicle.setModel(vehicle.getModel());
-            tradeVehicle.setPrimaryColour(vehicle.getPrimaryColour());
-
-            if (!"Not Stated".equalsIgnoreCase(vehicle.getSecondaryColour())) {
-                tradeVehicle.setSecondaryColour(vehicle.getSecondaryColour());
-            }
-
-            if (vehicle.getManufactureDate() != null) {
-                tradeVehicle.setManufactureYear(SDF_YEAR.format(vehicle.getManufactureDate()));
-            }
-        }
-
-        if (motTest != null) {
-            if (motTest.getExpiryDate() != null) {
-                tradeVehicle.setMotTestExpiryDate(SDF_DATE_ISO_8601.format(motTest.getExpiryDate()));
-            }
-            if (motTest.getNumber() != null) {
-                tradeVehicle.setMotTestNumber(motTest.getNumber().toString());
-            }
+        if (firstMotDueDate != null) {
+            tradeVehicle.setMotTestDueDate(
+                    SDF_DATE_ISO_8601.format(firstMotDueDate));
         }
 
         return tradeVehicle;
-    }
-
-    private class VehicleAndLatestMot {
-
-        private Vehicle vehicle;
-        private MotTest mot;
-
-        public VehicleAndLatestMot(Vehicle vehicle, MotTest mot) {
-            this.vehicle = vehicle;
-            this.mot = mot;
-        }
-
-        public VehicleAndLatestMot setVehicle(Vehicle vehicle) {
-            this.vehicle = vehicle;
-            return this;
-        }
-
-        public VehicleAndLatestMot setMot(MotTest mot) {
-            this.mot = mot;
-            return this;
-        }
-
-        public Vehicle getVehicle() {
-            return vehicle;
-        }
-
-        public MotTest getMotTest() {
-            return mot;
-        }
-
-        public boolean hasMotTest() {
-            return mot != null;
-        }
     }
 }

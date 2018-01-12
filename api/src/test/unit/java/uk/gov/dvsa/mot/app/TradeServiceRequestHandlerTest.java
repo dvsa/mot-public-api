@@ -11,9 +11,11 @@ import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
+import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
+import uk.gov.dvsa.mot.trade.read.core.MotrReadService;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
 import java.util.ArrayList;
@@ -30,6 +32,9 @@ import static org.mockito.Mockito.when;
 public class TradeServiceRequestHandlerTest {
     @Mock
     private TradeReadService tradeReadService;
+
+    @Mock
+    private MotrReadService motrReadService;
 
     @Mock
     private Context lambdaContext;
@@ -52,6 +57,7 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setMotrReadService(motrReadService);
 
         return sut.getTradeMotTests(request, lambdaContext);
     }
@@ -63,10 +69,11 @@ public class TradeServiceRequestHandlerTest {
      * @return The return value of getLatestMotTest
      * @throws TradeException if getLatestMotTest throws
      */
-    private Vehicle createHandlerAndGetLatestMotTest(TradeServiceRequest request) throws TradeException {
+    private MotrResponse createHandlerAndGetLatestMotTest(TradeServiceRequest request) throws TradeException {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setMotrReadService(motrReadService);
 
         return sut.getLatestMotTest(request, lambdaContext);
     }
@@ -78,10 +85,11 @@ public class TradeServiceRequestHandlerTest {
      * @return The return value of getLatestMotTestByMotTestNumber
      * @throws TradeException if getLatestMotTestByMotTestNumber throws
      */
-    private Vehicle createHandlerAndGetLatestMotTestByMotTestNumber(TradeServiceRequest request) throws TradeException {
+    private MotrResponse createHandlerAndGetLatestMotTestByMotTestNumber(TradeServiceRequest request) throws TradeException {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setMotrReadService(motrReadService);
 
         return sut.getLatestMotTestByMotTestNumber(request, lambdaContext);
     }
@@ -93,10 +101,11 @@ public class TradeServiceRequestHandlerTest {
      * @return The return value of getLatestMotTestByDvlaVehicleId
      * @throws TradeException if getLatestMotTestByDvlaVehicleId throws
      */
-    private Vehicle createHandlerAndGetLatestMotTestByDvlaVehicleId(TradeServiceRequest request) throws TradeException {
+    private MotrResponse createHandlerAndGetLatestMotTestByDvlaVehicleId(TradeServiceRequest request) throws TradeException {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setMotrReadService(motrReadService);
 
         return sut.getLatestMotTestByDvlaVehicleId(request, lambdaContext);
     }
@@ -112,6 +121,7 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setMotrReadService(motrReadService);
 
         return sut.getTradeMotTestsLegacy(request, lambdaContext);
     }
@@ -136,6 +146,7 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setMotrReadService(motrReadService);
 
         List<String> makes = sut.getMakes(null, lambdaContext);
 
@@ -152,6 +163,7 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setMotrReadService(motrReadService);
 
         sut.getMakes(null, lambdaContext);
     }
@@ -514,7 +526,7 @@ public class TradeServiceRequestHandlerTest {
         final String registration = "NOTACAR";
         request.getPathParams().setRegistration(registration);
 
-        when(tradeReadService.getLatestMotTestByRegistration(registration)).thenReturn(null);
+        when(motrReadService.getLatestMotTestByRegistration(registration)).thenReturn(null);
 
         createHandlerAndGetLatestMotTest(request);
     }
@@ -528,14 +540,14 @@ public class TradeServiceRequestHandlerTest {
         final String registration = "XX89UIP";
         request.getPathParams().setRegistration(registration);
 
-        final Vehicle vehicle = new Vehicle();
-        vehicle.setRegistration(registration);
+        final MotrResponse response = new MotrResponse();
+        response.setRegistration(registration);
 
-        when(tradeReadService.getLatestMotTestByRegistration(registration)).thenReturn(vehicle);
+        when(motrReadService.getLatestMotTestByRegistration(registration)).thenReturn(response);
 
-        Vehicle receivedVehicle = createHandlerAndGetLatestMotTest(request);
+        MotrResponse receivedResponse = createHandlerAndGetLatestMotTest(request);
 
-        assertEquals(vehicle, receivedVehicle);
+        assertEquals(response, receivedResponse);
     }
 
     /**
@@ -556,7 +568,7 @@ public class TradeServiceRequestHandlerTest {
         final String motNumber = "42";
         request.getPathParams().setNumber(motNumber);
 
-        when(tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long.parseLong(motNumber))).thenReturn(null);
+        when(motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long.parseLong(motNumber))).thenReturn(null);
 
         createHandlerAndGetLatestMotTestByMotTestNumber(request);
     }
@@ -573,14 +585,14 @@ public class TradeServiceRequestHandlerTest {
         final String registration = "XX89UIP";
         request.getPathParams().setRegistration(registration);
 
-        final Vehicle vehicle = new Vehicle();
-        vehicle.setRegistration(registration);
+        final MotrResponse motrResponse = new MotrResponse();
+        motrResponse.setRegistration(registration);
 
-        when(tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long.parseLong(motNumber))).thenReturn(vehicle);
+        when(motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long.parseLong(motNumber))).thenReturn(motrResponse);
 
-        Vehicle receivedVehicle = createHandlerAndGetLatestMotTestByMotTestNumber(request);
+        MotrResponse receivedMotrResponse = createHandlerAndGetLatestMotTestByMotTestNumber(request);
 
-        assertEquals(vehicle, receivedVehicle);
+        assertEquals(motrResponse, receivedMotrResponse);
     }
 
     /**
@@ -601,7 +613,7 @@ public class TradeServiceRequestHandlerTest {
         final int dvlaVehicleId = 42;
         request.getPathParams().setDvlaId(dvlaVehicleId);
 
-        when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
+        when(motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
 
         createHandlerAndGetLatestMotTestByDvlaVehicleId(request);
     }
@@ -617,15 +629,15 @@ public class TradeServiceRequestHandlerTest {
         request.getPathParams().setDvlaId(dvlaVehicleId);
 
         final String registration = "XX89UIP";
-        final Vehicle vehicle = new Vehicle();
-        vehicle.setRegistration(registration);
-        vehicle.setDvlaId(Integer.toString(dvlaVehicleId));
+        final MotrResponse motrResponse = new MotrResponse();
+        motrResponse.setRegistration(registration);
+        motrResponse.setDvlaId(Integer.toString(dvlaVehicleId));
 
-        when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(vehicle);
+        when(motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(motrResponse);
 
-        Vehicle receivedVehicle = createHandlerAndGetLatestMotTestByDvlaVehicleId(request);
+        MotrResponse receivedMotrResponse = createHandlerAndGetLatestMotTestByDvlaVehicleId(request);
 
-        assertEquals(vehicle, receivedVehicle);
+        assertEquals(motrResponse, receivedMotrResponse);
     }
 
     /**
@@ -640,16 +652,16 @@ public class TradeServiceRequestHandlerTest {
 
         final String registration = "XX89UIP";
         final String motNumber = "42";
-        final Vehicle vehicle = new Vehicle();
-        vehicle.setRegistration(registration);
-        vehicle.setMotTestNumber(motNumber);
+        final MotrResponse motrResponse = new MotrResponse();
+        motrResponse.setRegistration(registration);
+        motrResponse.setMotTestNumber(motNumber);
 
-        when(tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(vehicle);
+        when(motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId)).thenReturn(motrResponse);
 
-        Vehicle receivedVehicle = createHandlerAndGetLatestMotTestByDvlaVehicleId(request);
+        MotrResponse receivedMotrResponse = createHandlerAndGetLatestMotTestByDvlaVehicleId(request);
 
-        assertEquals(vehicle, receivedVehicle);
-        assertNull(receivedVehicle.getDvlaId());
+        assertEquals(motrResponse, receivedMotrResponse);
+        assertNull(receivedMotrResponse.getDvlaId());
     }
 
     /**

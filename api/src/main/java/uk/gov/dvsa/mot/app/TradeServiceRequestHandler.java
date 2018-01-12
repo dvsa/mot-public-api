@@ -1,7 +1,6 @@
 package uk.gov.dvsa.mot.app;
 
 import com.amazonaws.services.lambda.runtime.Context;
-
 import com.amazonaws.util.CollectionUtils;
 import com.google.inject.Inject;
 
@@ -11,9 +10,11 @@ import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
+import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
+import uk.gov.dvsa.mot.trade.read.core.MotrReadService;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
 import java.net.URLDecoder;
@@ -32,6 +33,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     private static final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
 
     private TradeReadService tradeReadService;
+    private MotrReadService motrReadService;
 
     public TradeServiceRequestHandler() {
 
@@ -52,9 +54,23 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     @Inject
     public void setTradeReadService(TradeReadService tradeReadService) {
 
-        logger.trace("Entering setTradeServiceRequestHandler");
+        logger.trace("Entering setTradeReadService");
         this.tradeReadService = tradeReadService;
-        logger.trace("Exiting setTradeServiceRequestHandler");
+        logger.trace("Exiting setTradeReadService");
+    }
+
+    /**
+     * Set the MOTR read service which will be used to make queries required by this
+     * class.
+     *
+     * @param motrReadService an instance of something which implements {@link MotrReadService}
+     */
+    @Inject
+    public void setMotrReadService(MotrReadService motrReadService) {
+
+        logger.trace("Entering setMotrReadService");
+        this.motrReadService = motrReadService;
+        logger.trace("Exiting setMotrReadService");
     }
 
     /**
@@ -247,23 +263,23 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
      * @return The vehicle and its latest MOT, if found.
      * @throws TradeException If there is a retrieval error or the vehicle and test are not found.
      */
-    public Vehicle getLatestMotTest(TradeServiceRequest request, Context context) throws TradeException {
+    public MotrResponse getLatestMotTest(TradeServiceRequest request, Context context) throws TradeException {
 
         try {
             logger.trace("Entering getLatestMotTest");
             if (request.getPathParams().getRegistration() != null) {
                 String registration = URLDecoder.decode(request.getPathParams().getRegistration(), "UTF-8");
                 logger.info("Trade API MOTR request for registration = " + registration);
-                Vehicle vehicle = tradeReadService.getLatestMotTestByRegistration(registration);
+                MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
 
-                if (vehicle == null) {
+                if (motrResponse == null) {
                     throw new InvalidResourceException("No MOT Test or DVLA vehicle found for registration " + registration,
                             context.getAwsRequestId());
                 }
 
                 logger.info("Trade API MOTR request for registration = " + registration + " returned 1 record");
                 logger.trace("Exiting getLatestMotTest");
-                return vehicle;
+                return motrResponse;
             } else {
                 logger.trace("Exiting getLatestMotTest");
                 throw new BadRequestException("Invalid Parameters", context.getAwsRequestId());
@@ -288,7 +304,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
      * @return The vehicle and its latest MOT, if found.
      * @throws TradeException If there is a retrieval error or the vehicle and test are not found.
      */
-    public Vehicle getLatestMotTestByMotTestNumber(TradeServiceRequest request, Context context) throws TradeException {
+    public MotrResponse getLatestMotTestByMotTestNumber(TradeServiceRequest request, Context context) throws TradeException {
 
         try {
             logger.trace("Entering getLatestMotTestByMotTestNumber");
@@ -297,10 +313,10 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             if (request.getPathNumber() != null) {
                 logger.info("Trade API MOTR request for mot test number = " + request.getPathNumber());
 
-                Vehicle vehicle =
-                        tradeReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(request.getPathNumber());
+                MotrResponse motrResponse =
+                        motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(request.getPathNumber());
 
-                if (vehicle == null) {
+                if (motrResponse == null) {
                     logger.debug("getLatestMotTestByMotTestNumber for number = " + request.getPathNumber() + " found 0");
                     throw new InvalidResourceException("No MOT Tests found with number : " + request.getPathNumber(),
                             context.getAwsRequestId());
@@ -308,7 +324,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
 
                 logger.info("Trade API MOTR request for mot test number = " + request.getPathNumber() + " returned 1 record");
                 logger.trace("Exiting getLatestMotTestByMotTestNumber");
-                return vehicle;
+                return motrResponse;
             } else {
                 logger.trace("Exiting getLatestMotTestByMotTestNumber");
                 throw new BadRequestException("Invalid Parameters", context.getAwsRequestId());
@@ -333,7 +349,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
      * @return The vehicle and its latest MOT, if found.
      * @throws TradeException If there is a retrieval error or the vehicle and test are not found.
      */
-    public Vehicle getLatestMotTestByDvlaVehicleId(TradeServiceRequest request, Context context) throws TradeException {
+    public MotrResponse getLatestMotTestByDvlaVehicleId(TradeServiceRequest request, Context context) throws TradeException {
 
         Integer dvlaVehicleId = request.getPathParams().getDvlaId();
 
@@ -342,16 +358,16 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             if (dvlaVehicleId != null) {
                 logger.info("Trade API MOTR request for DVLA id = " + dvlaVehicleId);
 
-                Vehicle vehicle = tradeReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
+                MotrResponse response = motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
 
-                if (vehicle == null) {
+                if (response == null) {
                     throw new InvalidResourceException("No MOT Test or DVLA vehicle found for DVLA vehicle id " + dvlaVehicleId,
                             context.getAwsRequestId());
                 }
 
                 logger.info("Trade API MOTR request for DVLA id = " + dvlaVehicleId + " returned 1 record");
                 logger.trace("Exiting getLatestMotTestByDvlaVehicleId");
-                return vehicle;
+                return response;
             } else {
                 logger.trace("Exiting getLatestMotTestByDvlaVehicleId");
                 throw new BadRequestException("Invalid Parameters", context.getAwsRequestId());
