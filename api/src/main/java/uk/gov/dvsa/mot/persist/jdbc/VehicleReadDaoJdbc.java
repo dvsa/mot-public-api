@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
 
-import uk.gov.dvsa.mot.mottest.read.core.ConnectionManager;
+import uk.gov.dvsa.mot.persist.ConnectionManager;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
 import uk.gov.dvsa.mot.persist.jdbc.util.DbQueryRunner;
 import uk.gov.dvsa.mot.persist.jdbc.util.DbQueryRunnerImpl;

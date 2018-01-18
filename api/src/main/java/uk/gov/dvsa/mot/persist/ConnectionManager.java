@@ -1,4 +1,4 @@
-package uk.gov.dvsa.mot.mottest.read.core;
+package uk.gov.dvsa.mot.persist;
 
 import uk.gov.dvsa.mot.persist.ConnectionFactory;
 import uk.gov.dvsa.mot.persist.jdbc.MySqlConnectionFactory;

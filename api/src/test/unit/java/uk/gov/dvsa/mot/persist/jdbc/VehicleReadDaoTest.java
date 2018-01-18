@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import uk.gov.dvsa.mot.mottest.read.core.ConnectionManager;
+import uk.gov.dvsa.mot.persist.ConnectionManager;
 import uk.gov.dvsa.mot.persist.model.Vehicle;
 import uk.gov.dvsa.mot.test.utility.ResultSetMockHelper;
 import uk.gov.dvsa.mot.trade.api.InternalException;

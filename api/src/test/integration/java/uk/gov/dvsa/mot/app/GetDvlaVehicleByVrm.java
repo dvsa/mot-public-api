@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 
@@ -39,7 +40,7 @@ public class GetDvlaVehicleByVrm {
         TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
         Context ctx = createContext();
 
-        uk.gov.dvsa.mot.trade.api.Vehicle output = tradeServiceRequestHandler.getLatestMotTest(tradeServiceRequest, ctx);
+        MotrResponse output = tradeServiceRequestHandler.getLatestMotTest(tradeServiceRequest, ctx);
 
         // until integration framework doing this is only option as it is reliant on PP data
         if (output != null) {

@@ -10,12 +10,12 @@ public class Vehicle {
     protected String makeInFull;
     protected String firstUsedDate;
     protected String manufactureDate;
-    protected String manufactureYear; // added for motr
+    protected String manufactureYear;
     protected String fuelType;
     protected String primaryColour;
     protected String secondaryColour;
-    protected String motTestExpiryDate; // added for motr - latest mot test expiry date
-    protected String motTestNumber;     // added for motr - latest mot test number (pass)
+    protected String motTestDueDate;
+    protected String motTestNumber;
     protected List<MotTest> motTests;
     protected String dvlaId;
 
@@ -139,14 +139,14 @@ public class Vehicle {
         this.manufactureYear = manufactureYear;
     }
 
-    public String getMotTestExpiryDate() {
+    public String getMotTestDueDate() {
 
-        return motTestExpiryDate;
+        return motTestDueDate;
     }
 
-    public void setMotTestExpiryDate(String motTestExpiryDate) {
+    public void setMotTestDueDate(String motTestDueDate) {
 
-        this.motTestExpiryDate = motTestExpiryDate;
+        this.motTestDueDate = motTestDueDate;
     }
 
     public String getMotTestNumber() {
