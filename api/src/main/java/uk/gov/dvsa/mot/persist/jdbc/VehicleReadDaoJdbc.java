@@ -581,7 +581,23 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
     private class DvlaVehicleRowMapper implements ResultSetRowMapper<DvlaVehicle> {
 
-        @Override
+        private static final String ID = "id";
+        private static final String DVLA_VEHICLE_ID = "dvla_vehicle_id";
+        private static final String REGISTRATION = "registration";
+        private static final String MODEL_CODE = "model_code";
+        private static final String MAKE_CODE = "make_code";
+        private static final String DVSA_MODEL_NAME = "dvsa_model_name";
+        private static final String DVSA_MAKE_NAME = "dvsa_make_name";
+        private static final String MAKE_IN_FULL = "make_in_full";
+        private static final String COLOUR_1_CODE = "colour_1_code";
+        private static final String COLOUR_2_CODE = "colour_2_code";
+        private static final String MANUFACTURE_DATE = "manufacture_date";
+        private static final String FIRST_REGISTRATION_DATE = "first_registration_date";
+        private static final String EU_CLASSIFICATION = "eu_classification";
+        private static final String BODY_TYPE_CODE = "body_type_code";
+        private static final String LAST_UPDATED_ON = "last_updated_on";
+
+
         public DvlaVehicle mapRow(ResultSet rs) throws SQLException {
 
             return mapResultSetToDvlaVehicle(rs);
@@ -590,12 +606,12 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         protected DvlaVehicle mapResultSetToDvlaVehicle(ResultSet rs) throws SQLException {
             DvlaVehicle dvlaVehicle = new DvlaVehicle();
 
-            dvlaVehicle.setId(rs.getInt(1));
-            dvlaVehicle.setDvlaVehicleId(rs.getInt(2));
-            dvlaVehicle.setRegistration(rs.getString(3));
+            dvlaVehicle.setId(rs.getInt(ID));
+            dvlaVehicle.setDvlaVehicleId(rs.getInt(DVLA_VEHICLE_ID));
+            dvlaVehicle.setRegistration(rs.getString(REGISTRATION));
 
-            String modelCode = rs.getString(4);
-            String makeCode = rs.getString(5);
+            String modelCode = rs.getString(MODEL_CODE);
+            String makeCode = rs.getString(MAKE_CODE);
 
             if (!Strings.isNullOrEmpty(makeCode)) {
                 dvlaVehicle.setMakeDetail(getDvlaMakeDetailByCode(makeCode));
@@ -605,29 +621,29 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
                 }
             }
 
-            dvlaVehicle.setDvsaModel(rs.getString(6));
-            dvlaVehicle.setDvsaMake(rs.getString(7));
-            dvlaVehicle.setMakeInFull(rs.getString(8));
+            dvlaVehicle.setDvsaModel(rs.getString(DVSA_MODEL_NAME));
+            dvlaVehicle.setDvsaMake(rs.getString(DVSA_MAKE_NAME));
+            dvlaVehicle.setMakeInFull(rs.getString(MAKE_IN_FULL));
 
-            dvlaVehicle.setColour1(getColourLookupByCode(rs.getString(9)));
-            if (rs.getString(10) != null) {
-                dvlaVehicle.setColour2(getColourLookupByCode(rs.getString(10)));
+            dvlaVehicle.setColour1(getColourLookupByCode(rs.getString(COLOUR_1_CODE)));
+            if (rs.getString(COLOUR_2_CODE) != null) {
+                dvlaVehicle.setColour2(getColourLookupByCode(rs.getString(COLOUR_2_CODE)));
             } else {
                 ColourLookup notStated = new ColourLookup();
                 notStated.setCode("W");
                 dvlaVehicle.setColour2(notStated);
             }
-            dvlaVehicle.setManufactureDate(rs.getDate(11));
-            if (rs.getDate(12) != null) {
-                dvlaVehicle.setFirstRegistrationDate(rs.getDate(12));
+            dvlaVehicle.setManufactureDate(rs.getDate(MANUFACTURE_DATE));
+            if (rs.getDate(FIRST_REGISTRATION_DATE) != null) {
+                dvlaVehicle.setFirstRegistrationDate(rs.getDate(FIRST_REGISTRATION_DATE));
             }
-            if (rs.getString(13) != null) {
-                dvlaVehicle.setEuClassification(rs.getString(13));
+            if (rs.getString(EU_CLASSIFICATION) != null) {
+                dvlaVehicle.setEuClassification(rs.getString(EU_CLASSIFICATION));
             }
-            if (rs.getString(14) != null) {
-                dvlaVehicle.setBodyTypeCode(rs.getString(14));
+            if (rs.getString(BODY_TYPE_CODE) != null) {
+                dvlaVehicle.setBodyTypeCode(rs.getString(BODY_TYPE_CODE));
             }
-            dvlaVehicle.setLastUpdatedOn(rs.getDate(15));
+            dvlaVehicle.setLastUpdatedOn(rs.getDate(LAST_UPDATED_ON));
 
             return dvlaVehicle;
         }
@@ -635,12 +651,14 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
 
     private class DvlaVehicleWithFuelTypeRowMapper extends DvlaVehicleRowMapper implements ResultSetRowMapper<DvlaVehicle> {
 
+        private static final String FUEL_TYPE_NAME = "fuel_type_name";
+
         @Override
         public DvlaVehicle mapRow(ResultSet rs) throws SQLException {
 
             DvlaVehicle dvlaVehicle = mapResultSetToDvlaVehicle(rs);
             FuelType fuelType = new FuelType();
-            fuelType.setName(rs.getString(13));
+            fuelType.setName(rs.getString(FUEL_TYPE_NAME));
             dvlaVehicle.setPropulsion(fuelType);
 
             return dvlaVehicle;
