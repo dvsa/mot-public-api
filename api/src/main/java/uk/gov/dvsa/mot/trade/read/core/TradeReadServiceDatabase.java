@@ -30,7 +30,7 @@ import javax.annotation.Resource;
 @Resource
 public class TradeReadServiceDatabase implements TradeReadService {
     private static final Logger logger = Logger.getLogger(TradeReadServiceDatabase.class);
-    private static final int VEHICLE_PAGE_SIZE = 2000;
+    private static final int VEHICLE_PAGE_SIZE = 1000;
 
     private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy.MM.dd");
     private static final SimpleDateFormat SDF_DATE_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd");

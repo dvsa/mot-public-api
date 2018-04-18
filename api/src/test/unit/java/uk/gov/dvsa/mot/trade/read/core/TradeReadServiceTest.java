@@ -76,14 +76,14 @@ public class TradeReadServiceTest {
 
     /**
      * Check that the service asks for the right vehicle IDs for a selection of
-     * pages Based on the hard-coded page size of 2000
+     * pages Based on the hard-coded page size of 1500
      */
     @Test
     public void getVehiclesByPage_CalculatesPagesCorrectly() {
 
         for (int page = 0; page < 10; ++page) {
-            int startId = page * 2000;
-            int endId = startId + 2000;
+            int startId = page * 1000;
+            int endId = startId + 1000;
 
             tradeReadService.getVehiclesByPage(page);
             verify(tradeReadDaoMock).getVehiclesMotTestsByRange(startId, endId);
