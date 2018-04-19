@@ -3,8 +3,6 @@ package uk.gov.dvsa.mot.persist.jdbc;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
-import org.apache.log4j.Logger;
-
 import uk.gov.dvsa.mot.persist.ConnectionManager;
 import uk.gov.dvsa.mot.persist.VehicleReadDao;
 import uk.gov.dvsa.mot.persist.jdbc.util.DbQueryRunner;
@@ -36,8 +34,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class VehicleReadDaoJdbc implements VehicleReadDao {
-    private static final Logger logger = Logger.getLogger(VehicleReadDaoJdbc.class);
-
     private ConnectionManager connectionManager;
 
     @Inject
@@ -131,6 +127,15 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         ResultSetRowMapper<DvlaVehicle> mapper = new DvlaVehicleWithFuelTypeRowMapper();
 
         return runner.executeQuery(DvlaVehicleReadSql.selectSingleDvlaVehicleByRegistration, mapper, registration);
+    }
+
+    @Override
+    public DvlaVehicle getDvlaVehicleByRegistrationWithVin(String registration) {
+
+        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
+        ResultSetRowMapper<DvlaVehicle> mapper = new DvlaVehicleWithFuelTypeRowMapper();
+
+        return runner.executeQuery(DvlaVehicleReadSql.selectSingleDvlaVehicleByRegistrationWithVin, mapper, registration);
     }
 
     @Override
@@ -596,6 +601,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         private static final String EU_CLASSIFICATION = "eu_classification";
         private static final String BODY_TYPE_CODE = "body_type_code";
         private static final String LAST_UPDATED_ON = "last_updated_on";
+        private static final String VIN = "vin";
 
 
         public DvlaVehicle mapRow(ResultSet rs) throws SQLException {
@@ -619,6 +625,12 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
                 if (!Strings.isNullOrEmpty(modelCode)) {
                     dvlaVehicle.setModelDetail(getDvlaModelDetailByCode(modelCode, makeCode));
                 }
+            }
+
+            String vin = rs.getString(VIN);
+
+            if (!Strings.isNullOrEmpty(vin)) {
+                dvlaVehicle.setVin(vin);
             }
 
             dvlaVehicle.setDvsaModel(rs.getString(DVSA_MODEL_NAME));

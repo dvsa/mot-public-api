@@ -59,15 +59,24 @@ repositories {
 
 dependencies {
     compile 'com.google.inject:guice:4.1.0'
-    compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+    compile 'com.amazonaws:aws-lambda-java-core:1.2.0'
     compile 'com.amazonaws:aws-lambda-java-events:1.1.0'
     compile 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
-    compile 'com.amazonaws:aws-java-sdk:1.11.77'
+    compile 'com.amazonaws.serverless:aws-serverless-java-container-core:1.1'
+    compile 'com.amazonaws.serverless:aws-serverless-java-container-jersey:1.1'
     compile 'log4j:log4j:1.2.17'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'org.slf4j:slf4j-simple:1.7.25'
     compile 'mysql:mysql-connector-java:5.1.40'
+    compile 'org.glassfish.jersey.core:jersey-client:2.27'
+    compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
+    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
+    compile 'org.glassfish.jersey.media:jersey-media-moxy:2.27'
+    compile 'org.glassfish.jersey.connectors:jersey-apache-connector:2.27'
 
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:2.+'
+    testCompile 'eu.codearte.catch-exception:catch-exception:1.4.4'
 }
 
 task wrapper (type: Wrapper)
