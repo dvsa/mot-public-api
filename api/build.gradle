@@ -74,7 +74,6 @@ task wrapper (type: Wrapper)
 
 task setVersion() {
     doFirst {
-        // Get the patch version (if not on build server defaults to 0)
         project.version = System.env.BUILD_VERSION ?: 'local-dev'
         println "Version set to: ${project.version}"
     }
