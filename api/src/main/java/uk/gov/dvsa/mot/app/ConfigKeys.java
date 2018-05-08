@@ -12,6 +12,10 @@ public final class ConfigKeys {
     public static final String ProxyPort = "PROXY_PORT";
     public static final String LogLevel = "LOG_LEVEL";
 
+    public static final String HgvPsvApiUrl = "HGV_PSV_URL";
+    public static final String HgvPsvApiKey = "HGV_PSV_KEY";
+    public static final String HgvPsvApiConnectionTimeoutMs = "HGV_PSV_CONNECTION_TIMEOUT";
+
     private ConfigKeys() {
 
     }
