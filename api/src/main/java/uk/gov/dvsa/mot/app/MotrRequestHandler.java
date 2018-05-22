@@ -205,7 +205,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
 
     private AwsProxyResponse createResponse(HgvPsvVehicle vehicle) throws Exception {
         Map<String, String> responseHeaders = new HashMap<>();
-        responseHeaders.put("Content-Type", "text/html");
+        responseHeaders.put("Content-Type", "text/plain");
         ObjectMapper mapper = new ObjectMapper();
         String jsonString;
 
