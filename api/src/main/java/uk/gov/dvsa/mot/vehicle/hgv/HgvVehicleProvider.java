@@ -30,11 +30,11 @@ public class HgvVehicleProvider {
         this.configuration = configuration;
     }
 
-    public Vehicle getVehicle(String vin) throws Exception {
+    public Vehicle getVehicle(String registration) throws Exception {
         logger.trace("Entering HgvVehicleProvider getVehicle()");
 
-        if (vin == null || vin.isEmpty()) {
-            throw new IllegalArgumentException("VIN number is null or empty");
+        if (registration == null || registration.isEmpty()) {
+            throw new IllegalArgumentException("Registration is null or empty");
         }
 
         Vehicle vehicle;
@@ -45,7 +45,7 @@ public class HgvVehicleProvider {
                 Vehicle result = null;
 
                 try {
-                    result = getHgvVehicle(vin);
+                    result = getHgvVehicle(registration);
                 } catch (IOException e) {
                     logger.error("IO error during communication with HGV vehicle api",  e);
                 } catch (InstantiationException e) {
@@ -61,7 +61,7 @@ public class HgvVehicleProvider {
                 TestHistory[] result = null;
 
                 try {
-                    result = getHgvVehicleTestHistory(vin);
+                    result = getHgvVehicleTestHistory(registration);
                 } catch (IOException e) {
                     logger.error("IO error during communication with HGV test history api", e);
                 } catch (InstantiationException e) {
@@ -88,24 +88,24 @@ public class HgvVehicleProvider {
         return vehicle;
     }
 
-    private Vehicle getHgvVehicle(String vin) throws IOException, InstantiationException, IllegalAccessException {
-        ResponseVehicle response = getHgvResponse(vin,  "/vehicle/moth", ResponseVehicle.class);
+    private Vehicle getHgvVehicle(String registration) throws IOException, InstantiationException, IllegalAccessException {
+        ResponseVehicle response = getHgvResponse(registration,  "/vehicle/moth", ResponseVehicle.class);
 
         return response.getVehicle();
     }
 
-    private TestHistory[] getHgvVehicleTestHistory(String vin) throws IOException, InstantiationException, IllegalAccessException {
-        ResponseTestHistory response = getHgvResponse(vin, "/testhistory/moth", ResponseTestHistory.class);
+    private TestHistory[] getHgvVehicleTestHistory(String registration) throws IOException, InstantiationException, IllegalAccessException {
+        ResponseTestHistory response = getHgvResponse(registration, "/testhistory/moth", ResponseTestHistory.class);
 
         return response.getTestHistory();
     }
 
-    private <T> T getHgvResponse(String vin, String endpointToCall, Class<T> type) throws IOException, IllegalAccessException,
+    private <T> T getHgvResponse(String registration, String endpointToCall, Class<T> type) throws IOException, IllegalAccessException,
             InstantiationException {
         logger.trace("Entering getHgvResponse(), endpoint to call: " + endpointToCall);
 
         Response response = getClient().target(configuration.getApiUrl() + endpointToCall)
-                .queryParam("identifier", vin)
+                .queryParam("identifier", registration)
                 .request()
                 .header("x-api-key", configuration.getApiKey())
                 .get();

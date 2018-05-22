@@ -78,16 +78,10 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         if ((!motVehiclesOptional.isPresent() || motVehiclesOptional.get().isEmpty()) && dvlaVehicleOptional.isPresent()) {
             DvlaVehicle dvlaVehicle = dvlaVehicleOptional.get();
 
-            Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(dvlaVehicle.getVin());
+            Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
             if (!hgvPsvVehicleOptional.isPresent()) {
                 logger.error("No HGV/PSV vehicle retrieved");
                 throw new InvalidResourceException("No HGV/PSV vehicle retrieved", awsRequestId);
-            }
-
-            if (!registration.equals(hgvPsvVehicleOptional.get().getVehicleIdentifier())) {
-                logger.error(String.format("VRM mismatch between user input and HGV api; user input: %s, registration from HGV api: %s ",
-                        registration, hgvPsvVehicleOptional.get().getVehicleIdentifier()));
-                throw new Exception("VRM mismatch between user input and HGV api");
             }
 
             return createResponse(setResponseVehicle(hgvPsvVehicleOptional.get(), dvlaVehicle));
@@ -133,14 +127,14 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         return Optional.ofNullable(dvlaVehicle);
     }
 
-    private Optional<Vehicle> getHgvPsvVehicle(String vin) throws Exception {
+    private Optional<Vehicle> getHgvPsvVehicle(String registration) throws Exception {
         Vehicle foundVehicle = null;
 
         try {
-            if (!Strings.isNullOrEmpty(vin)) {
-                foundVehicle = hgvVehicleProvider.getVehicle(vin);
+            if (!Strings.isNullOrEmpty(registration)) {
+                foundVehicle = hgvVehicleProvider.getVehicle(registration);
             } else {
-                logger.warn("Passed VIN was empty or null");
+                logger.warn("Passed registration was empty or null");
             }
         } catch (Exception e) {
             logger.error("There was an error retrieving the HGV/PSV history", e);
