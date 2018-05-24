@@ -37,6 +37,10 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     private HgvVehicleProvider hgvVehicleProvider;
     private String awsRequestId;
 
+    public MotrRequestHandler() {
+        super();
+    }
+
     public MotrRequestHandler(boolean injectSelf) {
         super(injectSelf);
     }
