@@ -22,9 +22,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.ws.rs.GET;
@@ -32,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
 @Path("/")
 public class MotrRequestHandler extends AbstractRequestHandler {
@@ -63,7 +62,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     @GET
     @Path("motr/v2/search/registration/{registration}")
     @Produces("application/json")
-    public AwsProxyResponse getVehicle(@PathParam("registration") String registration) throws Exception {
+    public Response getVehicle(@PathParam("registration") String registration) throws Exception {
         // awsRequestId = context.getAwsRequestId();
         logger.info(String.format("Entering MotrRequestHandler, awsRequestId: %s", awsRequestId));
 
@@ -84,7 +83,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                 throw new InvalidResourceException("No HGV/PSV vehicle retrieved", awsRequestId);
             }
 
-            return createResponse(setResponseVehicle(hgvPsvVehicleOptional.get(), dvlaVehicle));
+            return Response.ok(setResponseVehicle(hgvPsvVehicleOptional.get(), dvlaVehicle)).build();
         } else {
             logger.error("Vehicle is not HGV/PSV vehicle");
             throw new InternalServerErrorException("Vehicle is not HGV/PSV vehicle", awsRequestId);
@@ -195,26 +194,5 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         } else {
             return testHistory[testHistory.length - 1].getTestDate();
         }
-    }
-
-    private AwsProxyResponse createResponse(HgvPsvVehicle vehicle) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString;
-
-        try {
-            jsonString = mapper.writeValueAsString(vehicle);
-        } catch (JsonProcessingException e) {
-            logger.error("Error while converting hgv/psv vehicle to a JSON string", e);
-            throw new InternalServerErrorException("Error while converting hgv/psv vehicle to a JSON string", awsRequestId);
-        }
-
-        Map<String, String> responseHeaders = new HashMap<>();
-        responseHeaders.put("Content-Type", "application/json");
-        responseHeaders.put("Content-Length", String.valueOf(jsonString.length()));
-
-        AwsProxyResponse response = new AwsProxyResponse(200, responseHeaders, jsonString);
-        response.setBase64Encoded(false);
-
-        return response;
     }
 }
