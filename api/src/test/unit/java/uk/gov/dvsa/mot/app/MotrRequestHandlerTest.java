@@ -1,10 +1,6 @@
 package uk.gov.dvsa.mot.app;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -35,7 +31,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -131,7 +126,6 @@ public class MotrRequestHandlerTest {
     }
 
     @Test
-    @Ignore
     public void getVehicle_WhenVehicleTestHistoryIsNotEmpty_AnnualTestExpiryDateShouldBeSetToTestDate() throws Exception {
         TestHistory[] testHistory = new TestHistory[1];
         TestHistory historyItem =  new TestHistory();
@@ -149,11 +143,11 @@ public class MotrRequestHandlerTest {
         Response response = motrRequestHandler.getVehicle(REGISTRATION);
 
         HgvPsvVehicle expectedVehicle = createResponseVehicle("HGV", "2018-01-01");
-        assertSame(response.readEntity(HgvPsvVehicle.class), writeVehicleResponseAsString(expectedVehicle));
+        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
     @Test
-    @Ignore
     public void getVehicle_WhenVehicleTestHistoryIsNotEmpty_MotTestNumberShouldBeSet() throws Exception {
         TestHistory[] testHistory = new TestHistory[1];
         TestHistory historyItem =  new TestHistory();
@@ -173,7 +167,8 @@ public class MotrRequestHandlerTest {
 
         HgvPsvVehicle expectedVehicle = createResponseVehicle("PSV", "2018-01-01");
         expectedVehicle.setMotTestNumber("SERIAL");
-        assertTrue(response.getEntity().equals(writeVehicleResponseAsString(expectedVehicle)));
+        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
     @Test
@@ -195,7 +190,6 @@ public class MotrRequestHandlerTest {
     }
 
     @Test
-    @Ignore
     public void getVehicle_WhenVehicleTestHistoryIsEmptyAndVehicleIsHgv_AnnualTestExpiryDateShouldBeSetProperly() throws Exception {
         DvlaVehicle dvlaVehicle = createDvlaVehicle();
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("HGV");
@@ -209,11 +203,11 @@ public class MotrRequestHandlerTest {
         Response response = motrRequestHandler.getVehicle(REGISTRATION);
 
         HgvPsvVehicle expectedVehicle = createResponseVehicle("HGV", "2016-01-31");
-        assertTrue(response.getEntity().equals(writeVehicleResponseAsString(expectedVehicle)));
+        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
     @Test
-    @Ignore
     public void getVehicle_WhenSingleMotVehicleIsPresent_BodyIsCorrect() throws Exception {
         List<Vehicle> motVehicles = new ArrayList<>();
         motVehicles.add(createMotVehicle("VIN123451"));
@@ -221,11 +215,11 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION);
 
-        assertTrue(response.getEntity().equals(writeVehicleResponseAsString(motVehicles)));
+        List<uk.gov.dvsa.mot.vehicle.api.Vehicle> actualVehicles = (List<uk.gov.dvsa.mot.vehicle.api.Vehicle>) response.getEntity();
+        checkIfMotVehicleIsCorrect(motVehicles.get(0), actualVehicles.get(0));
     }
 
     @Test
-    @Ignore
     public void getVehicle_WhenTwoMotVehicleIsPresent_BodyIsCorrect() throws Exception {
         List<Vehicle> motVehicles = new ArrayList<>();
         motVehicles.add(createMotVehicle("VIN123451"));
@@ -234,11 +228,12 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION);
 
-        assertTrue(response.getEntity().equals(writeVehicleResponseAsString(motVehicles)));
+        List<uk.gov.dvsa.mot.vehicle.api.Vehicle> actualVehicles = (List<uk.gov.dvsa.mot.vehicle.api.Vehicle>) response.getEntity();
+        checkIfMotVehicleIsCorrect(motVehicles.get(0), actualVehicles.get(0));
+        checkIfMotVehicleIsCorrect(motVehicles.get(1), actualVehicles.get(1));
     }
 
     @Test
-    @Ignore
     public void getVehicle_WhenVehicleTestHistoryIsEmptyAndVehicleIsPsv_AnnualTestExpiryDateShouldBeSetProperly() throws Exception {
         DvlaVehicle dvlaVehicle = createDvlaVehicle();
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("PSV");
@@ -252,11 +247,8 @@ public class MotrRequestHandlerTest {
         Response response = motrRequestHandler.getVehicle(REGISTRATION);
 
         HgvPsvVehicle expectedVehicle = createResponseVehicle("PSV", "2016-02-05");
-        assertTrue(response.getEntity().equals(writeVehicleResponseAsString(expectedVehicle)));
-    }
-
-    private String writeVehicleResponseAsString(Object vehicles) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(vehicles);
+        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
     private DvlaVehicle createDvlaVehicle() {
@@ -274,14 +266,14 @@ public class MotrRequestHandlerTest {
     }
 
     private Vehicle createMotVehicle(String vin) {
-        Vehicle dvlaVehicle = new Vehicle();
+        Vehicle motVehicle = new Vehicle();
 
-        dvlaVehicle.setVin(vin);
-        dvlaVehicle.setPrimaryColour("BLACK");
-        dvlaVehicle.setDvlaVehicleId(1);
-        dvlaVehicle.setRegistration(REGISTRATION);
+        motVehicle.setVin(vin);
+        motVehicle.setPrimaryColour("BLACK");
+        motVehicle.setDvlaVehicleId(1);
+        motVehicle.setRegistration(REGISTRATION);
 
-        return dvlaVehicle;
+        return motVehicle;
     }
 
     private uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle createVehicle(String vehicleType) {
@@ -310,5 +302,27 @@ public class MotrRequestHandlerTest {
         hgvPsvVehicle.setMotTestExpiryDate(testExpiryDate);
 
         return hgvPsvVehicle;
+    }
+
+    private void checkIfHgvPsvVehicleIsCorrect(HgvPsvVehicle expectedVehicle, HgvPsvVehicle actualVehicle) {
+        assertTrue(actualVehicle.getMake().equals(expectedVehicle.getMake()));
+        assertTrue(actualVehicle.getManufactureYear().equals(expectedVehicle.getManufactureYear()));
+        assertTrue(actualVehicle.getModel().equals(expectedVehicle.getModel()));
+        assertTrue(actualVehicle.getMotTestExpiryDate().equals(expectedVehicle.getMotTestExpiryDate()));
+        assertTrue(actualVehicle.getPrimaryColour().equals(expectedVehicle.getPrimaryColour()));
+        assertTrue(actualVehicle.getRegistration().equals(expectedVehicle.getRegistration()));
+        assertTrue(actualVehicle.getVehicleType().equals(expectedVehicle.getVehicleType()));
+        assertTrue(actualVehicle.getDvlaId() == expectedVehicle.getDvlaId());
+
+        if (expectedVehicle.getMotTestNumber() != null) {
+            assertTrue(actualVehicle.getMotTestNumber().equals(expectedVehicle.getMotTestNumber()));
+        }
+    }
+
+    private void checkIfMotVehicleIsCorrect(Vehicle expectedVehicle, uk.gov.dvsa.mot.vehicle.api.Vehicle actualVehicle) {
+        assertTrue(actualVehicle.getPrimaryColour().equals(expectedVehicle.getPrimaryColour()));
+        assertTrue(actualVehicle.getRegistration().equals(expectedVehicle.getRegistration()));
+        assertTrue(actualVehicle.getVin().equals(expectedVehicle.getVin()));
+        assertTrue(actualVehicle.getDvlaVehicleId() == expectedVehicle.getDvlaVehicleId());
     }
 }
