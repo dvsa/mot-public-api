@@ -46,9 +46,12 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     }
 
     @Inject
-    public MotrRequestHandler(VehicleReadService vehicleReadService, HgvVehicleProvider hgvVehicleProvider) {
-        super();
+    public void setVehicleReadService(VehicleReadService vehicleReadService) {
         this.vehicleReadService = vehicleReadService;
+    }
+
+    @Inject
+    public void setHgvVehicleProvider(HgvVehicleProvider hgvVehicleProvider) {
         this.hgvVehicleProvider = hgvVehicleProvider;
     }
 
