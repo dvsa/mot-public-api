@@ -1,8 +1,5 @@
 package uk.gov.dvsa.mot.app;
 
-import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
@@ -29,7 +26,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 @Path("/")
@@ -41,21 +37,14 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     private HgvVehicleProvider hgvVehicleProvider;
     private String awsRequestId;
 
-    public MotrRequestHandler() {
-        super();
-    }
-
     public MotrRequestHandler(boolean injectSelf) {
         super(injectSelf);
     }
 
     @Inject
-    public void setVehicleReadService(VehicleReadService vehicleReadService) {
+    public MotrRequestHandler(VehicleReadService vehicleReadService, HgvVehicleProvider hgvVehicleProvider) {
+        super();
         this.vehicleReadService = vehicleReadService;
-    }
-
-    @Inject
-    public void setHgvVehicleProvider(HgvVehicleProvider hgvVehicleProvider) {
         this.hgvVehicleProvider = hgvVehicleProvider;
     }
 
@@ -72,9 +61,15 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         }
 
         Optional<List<uk.gov.dvsa.mot.vehicle.api.Vehicle>> motVehiclesOptional = getMotVehicle(registration);
+
+        if (motVehiclesOptional.isPresent() && !motVehiclesOptional.get().isEmpty()) {
+
+            return Response.ok(motVehiclesOptional.get()).build();
+        }
+
         Optional<DvlaVehicle> dvlaVehicleOptional = getDvlaVehicle(registration);
 
-        if ((!motVehiclesOptional.isPresent() || motVehiclesOptional.get().isEmpty()) && dvlaVehicleOptional.isPresent()) {
+        if (dvlaVehicleOptional.isPresent()) {
             DvlaVehicle dvlaVehicle = dvlaVehicleOptional.get();
 
             Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
