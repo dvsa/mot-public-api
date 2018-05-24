@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -52,15 +51,19 @@ public class MotrRequestHandlerTest {
     @Mock
     private HgvVehicleProvider hgvVehicleProvider;
 
+    private MotrRequestHandler motrRequestHandler;
+
     @Before
     public void setUp() throws IOException {
         MockitoAnnotations.initMocks(this);
+
+        motrRequestHandler = new MotrRequestHandler(false);
+        motrRequestHandler.setHgvVehicleProvider(hgvVehicleProvider);
+        motrRequestHandler.setVehicleReadService(vehicleReadService);
     }
 
     @Test
     public void getVehicle_WithoutRegistrationParam_ShouldThrowException() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         catchException(motrRequestHandler).getVehicle("");
 
         assertThat(caughtException(), allOf(
@@ -72,8 +75,6 @@ public class MotrRequestHandlerTest {
 
     @Test
     public void getVehicle_WhenVehicleReadServiceFindByRegistrationReturnsException_ShouldThrowException() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         when(vehicleReadService.findByRegistration(REGISTRATION)).thenThrow(new IndexOutOfBoundsException());
 
         catchException(motrRequestHandler).getVehicle(REGISTRATION);
@@ -88,8 +89,6 @@ public class MotrRequestHandlerTest {
     @Test
     public void getVehicle_WhenVehicleReadServiceGetDvlaVehicleByRegistrationWithVinReturnsException_ShouldThrowException()
             throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenThrow(new IndexOutOfBoundsException());
 
         catchException(motrRequestHandler).getVehicle(REGISTRATION);
@@ -103,8 +102,6 @@ public class MotrRequestHandlerTest {
 
     @Test
     public void getVehicle_WhenDvlaVehicleIsNotPresent_ShouldThrowException() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenReturn(null);
         when(vehicleReadService.findByRegistration(REGISTRATION)).thenReturn(null);
 
@@ -119,8 +116,6 @@ public class MotrRequestHandlerTest {
 
     @Test
     public void getVehicle_WhenGetHgvPsvVehicleNotReturnVehicle_ShouldThrowException() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         DvlaVehicle dvlaVehicle = new DvlaVehicle();
 
         when(vehicleReadService.findByRegistration(REGISTRATION)).thenReturn(null);
@@ -138,8 +133,6 @@ public class MotrRequestHandlerTest {
     @Test
     @Ignore
     public void getVehicle_WhenVehicleTestHistoryIsNotEmpty_AnnualTestExpiryDateShouldBeSetToTestDate() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         TestHistory[] testHistory = new TestHistory[1];
         TestHistory historyItem =  new TestHistory();
         historyItem.setTestDate("2018-01-01");
@@ -162,8 +155,6 @@ public class MotrRequestHandlerTest {
     @Test
     @Ignore
     public void getVehicle_WhenVehicleTestHistoryIsNotEmpty_MotTestNumberShouldBeSet() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         TestHistory[] testHistory = new TestHistory[1];
         TestHistory historyItem =  new TestHistory();
         historyItem.setTestDate("2018-01-01");
@@ -187,8 +178,6 @@ public class MotrRequestHandlerTest {
 
     @Test
     public void getVehicle_WhenVehicleTestHistoryIsEmptyAndRegistrationDateIsNull_ShouldThrowException() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         DvlaVehicle dvlaVehicle = createDvlaVehicle();
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("HGV");
         vehicle.setTestHistory(new TestHistory[0]);
@@ -208,8 +197,6 @@ public class MotrRequestHandlerTest {
     @Test
     @Ignore
     public void getVehicle_WhenVehicleTestHistoryIsEmptyAndVehicleIsHgv_AnnualTestExpiryDateShouldBeSetProperly() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         DvlaVehicle dvlaVehicle = createDvlaVehicle();
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("HGV");
         vehicle.setTestHistory(new TestHistory[0]);
@@ -228,8 +215,6 @@ public class MotrRequestHandlerTest {
     @Test
     @Ignore
     public void getVehicle_WhenSingleMotVehicleIsPresent_BodyIsCorrect() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         List<Vehicle> motVehicles = new ArrayList<>();
         motVehicles.add(createMotVehicle("VIN123451"));
         when(vehicleReadService.findByRegistration(REGISTRATION)).thenReturn(motVehicles);
@@ -242,8 +227,6 @@ public class MotrRequestHandlerTest {
     @Test
     @Ignore
     public void getVehicle_WhenTwoMotVehicleIsPresent_BodyIsCorrect() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         List<Vehicle> motVehicles = new ArrayList<>();
         motVehicles.add(createMotVehicle("VIN123451"));
         motVehicles.add(createMotVehicle("VIN123452"));
@@ -257,8 +240,6 @@ public class MotrRequestHandlerTest {
     @Test
     @Ignore
     public void getVehicle_WhenVehicleTestHistoryIsEmptyAndVehicleIsPsv_AnnualTestExpiryDateShouldBeSetProperly() throws Exception {
-        MotrRequestHandler motrRequestHandler = new MotrRequestHandler(false);
-
         DvlaVehicle dvlaVehicle = createDvlaVehicle();
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("PSV");
         vehicle.setTestHistory(new TestHistory[0]);
