@@ -198,8 +198,6 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     }
 
     private AwsProxyResponse createResponse(HgvPsvVehicle vehicle) throws Exception {
-        Map<String, String> responseHeaders = new HashMap<>();
-        responseHeaders.put("Content-Type", "application/json");
         ObjectMapper mapper = new ObjectMapper();
         String jsonString;
 
@@ -209,6 +207,10 @@ public class MotrRequestHandler extends AbstractRequestHandler {
             logger.error("Error while converting hgv/psv vehicle to a JSON string", e);
             throw new InternalServerErrorException("Error while converting hgv/psv vehicle to a JSON string", awsRequestId);
         }
+
+        Map<String, String> responseHeaders = new HashMap<>();
+        responseHeaders.put("Content-Type", "application/json");
+        responseHeaders.put("Content-Length", String.valueOf(jsonString.length()));
 
         AwsProxyResponse response = new AwsProxyResponse(200, responseHeaders, jsonString);
         response.setBase64Encoded(false);
