@@ -1,9 +1,6 @@
 package uk.gov.dvsa.mot.app;
 
-import com.amazonaws.serverless.proxy.internal.servlet.AwsProxyHttpServletRequest;
 import com.amazonaws.serverless.proxy.model.ApiGatewayRequestContext;
-import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
-import com.amazonaws.services.lambda.runtime.Context;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +29,6 @@ import static com.googlecode.catchexception.CatchException.caughtException;
 import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasMessageThat;
 import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasNoCause;
 
-import static org.hamcrest.CoreMatchers.any;
-import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
@@ -59,7 +54,7 @@ public class MotrRequestHandlerTest {
     private ContainerRequestContext containerRequestContext;
 
     @Mock
-    private Context context;
+    private ApiGatewayRequestContext context;
 
     @Mock
     private HgvVehicleProvider hgvVehicleProvider;
@@ -70,7 +65,7 @@ public class MotrRequestHandlerTest {
     public void setUp() throws IOException {
         MockitoAnnotations.initMocks(this);
 
-        when(context.getAwsRequestId()).thenReturn("1");
+        when(context.getRequestId()).thenReturn("1");
         when(containerRequestContext.getProperty(anyString())).thenReturn(context);
 
         motrRequestHandler = new MotrRequestHandler(false);

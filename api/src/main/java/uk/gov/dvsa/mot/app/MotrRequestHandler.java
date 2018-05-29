@@ -1,7 +1,7 @@
 package uk.gov.dvsa.mot.app;
 
 import com.amazonaws.serverless.proxy.RequestReader;
-import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.serverless.proxy.model.ApiGatewayRequestContext;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
@@ -70,12 +70,12 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     @Produces("application/json")
     public Response getVehicle(@PathParam("registration") String registration,
                                ContainerRequestContext requestContext) throws TradeException {
-
         try {
-            Context context = (Context) requestContext.getProperty(RequestReader.LAMBDA_CONTEXT_PROPERTY);
 
+            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
+                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
             if (context != null) {
-                awsRequestId = context.getAwsRequestId();
+                awsRequestId = context.getRequestId();
             }
 
             logger.info(String.format("Entering MotrRequestHandler, awsRequestId: %s", awsRequestId));
@@ -137,11 +137,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
             throw new InvalidResourceException("There was an error retrieving mot vehicle", awsRequestId);
         }
 
-        if (motVehicles == null) {
-            return Optional.empty();
-        }
-
-        return Optional.of(motVehicles);
+        return Optional.ofNullable(motVehicles);
     }
 
 
