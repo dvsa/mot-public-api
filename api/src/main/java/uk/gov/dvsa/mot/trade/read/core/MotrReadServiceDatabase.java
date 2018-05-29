@@ -35,11 +35,22 @@ public class MotrReadServiceDatabase implements MotrReadService {
     @ProvideDbConnection
     public MotrResponse getLatestMotTestByRegistration(String registration) {
 
+        return getLatestMotTestByRegistration(registration, true);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public MotrResponse getLatestMotTestByRegistration(String registration, Boolean withDvlaVehicles) {
+
         List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
         MotrReadServiceDatabase.VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
 
         if (vehicleAndLatestMot == null || !vehicleAndLatestMot.hasMotTest()) {
-            return getDvlaVehicleByRegistration(registration);
+            if (withDvlaVehicles) {
+                return getDvlaVehicleByRegistration(registration);
+            }
+
+            return null;
         }
 
         return mapVehicleAndLatestMotToMotrResponse(vehicleAndLatestMot);

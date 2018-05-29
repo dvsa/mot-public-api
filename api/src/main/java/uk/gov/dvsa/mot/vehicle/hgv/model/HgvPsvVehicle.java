@@ -15,7 +15,7 @@ public class HgvPsvVehicle {
     private String manufactureYear;
     private String motTestExpiryDate;
     private String motTestNumber;
-    private int dvlaId;
+    private String dvlaId;
 
     public String getMake() {
         return make;
@@ -97,11 +97,11 @@ public class HgvPsvVehicle {
         this.motTestNumber = motTestNumber;
     }
 
-    public int getDvlaId() {
+    public String getDvlaId() {
         return dvlaId;
     }
 
-    public void setDvlaId(int dvlaId) {
+    public void setDvlaId(String dvlaId) {
         this.dvlaId = dvlaId;
     }
 }

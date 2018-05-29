@@ -6,6 +6,8 @@ public interface MotrReadService {
 
     MotrResponse getLatestMotTestByRegistration(String registration);
 
+    MotrResponse getLatestMotTestByRegistration(String registration, Boolean withDvlaVehicles);
+
     MotrResponse getLatestMotTestByDvlaVehicleId(Integer dvlaVehicleId);
 
     MotrResponse getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber);

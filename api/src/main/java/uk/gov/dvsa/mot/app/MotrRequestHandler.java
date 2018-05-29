@@ -1,5 +1,7 @@
 package uk.gov.dvsa.mot.app;
 
+import com.amazonaws.serverless.proxy.RequestReader;
+import com.amazonaws.services.lambda.runtime.Context;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
@@ -9,23 +11,25 @@ import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
+import uk.gov.dvsa.mot.trade.api.MotrResponse;
+import uk.gov.dvsa.mot.trade.api.TradeException;
+import uk.gov.dvsa.mot.trade.read.core.MotrReadService;
 import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
 import uk.gov.dvsa.mot.vehicle.hgv.model.HgvPsvVehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 import uk.gov.dvsa.mot.vehicle.read.core.VehicleReadService;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Optional;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 
 @Path("/")
@@ -33,6 +37,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     private static final String HGV_VEHICLE_TYPE = "HGV";
     private static final Logger logger = Logger.getLogger(MotrRequestHandler.class);
 
+    private MotrReadService motrReadService;
     private VehicleReadService vehicleReadService;
     private HgvVehicleProvider hgvVehicleProvider;
     private String awsRequestId;
@@ -55,50 +60,77 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         this.hgvVehicleProvider = hgvVehicleProvider;
     }
 
+    @Inject
+    public void setMotrReadService(MotrReadService motrReadService) {
+        this.motrReadService = motrReadService;
+    }
+
     @GET
     @Path("motr/v2/search/registration/{registration}")
     @Produces("application/json")
-    public Response getVehicle(@PathParam("registration") String registration) throws Exception {
-        // awsRequestId = context.getAwsRequestId();
-        logger.info(String.format("Entering MotrRequestHandler, awsRequestId: %s", awsRequestId));
+    public Response getVehicle(@PathParam("registration") String registration,
+                               ContainerRequestContext requestContext) throws TradeException {
 
-        if (Strings.isNullOrEmpty(registration)) {
-            logger.error("Registration param is missing");
-            throw new BadRequestException("Registration param is missing", awsRequestId);
-        }
+        try {
+            Context context = (Context) requestContext.getProperty(RequestReader.LAMBDA_CONTEXT_PROPERTY);
 
-        Optional<List<uk.gov.dvsa.mot.vehicle.api.Vehicle>> motVehiclesOptional = getMotVehicle(registration);
-
-        if (motVehiclesOptional.isPresent() && !motVehiclesOptional.get().isEmpty()) {
-
-            return Response.ok(motVehiclesOptional.get()).build();
-        }
-
-        Optional<DvlaVehicle> dvlaVehicleOptional = getDvlaVehicle(registration);
-
-        if (dvlaVehicleOptional.isPresent()) {
-            DvlaVehicle dvlaVehicle = dvlaVehicleOptional.get();
-
-            Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
-            if (!hgvPsvVehicleOptional.isPresent()) {
-                logger.error("No HGV/PSV vehicle retrieved");
-                throw new InvalidResourceException("No HGV/PSV vehicle retrieved", awsRequestId);
+            if (context != null) {
+                awsRequestId = context.getAwsRequestId();
             }
 
-            return Response.ok(setResponseVehicle(hgvPsvVehicleOptional.get(), dvlaVehicle)).build();
-        } else {
-            logger.error("Vehicle is not HGV/PSV vehicle");
-            throw new InternalServerErrorException("Vehicle is not HGV/PSV vehicle", awsRequestId);
+            logger.info(String.format("Entering MotrRequestHandler, awsRequestId: %s", awsRequestId));
+
+            if (Strings.isNullOrEmpty(registration)) {
+                logger.error("Registration param is missing");
+                throw new BadRequestException("Registration param is missing", awsRequestId);
+            }
+
+            Optional<MotrResponse> motVehiclesOptional = getMotVehicle(registration);
+
+            if (motVehiclesOptional.isPresent()) {
+
+                return Response.ok(setResponseMotVehicle(motVehiclesOptional.get())).build();
+            }
+
+            Optional<DvlaVehicle> dvlaVehicleOptional = getDvlaVehicle(registration);
+
+            if (dvlaVehicleOptional.isPresent()) {
+                DvlaVehicle dvlaVehicle = dvlaVehicleOptional.get();
+
+                Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
+
+                if (!hgvPsvVehicleOptional.isPresent()) {
+                    logger.error("No HGV/PSV vehicle retrieved");
+                    throw new InvalidResourceException("No HGV/PSV vehicle retrieved", awsRequestId);
+                }
+
+                HgvPsvVehicle hgvPsvVehicle = setResponseHgvVehicle(hgvPsvVehicleOptional.get(), dvlaVehicle);
+
+                return Response.ok(hgvPsvVehicle).build();
+            } else {
+                logger.error("No MOT Test or DVLA vehicle found for registration.");
+                throw new InvalidResourceException("No MOT Test or DVLA vehicle found for registration " + registration,
+                        awsRequestId);
+            }
+        } catch (TradeException e) {
+            // no need to log these errors, just throw them back
+            logger.trace("Exiting getVehicle");
+            throw e;
+        } catch (Exception e) {
+            // log all unhandled exceptions and throw an internal server error
+            logger.error(e);
+            logger.trace("Exiting getVehicle");
+            throw new InternalServerErrorException(e, awsRequestId);
         }
     }
 
-    private Optional<List<uk.gov.dvsa.mot.vehicle.api.Vehicle>> getMotVehicle(String registration) throws Exception {
+    private Optional<MotrResponse> getMotVehicle(String registration) throws Exception {
         logger.info(String.format("Retrieving vehicle by registration: %s", registration));
 
-        List<uk.gov.dvsa.mot.vehicle.api.Vehicle> motVehicles;
+        MotrResponse motVehicles;
 
         try {
-            motVehicles = vehicleReadService.findByRegistration(registration);
+            motVehicles = motrReadService.getLatestMotTestByRegistration(registration, false);
         } catch (Exception e) {
             logger.error(String.format("There was an error retrieving mot vehicle with reg: %s",
                     registration), e);
@@ -111,6 +143,8 @@ public class MotrRequestHandler extends AbstractRequestHandler {
 
         return Optional.of(motVehicles);
     }
+
+
 
     private Optional<DvlaVehicle> getDvlaVehicle(String registration) throws Exception {
         logger.info(String.format("Retrieving dvla vehicle by registration: %s", registration));
@@ -145,7 +179,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         return Optional.ofNullable(foundVehicle);
     }
 
-    private HgvPsvVehicle setResponseVehicle(Vehicle vehicle, DvlaVehicle dvlaVehicle) throws Exception {
+    private HgvPsvVehicle setResponseHgvVehicle(Vehicle vehicle, DvlaVehicle dvlaVehicle) throws Exception {
         HgvPsvVehicle hgvPsvVehicle = new HgvPsvVehicle();
 
         hgvPsvVehicle.setMake(vehicle.getMake());
@@ -155,7 +189,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         hgvPsvVehicle.setVin(dvlaVehicle.getVin());
         hgvPsvVehicle.setVehicleType(vehicle.getVehicleType());
         hgvPsvVehicle.setManufactureYear(vehicle.getYearOfManufacture().toString());
-        hgvPsvVehicle.setDvlaId(dvlaVehicle.getDvlaVehicleId());
+        hgvPsvVehicle.setDvlaId(Integer.toString(dvlaVehicle.getDvlaVehicleId()));
         hgvPsvVehicle.setMotTestExpiryDate(determineAnnualTestExpiryDate(vehicle));
 
         if (dvlaVehicle.getColour2() != null) {
@@ -171,30 +205,52 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     }
 
     private String determineAnnualTestExpiryDate(Vehicle vehicle) throws Exception {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        TestHistory[] testHistory = vehicle.getTestHistory();
-        String registrationDate = vehicle.getRegistrationDate();
+        DateTimeFormatter oldPattern = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter newPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        if (testHistory.length == 0) {
+        LocalDate datetime;
+
+        String date = vehicle.getTestCertificateExpiryDate();
+
+        if (Strings.isNullOrEmpty(date)) {
+            logger.info("Test Certificate Expiry date is null or empty");
+
+            String registrationDate = vehicle.getRegistrationDate();
+
             if (Strings.isNullOrEmpty(registrationDate)) {
                 logger.error("Registration date is null or empty");
                 throw new BadRequestException("Registration date is null or empty", awsRequestId);
             }
 
-            Date date = dateFormat.parse(registrationDate);
-            Calendar calendarDate = Calendar.getInstance();
-            calendarDate.setTime(date);
+            datetime = LocalDate.parse(registrationDate, oldPattern);
 
             if (vehicle.getVehicleType().equals(HGV_VEHICLE_TYPE)) {
-                calendarDate.add(Calendar.MONTH, 12);
-                calendarDate.set(Calendar.DAY_OF_MONTH, calendarDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+                datetime = datetime.plusMonths(12);
+                datetime = datetime.with(TemporalAdjusters.lastDayOfMonth());
             } else {
-                calendarDate.add(Calendar.MONTH, 12);
+                datetime = datetime.plusMonths(12);
             }
-
-            return dateFormat.format(calendarDate.getTime());
         } else {
-            return testHistory[testHistory.length - 1].getTestDate();
+            datetime = LocalDate.parse(date, oldPattern);
         }
+
+        return datetime.format(newPattern);
+    }
+
+    private HgvPsvVehicle setResponseMotVehicle(MotrResponse response) {
+        HgvPsvVehicle hgvPsvVehicle = new HgvPsvVehicle();
+
+        hgvPsvVehicle.setDvlaId(response.getDvlaId());
+        hgvPsvVehicle.setMake(response.getMake());
+        hgvPsvVehicle.setManufactureYear(response.getManufactureYear());
+        hgvPsvVehicle.setModel(response.getModel());
+        hgvPsvVehicle.setMotTestExpiryDate(response.getMotTestExpiryDate());
+        hgvPsvVehicle.setPrimaryColour(response.getPrimaryColour());
+        hgvPsvVehicle.setRegistration(response.getRegistration());
+        hgvPsvVehicle.setSecondaryColour(response.getSecondaryColour());
+        hgvPsvVehicle.setMotTestNumber(response.getMotTestNumber());
+        hgvPsvVehicle.setVehicleType("MOT");
+
+        return hgvPsvVehicle;
     }
 }
