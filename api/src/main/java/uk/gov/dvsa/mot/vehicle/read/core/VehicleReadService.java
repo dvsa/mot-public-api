@@ -21,8 +21,6 @@ public interface VehicleReadService {
 
     DvlaVehicle getDvlaVehicleByRegistration(String registration);
 
-    uk.gov.dvsa.mot.persist.model.DvlaVehicle getDvlaVehicleByRegistrationWithVin(String registration);
-
     List<DvlaVehicle> findDvlaVehicleById(Integer dvlaVehicleId);
 
     List<Vehicle> findByMotTestNumberWithSameRegistrationAndVin(long motTestNumber);

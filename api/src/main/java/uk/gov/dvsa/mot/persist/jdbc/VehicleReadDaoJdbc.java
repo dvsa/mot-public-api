@@ -130,15 +130,6 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
     }
 
     @Override
-    public DvlaVehicle getDvlaVehicleByRegistrationWithVin(String registration) {
-
-        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
-        ResultSetRowMapper<DvlaVehicle> mapper = new DvlaVehicleWithFuelTypeRowMapper();
-
-        return runner.executeQuery(DvlaVehicleReadSql.selectSingleDvlaVehicleByRegistrationWithVin, mapper, registration);
-    }
-
-    @Override
     public List<DvlaVehicle> getDvlaVehicleByDvlaVehicleId(Integer dvlaVehicleId) {
 
         DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
@@ -601,7 +592,6 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         private static final String EU_CLASSIFICATION = "eu_classification";
         private static final String BODY_TYPE_CODE = "body_type_code";
         private static final String LAST_UPDATED_ON = "last_updated_on";
-        private static final String VIN = "vin";
 
 
         public DvlaVehicle mapRow(ResultSet rs) throws SQLException {
@@ -625,12 +615,6 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
                 if (!Strings.isNullOrEmpty(modelCode)) {
                     dvlaVehicle.setModelDetail(getDvlaModelDetailByCode(modelCode, makeCode));
                 }
-            }
-
-            String vin = rs.getString(VIN);
-
-            if (!Strings.isNullOrEmpty(vin)) {
-                dvlaVehicle.setVin(vin);
             }
 
             dvlaVehicle.setDvsaModel(rs.getString(DVSA_MODEL_NAME));

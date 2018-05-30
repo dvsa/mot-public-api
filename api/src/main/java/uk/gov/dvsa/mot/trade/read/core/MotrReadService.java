@@ -4,9 +4,11 @@ import uk.gov.dvsa.mot.trade.api.MotrResponse;
 
 public interface MotrReadService {
 
+    MotrResponse getLatestMotTestForMotOrDvlaVehicleByRegistration(String registration);
+
     MotrResponse getLatestMotTestByRegistration(String registration);
 
-    MotrResponse getLatestMotTestByRegistration(String registration, Boolean withDvlaVehicles);
+    MotrResponse getLatestMotTestForDvlaVehicleByRegistration(String registration);
 
     MotrResponse getLatestMotTestByDvlaVehicleId(Integer dvlaVehicleId);
 

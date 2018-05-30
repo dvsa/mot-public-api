@@ -1,22 +1,23 @@
 package uk.gov.dvsa.mot.vehicle.hgv.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sun.istack.internal.Nullable;
+
+import javax.validation.constraints.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class HgvPsvVehicle {
 
     private String make;
     private String model;
-    private String primaryColour;
-    private String secondaryColour;
     private String registration;
-    private String vin;
     private String vehicleType;
     private String manufactureYear;
     private String motTestExpiryDate;
     private String motTestNumber;
     private String dvlaId;
 
+    @Nullable
     public String getMake() {
         return make;
     }
@@ -25,6 +26,7 @@ public class HgvPsvVehicle {
         this.make = make;
     }
 
+    @Nullable
     public String getModel() {
         return model;
     }
@@ -33,22 +35,7 @@ public class HgvPsvVehicle {
         this.model = model;
     }
 
-    public String getPrimaryColour() {
-        return primaryColour;
-    }
-
-    public void setPrimaryColour(String primaryColour) {
-        this.primaryColour = primaryColour;
-    }
-
-    public String getSecondaryColour() {
-        return secondaryColour;
-    }
-
-    public void setSecondaryColour(String secondaryColour) {
-        this.secondaryColour = secondaryColour;
-    }
-
+    @NotNull
     public String getRegistration() {
         return registration;
     }
@@ -57,14 +44,7 @@ public class HgvPsvVehicle {
         this.registration = registration;
     }
 
-    public String getVin() {
-        return vin;
-    }
-
-    public void setVin(String vin) {
-        this.vin = vin;
-    }
-
+    @NotNull
     public String getVehicleType() {
         return vehicleType;
     }
@@ -73,6 +53,7 @@ public class HgvPsvVehicle {
         this.vehicleType = vehicleType;
     }
 
+    @Nullable
     public String getManufactureYear() {
         return manufactureYear;
     }
@@ -81,6 +62,7 @@ public class HgvPsvVehicle {
         this.manufactureYear = manufactureYear;
     }
 
+    @NotNull
     public String getMotTestExpiryDate() {
         return motTestExpiryDate;
     }
@@ -89,6 +71,7 @@ public class HgvPsvVehicle {
         this.motTestExpiryDate = motTestExpiryDate;
     }
 
+    @Nullable
     public String getMotTestNumber() {
         return motTestNumber;
     }
@@ -97,6 +80,7 @@ public class HgvPsvVehicle {
         this.motTestNumber = motTestNumber;
     }
 
+    @Nullable
     public String getDvlaId() {
         return dvlaId;
     }

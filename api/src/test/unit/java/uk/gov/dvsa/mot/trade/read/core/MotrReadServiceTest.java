@@ -132,7 +132,7 @@ public class MotrReadServiceTest {
         when(vehicleReadServiceMock.findByRegistration(registration)).thenReturn(Arrays.asList(backendVehicle));
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(backendTest);
 
-        MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
+        MotrResponse motrResponse = motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration);
 
         assertNotNull("Returned vehicle is null", motrResponse);
         assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
@@ -174,7 +174,7 @@ public class MotrReadServiceTest {
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(null);
         when(vehicleReadServiceMock.findDvlaVehicleByRegistration(registration)).thenReturn(Arrays.asList(dvlaVehicle));
 
-        MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
+        MotrResponse motrResponse = motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration);
 
         assertNotNull("Returned vehicle is null", motrResponse);
         assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
@@ -196,7 +196,7 @@ public class MotrReadServiceTest {
 
         when(vehicleReadServiceMock.findByRegistration(registration)).thenReturn(null);
 
-        MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
+        MotrResponse motrResponse = motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration);
 
         assertNull(motrResponse);
     }
@@ -229,7 +229,7 @@ public class MotrReadServiceTest {
         when(vehicleReadServiceMock.findByRegistration(registration)).thenReturn(Arrays.asList(backendVehicle));
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(backendTest);
 
-        MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
+        MotrResponse motrResponse = motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration);
 
         assertNotNull("Returned vehicle is null", motrResponse);
         assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
@@ -274,7 +274,7 @@ public class MotrReadServiceTest {
         when(vehicleReadServiceMock.findByRegistration(registration)).thenReturn(Arrays.asList(backendVehicle));
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(backendTest);
 
-        MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
+        MotrResponse motrResponse = motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration);
 
         assertNotNull("Returned vehicle is null", motrResponse);
         assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
@@ -317,7 +317,7 @@ public class MotrReadServiceTest {
         when(vehicleReadServiceMock.findByRegistration(registration)).thenReturn(Arrays.asList(backendVehicle));
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(backendTest);
 
-        MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
+        MotrResponse motrResponse = motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration);
 
         assertNotNull("Returned vehicle is null", motrResponse);
         assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
@@ -360,7 +360,7 @@ public class MotrReadServiceTest {
         when(vehicleReadServiceMock.findByRegistration(registration)).thenReturn(Arrays.asList(backendVehicle));
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(backendTest);
 
-        MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
+        MotrResponse motrResponse = motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration);
 
         assertNotNull("Returned vehicle is null", motrResponse);
         assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
@@ -401,7 +401,7 @@ public class MotrReadServiceTest {
         when(vehicleReadServiceMock.findByRegistration(registration)).thenReturn(Arrays.asList(backendVehicle));
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(backendTest);
 
-        MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
+        MotrResponse motrResponse = motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration);
 
         assertNotNull("Returned vehicle is null", motrResponse);
         assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());

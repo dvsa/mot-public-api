@@ -526,7 +526,7 @@ public class TradeServiceRequestHandlerTest {
         final String registration = "NOTACAR";
         request.getPathParams().setRegistration(registration);
 
-        when(motrReadService.getLatestMotTestByRegistration(registration)).thenReturn(null);
+        when(motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration)).thenReturn(null);
 
         createHandlerAndGetLatestMotTest(request);
     }
@@ -543,7 +543,7 @@ public class TradeServiceRequestHandlerTest {
         final MotrResponse response = new MotrResponse();
         response.setRegistration(registration);
 
-        when(motrReadService.getLatestMotTestByRegistration(registration)).thenReturn(response);
+        when(motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration)).thenReturn(response);
 
         MotrResponse receivedResponse = createHandlerAndGetLatestMotTest(request);
 

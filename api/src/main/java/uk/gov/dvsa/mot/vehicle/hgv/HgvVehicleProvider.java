@@ -31,47 +31,15 @@ public class HgvVehicleProvider {
     }
 
     public Vehicle getVehicle(String registration) throws Exception {
-        logger.trace("Entering HgvVehicleProvider getVehicle()");
-
-        if (registration == null || registration.isEmpty()) {
-            throw new IllegalArgumentException("Registration is null or empty");
-        }
 
         Vehicle vehicle;
         TestHistory[] vehicleTestHistory;
 
         try {
-            CompletableFuture<Vehicle> vehicleFuture = CompletableFuture.supplyAsync(() -> {
-                Vehicle result = null;
+            CompletableFuture<Vehicle> vehicleFuture = CompletableFuture.supplyAsync(() -> getHgvVehicle(registration));
 
-                try {
-                    result = getHgvVehicle(registration);
-                } catch (IOException e) {
-                    logger.error("IO error during communication with HGV vehicle api",  e);
-                } catch (InstantiationException e) {
-                    logger.error("Instantiation error during communication with HGV api", e);
-                } catch (IllegalAccessException e) {
-                    logger.error("IllegalAccess error during communication with HGV api", e);
-                }
-
-                return result;
-            });
-
-            CompletableFuture<TestHistory[]> vehicleTestHistoryFuture = CompletableFuture.supplyAsync(() -> {
-                TestHistory[] result = null;
-
-                try {
-                    result = getHgvVehicleTestHistory(registration);
-                } catch (IOException e) {
-                    logger.error("IO error during communication with HGV test history api", e);
-                } catch (InstantiationException e) {
-                    logger.error("Instantiation error during communication with HGV test history api", e);
-                } catch (IllegalAccessException e) {
-                    logger.error("IllegalAccess error during communication with HGV test history api", e);
-                }
-
-                return result;
-            });
+            CompletableFuture<TestHistory[]> vehicleTestHistoryFuture = CompletableFuture.supplyAsync(
+                    () -> getHgvVehicleTestHistory(registration));
 
             vehicle = vehicleFuture.get();
             vehicleTestHistory = vehicleTestHistoryFuture.get();
@@ -82,47 +50,56 @@ public class HgvVehicleProvider {
 
         if (vehicle != null) {
             vehicle.setTestHistory(vehicleTestHistory);
-            logger.info("HGV vehicle fetched successfully. Registration " + vehicle.getVehicleIdentifier());
         }
 
         return vehicle;
     }
 
-    private Vehicle getHgvVehicle(String registration) throws IOException, InstantiationException, IllegalAccessException {
+    private Vehicle getHgvVehicle(String registration) {
         ResponseVehicle response = getHgvResponse(registration,  "/vehicle/moth", ResponseVehicle.class);
 
-        return response.getVehicle();
+        return response != null ? response.getVehicle() : null;
     }
 
-    private TestHistory[] getHgvVehicleTestHistory(String registration) throws IOException, InstantiationException, IllegalAccessException {
+    private TestHistory[] getHgvVehicleTestHistory(String registration) {
         ResponseTestHistory response = getHgvResponse(registration, "/testhistory/moth", ResponseTestHistory.class);
 
-        return response.getTestHistory();
+        return response != null ? response.getTestHistory() : null;
     }
 
-    private <T> T getHgvResponse(String registration, String endpointToCall, Class<T> type) throws IOException, IllegalAccessException,
-            InstantiationException {
-        logger.trace("Entering getHgvResponse(), endpoint to call: " + endpointToCall);
+    private <T> T getHgvResponse(String registration, String endpointToCall, Class<T> type) {
 
-        Response response = getClient().target(configuration.getApiUrl() + endpointToCall)
-                .queryParam("identifier", registration)
-                .request()
-                .header("x-api-key", configuration.getApiKey())
-                .get();
+        try {
+            logger.trace("Entering getHgvResponse(), endpoint to call: " + endpointToCall);
 
-        int status = response.getStatus();
-        logger.info("HGV response status code: " + status);
+            Response response = getClient().target(configuration.getApiUrl() + endpointToCall)
+                    .queryParam("identifier", registration)
+                    .request()
+                    .header("x-api-key", configuration.getApiKey())
+                    .get();
 
-        switch (status) {
-            case 200:
-                return response.readEntity(type);
-            case 204:
-                response.close();
-                return type.newInstance();
-            default:
-                response.close();
-                throw new IOException("Invalid http response code");
+            int status = response.getStatus();
+            logger.info("HGV response status code: " + status);
+
+            switch (status) {
+                case 200:
+                    return response.readEntity(type);
+                case 204:
+                    response.close();
+                    return type.newInstance();
+                default:
+                    response.close();
+                    throw new IOException("Invalid http response code");
+            }
+        } catch (IOException e) {
+            logger.error(String.format("IO error during communication with api from HGV endpoint : %s", endpointToCall), e);
+        } catch (InstantiationException e) {
+            logger.error(String.format("Instantiation error during communication with api from HGV endpoint : %s", endpointToCall), e);
+        } catch (IllegalAccessException e) {
+            logger.error(String.format("IllegalAccess error during communication with api from HGV endpoint : %s", endpointToCall), e);
         }
+
+        return null;
     }
 
     private Client getClient() throws IOException {

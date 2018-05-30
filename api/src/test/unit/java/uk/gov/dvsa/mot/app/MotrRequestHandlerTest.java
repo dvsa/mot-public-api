@@ -8,8 +8,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import uk.gov.dvsa.mot.persist.model.ColourLookup;
-import uk.gov.dvsa.mot.persist.model.DvlaVehicle;
 import uk.gov.dvsa.mot.trade.api.BadRequestException;
+import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
 import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.trade.read.core.MotrReadService;
@@ -17,7 +17,6 @@ import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
 import uk.gov.dvsa.mot.vehicle.hgv.model.HgvPsvVehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
-import uk.gov.dvsa.mot.vehicle.read.core.VehicleReadService;
 
 import java.io.IOException;
 
@@ -33,6 +32,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -43,9 +43,6 @@ public class MotrRequestHandlerTest {
 
     private static final String AWS_REQUEST_ID = "123456";
     private static final String REGISTRATION = "REG123456";
-
-    @Mock
-    private VehicleReadService vehicleReadService;
 
     @Mock
     private MotrReadService motrReadService;
@@ -71,7 +68,6 @@ public class MotrRequestHandlerTest {
         motrRequestHandler = new MotrRequestHandler(false);
         motrRequestHandler.setHgvVehicleProvider(hgvVehicleProvider);
         motrRequestHandler.setMotrReadService(motrReadService);
-        motrRequestHandler.setVehicleReadService(vehicleReadService);
     }
 
     @Test
@@ -79,15 +75,15 @@ public class MotrRequestHandlerTest {
         catchException(motrRequestHandler).getVehicle("", containerRequestContext);
 
         assertThat(caughtException(), allOf(
-                instanceOf(BadRequestException.class),
-                hasMessageThat(containsString("Registration param is missing")),
+                instanceOf(InvalidResourceException.class),
+                hasMessageThat(containsString("No MOT Test or DVLA vehicle found for registration")),
                 hasNoCause()
         ));
     }
 
     @Test
     public void getVehicle_WhenVehicleReadServiceFindByRegistrationReturnsException_ShouldThrowException() throws Exception {
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenThrow(new IndexOutOfBoundsException());
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenThrow(new IndexOutOfBoundsException());
 
         catchException(motrRequestHandler).getVehicle(REGISTRATION, containerRequestContext);
 
@@ -101,7 +97,7 @@ public class MotrRequestHandlerTest {
     @Test
     public void getVehicle_WhenVehicleReadServiceGetDvlaVehicleByRegistrationWithVinReturnsException_ShouldThrowException()
             throws Exception {
-        when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenThrow(new IndexOutOfBoundsException());
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenThrow(new IndexOutOfBoundsException());
 
         catchException(motrRequestHandler).getVehicle(REGISTRATION, containerRequestContext);
 
@@ -114,8 +110,8 @@ public class MotrRequestHandlerTest {
 
     @Test
     public void getVehicle_WhenDvlaVehicleIsNotPresent_ShouldThrowException() throws Exception {
-        when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenReturn(null);
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenReturn(null);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(null);
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(null);
 
         catchException(motrRequestHandler).getVehicle(REGISTRATION, containerRequestContext);
 
@@ -128,18 +124,17 @@ public class MotrRequestHandlerTest {
 
     @Test
     public void getVehicle_WhenGetHgvPsvVehicleNotReturnVehicle_ShouldThrowException() throws Exception {
-        DvlaVehicle dvlaVehicle = new DvlaVehicle();
+        MotrResponse dvlaVehicle = defaultMotrResponse(REGISTRATION);
 
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenReturn(null);
-        when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenReturn(dvlaVehicle);
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(null);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
         when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(null);
 
-        catchException(motrRequestHandler).getVehicle(REGISTRATION, containerRequestContext);
+        Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        assertThat(caughtException(), allOf(
-                instanceOf(InvalidResourceException.class),
-                hasMessageThat(containsString("No HGV/PSV vehicle retrieved"))
-        ));
+        HgvPsvVehicle expectedVehicle = createResponseVehicle("MOT", "2018-01-01");
+        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
     @Test
@@ -148,13 +143,13 @@ public class MotrRequestHandlerTest {
         TestHistory historyItem =  new TestHistory();
         testHistory[0] = historyItem;
 
-        DvlaVehicle dvlaVehicle = createDvlaVehicle();
+        MotrResponse dvlaVehicle = defaultMotrResponse(REGISTRATION);
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("HGV");
         vehicle.setTestHistory(testHistory);
         vehicle.setTestCertificateExpiryDate("01/01/2018");
 
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenReturn(null);
-        when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenReturn(dvlaVehicle);
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(null);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
         when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(vehicle);
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
@@ -171,13 +166,13 @@ public class MotrRequestHandlerTest {
         historyItem.setTestCertificateSerialNo("SERIAL");
         testHistory[0] = historyItem;
 
-        DvlaVehicle dvlaVehicle = createDvlaVehicle();
+        MotrResponse dvlaVehicle = defaultMotrResponse(REGISTRATION);
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("PSV");
         vehicle.setTestHistory(testHistory);
         vehicle.setTestCertificateExpiryDate("01/01/2018");
 
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenReturn(null);
-        when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenReturn(dvlaVehicle);
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(null);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
         when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(vehicle);
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
@@ -190,12 +185,12 @@ public class MotrRequestHandlerTest {
 
     @Test
     public void getVehicle_WhenVehicleTestHistoryIsEmptyAndRegistrationDateIsNull_ShouldThrowException() throws Exception {
-        DvlaVehicle dvlaVehicle = createDvlaVehicle();
+        MotrResponse dvlaVehicle = defaultMotrResponse(REGISTRATION);
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("HGV");
         vehicle.setTestHistory(new TestHistory[0]);
 
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenReturn(null);
-        when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenReturn(dvlaVehicle);
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(null);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
         when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(vehicle);
 
         catchException(motrRequestHandler).getVehicle(REGISTRATION, containerRequestContext);
@@ -208,13 +203,13 @@ public class MotrRequestHandlerTest {
 
     @Test
     public void getVehicle_WhenVehicleTestHistoryIsEmptyAndVehicleIsHgv_AnnualTestExpiryDateShouldBeSetProperly() throws Exception {
-        DvlaVehicle dvlaVehicle = createDvlaVehicle();
+        MotrResponse dvlaVehicle = defaultMotrResponse(REGISTRATION);
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("HGV");
         vehicle.setTestHistory(new TestHistory[0]);
         vehicle.setRegistrationDate("05/01/2015");
 
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenReturn(null);
-        when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenReturn(dvlaVehicle);
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(null);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
         when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(vehicle);
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
@@ -228,7 +223,7 @@ public class MotrRequestHandlerTest {
     public void getVehicle_WhenSingleMotVehicleIsPresent_BodyIsCorrect() throws Exception {
         MotrResponse motrResponse = defaultMotrResponse("VIN123451");
 
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenReturn(motrResponse);
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(motrResponse);
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
@@ -239,7 +234,7 @@ public class MotrRequestHandlerTest {
     @Test
     public void getVehicle_WhenTwoMotVehicleIsPresent_BodyIsCorrect() throws Exception {
         MotrResponse motrResponse = defaultMotrResponse("VIN12123");
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenReturn(motrResponse);
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(motrResponse);
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
@@ -249,13 +244,13 @@ public class MotrRequestHandlerTest {
 
     @Test
     public void getVehicle_WhenVehicleTestHistoryIsEmptyAndVehicleIsPsv_AnnualTestExpiryDateShouldBeSetProperly() throws Exception {
-        DvlaVehicle dvlaVehicle = createDvlaVehicle();
+        MotrResponse dvlaVehicle = defaultMotrResponse(REGISTRATION);
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("PSV");
         vehicle.setTestHistory(new TestHistory[0]);
         vehicle.setRegistrationDate("05/02/2015");
 
-        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION, false)).thenReturn(null);
-        when(vehicleReadService.getDvlaVehicleByRegistrationWithVin(REGISTRATION)).thenReturn(dvlaVehicle);
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(null);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
         when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(vehicle);
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
@@ -270,11 +265,8 @@ public class MotrRequestHandlerTest {
 
         ColourLookup colourLookup = new ColourLookup();
         colourLookup.setName("BLACK");
-
-        dvlaVehicle.setVin("VIN123456");
-        dvlaVehicle.setColour1(colourLookup);
         dvlaVehicle.setDvlaVehicleId(1);
-        dvlaVehicle.setRegistration(REGISTRATION);
+        dvlaVehicle.setRegistration("VIN13451");
 
         return dvlaVehicle;
     }
@@ -283,7 +275,6 @@ public class MotrRequestHandlerTest {
         Vehicle motVehicle = new Vehicle();
 
         motVehicle.setVin(vin);
-        motVehicle.setPrimaryColour("BLACK");
         motVehicle.setDvlaVehicleId(1);
         motVehicle.setRegistration(REGISTRATION);
 
@@ -293,7 +284,7 @@ public class MotrRequestHandlerTest {
     private uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle createVehicle(String vehicleType) {
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
 
-        vehicle.setVehicleIdentifier("VIN123456");
+        vehicle.setVehicleIdentifier(REGISTRATION);
         vehicle.setMake("MAKE");
         vehicle.setModel("MODEL");
         vehicle.setVehicleType(vehicleType);
@@ -307,43 +298,42 @@ public class MotrRequestHandlerTest {
 
         hgvPsvVehicle.setMake("MAKE");
         hgvPsvVehicle.setModel("MODEL");
-        hgvPsvVehicle.setPrimaryColour("BLACK");
         hgvPsvVehicle.setRegistration(REGISTRATION);
-        hgvPsvVehicle.setVin("VIN123456");
         hgvPsvVehicle.setVehicleType(vehicleType);
         hgvPsvVehicle.setManufactureYear("2013");
-        hgvPsvVehicle.setDvlaId("1");
+        hgvPsvVehicle.setDvlaId("213");
         hgvPsvVehicle.setMotTestExpiryDate(testExpiryDate);
 
         return hgvPsvVehicle;
     }
 
     private void checkIfHgvPsvVehicleIsCorrect(HgvPsvVehicle expectedVehicle, HgvPsvVehicle actualVehicle) {
-        assertTrue(actualVehicle.getMake().equals(expectedVehicle.getMake()));
-        assertTrue(actualVehicle.getManufactureYear().equals(expectedVehicle.getManufactureYear()));
-        assertTrue(actualVehicle.getModel().equals(expectedVehicle.getModel()));
-        assertTrue(actualVehicle.getMotTestExpiryDate().equals(expectedVehicle.getMotTestExpiryDate()));
-        assertTrue(actualVehicle.getPrimaryColour().equals(expectedVehicle.getPrimaryColour()));
-        assertTrue(actualVehicle.getRegistration().equals(expectedVehicle.getRegistration()));
-        assertTrue(actualVehicle.getVehicleType().equals(expectedVehicle.getVehicleType()));
-        assertTrue(actualVehicle.getDvlaId().equals(expectedVehicle.getDvlaId()));
+        assertEquals(actualVehicle.getMake(), expectedVehicle.getMake());
+        assertEquals(actualVehicle.getManufactureYear(), expectedVehicle.getManufactureYear());
+        assertEquals(actualVehicle.getModel(), expectedVehicle.getModel());
+        assertEquals(actualVehicle.getMotTestExpiryDate(), expectedVehicle.getMotTestExpiryDate());
+        assertEquals(actualVehicle.getRegistration(), expectedVehicle.getRegistration());
+        assertEquals(actualVehicle.getVehicleType(), expectedVehicle.getVehicleType());
+        assertEquals(actualVehicle.getDvlaId(), expectedVehicle.getDvlaId());
 
         if (expectedVehicle.getMotTestNumber() != null) {
-            assertTrue(actualVehicle.getMotTestNumber().equals(expectedVehicle.getMotTestNumber()));
+            assertEquals(actualVehicle.getMotTestNumber(), expectedVehicle.getMotTestNumber());
         }
     }
 
     private void checkIfMotVehicleIsCorrect(MotrResponse expectedVehicle, HgvPsvVehicle actualVehicle) {
-        assertTrue(actualVehicle.getPrimaryColour().equals(expectedVehicle.getPrimaryColour()));
-        assertTrue(actualVehicle.getRegistration().equals(expectedVehicle.getRegistration()));
+        assertEquals(actualVehicle.getRegistration(), expectedVehicle.getRegistration());
         assertSame(actualVehicle.getDvlaId(), expectedVehicle.getDvlaId());
     }
 
     private MotrResponse defaultMotrResponse(String registration) {
         MotrResponse motrResponse = new MotrResponse();
 
-        motrResponse.setPrimaryColour("Black");
         motrResponse.setRegistration(registration);
+        motrResponse.setMake("MAKE");
+        motrResponse.setModel("MODEL");
+        motrResponse.setManufactureYear("2013");
+        motrResponse.setMotTestExpiryDate("2018-01-01");
         motrResponse.setDvlaId("213");
 
         return motrResponse;
