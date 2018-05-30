@@ -15,7 +15,7 @@ public class AnnualTestExpiryDateCalculator {
     private static final Logger logger = Logger.getLogger(AnnualTestExpiryDateCalculator.class);
 
     private static final String HGV_VEHICLE_TYPE = "HGV";
-    private DateTimeFormatter oldPattern = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private DateTimeFormatter oldPattern = DateTimeFormatter.ofPattern("d/M/yyyy");
     private DateTimeFormatter newPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 

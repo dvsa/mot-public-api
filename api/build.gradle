@@ -77,6 +77,7 @@ dependencies {
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:2.+'
     testCompile 'eu.codearte.catch-exception:catch-exception:1.4.4'
+    testCompile 'com.tngtech.java:junit-dataprovider:1.9.3'
 }
 
 task wrapper (type: Wrapper)
