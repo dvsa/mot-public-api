@@ -89,7 +89,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                         return Response.ok(buildMotResponse(dvlaVehicle)).build();
                     }
 
-                    throw new InvalidResourceException("No HGV/PSV vehicle retrieved for registration " + registration,
+                    throw new InvalidResourceException("Could not determine test expiry date for registration " + registration,
                             awsRequestId);
                 }
 
@@ -156,7 +156,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
             }
         } catch (Exception e) {
             logger.error("There was an error retrieving the HGV/PSV history", e);
-            throw new InvalidResourceException("There was an error retrieving the HGV/PSV history", awsRequestId);
+            throw new InternalServerErrorException("There was an error retrieving the HGV/PSV history", awsRequestId);
         }
 
         return Optional.ofNullable(foundVehicle);

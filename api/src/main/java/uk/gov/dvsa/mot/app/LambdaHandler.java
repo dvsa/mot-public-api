@@ -10,9 +10,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import uk.gov.dvsa.mot.trade.api.TradeExceptionMapper;
 
-/**
- * Entry point for Lambda
- */
 public class LambdaHandler implements RequestHandler<AwsProxyRequest, AwsProxyResponse> {
 
     private static final ResourceConfig jerseyApplication = new ResourceConfig()
@@ -22,11 +19,9 @@ public class LambdaHandler implements RequestHandler<AwsProxyRequest, AwsProxyRe
     private static final JerseyLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler =
             JerseyLambdaContainerHandler.getAwsProxyHandler(jerseyApplication);
 
-
     @Override
     public AwsProxyResponse handleRequest(AwsProxyRequest request, Context context) {
         context.getLogger().log("Entering lambda handler : " + context.getAwsRequestId());
-
 
         return handler.proxy(request, context);
     }

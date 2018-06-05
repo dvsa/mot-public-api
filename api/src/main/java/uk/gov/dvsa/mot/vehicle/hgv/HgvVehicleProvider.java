@@ -15,7 +15,6 @@ import uk.gov.dvsa.mot.vehicle.hgv.response.ResponseVehicle;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
@@ -43,9 +42,9 @@ public class HgvVehicleProvider {
 
             vehicle = vehicleFuture.get();
             vehicleTestHistory = vehicleTestHistoryFuture.get();
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (Exception e) {
             logger.error("HGV calls execution error", e);
-            throw new Exception("HGV calls execution error" + e.getStackTrace());
+            throw new Exception("HGV calls execution error", e);
         }
 
         if (vehicle != null) {
@@ -57,7 +56,6 @@ public class HgvVehicleProvider {
 
     private Vehicle getHgvVehicle(String registration) {
         ResponseVehicle response = getHgvResponse(registration,  "/vehicle/moth", ResponseVehicle.class);
-
         return response != null ? response.getVehicle() : null;
     }
 
@@ -91,15 +89,10 @@ public class HgvVehicleProvider {
                     response.close();
                     throw new IOException("Invalid http response code");
             }
-        } catch (IOException e) {
-            logger.error(String.format("IO error during communication with api from HGV endpoint : %s", endpointToCall), e);
-        } catch (InstantiationException e) {
-            logger.error(String.format("Instantiation error during communication with api from HGV endpoint : %s", endpointToCall), e);
-        } catch (IllegalAccessException e) {
-            logger.error(String.format("IllegalAccess error during communication with api from HGV endpoint : %s", endpointToCall), e);
+        } catch (IOException | InstantiationException | IllegalAccessException e) {
+            logger.error(String.format("Error during communication with api from HGV endpoint : %s", endpointToCall), e);
+            throw new RuntimeException("Error during communication with HGV/PSV API", e);
         }
-
-        return null;
     }
 
     private Client getClient() throws IOException {

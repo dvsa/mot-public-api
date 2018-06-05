@@ -15,7 +15,7 @@ public class TradeExceptionMapper implements ExceptionMapper<TradeException> {
 
         return Response
                 .status(e.getHttpStatus())
-                .type(MediaType.TEXT_PLAIN)
+                .type(MediaType.APPLICATION_JSON)
                 .entity(e.getMessage())
                 .build();
     }
