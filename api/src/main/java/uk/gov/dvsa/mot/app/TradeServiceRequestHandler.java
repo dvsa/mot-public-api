@@ -270,7 +270,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             if (request.getPathParams().getRegistration() != null) {
                 String registration = URLDecoder.decode(request.getPathParams().getRegistration(), "UTF-8");
                 logger.info("Trade API MOTR request for registration = " + registration);
-                MotrResponse motrResponse = motrReadService.getLatestMotTestByRegistration(registration);
+                MotrResponse motrResponse = motrReadService.getLatestMotTestForMotOrDvlaVehicleByRegistration(registration);
 
                 if (motrResponse == null) {
                     throw new InvalidResourceException("No MOT Test or DVLA vehicle found for registration " + registration,

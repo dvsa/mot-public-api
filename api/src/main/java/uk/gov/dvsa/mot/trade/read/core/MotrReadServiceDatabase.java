@@ -33,7 +33,7 @@ public class MotrReadServiceDatabase implements MotrReadService {
 
     @Override
     @ProvideDbConnection
-    public MotrResponse getLatestMotTestByRegistration(String registration) {
+    public MotrResponse getLatestMotTestForMotOrDvlaVehicleByRegistration(String registration) {
 
         List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
         MotrReadServiceDatabase.VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
@@ -43,6 +43,33 @@ public class MotrReadServiceDatabase implements MotrReadService {
         }
 
         return mapVehicleAndLatestMotToMotrResponse(vehicleAndLatestMot);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public MotrResponse getLatestMotTestByRegistration(String registration) {
+
+        List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
+        MotrReadServiceDatabase.VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
+
+        if (vehicleAndLatestMot == null || !vehicleAndLatestMot.hasMotTest()) {
+            return null;
+        }
+
+        return mapVehicleAndLatestMotToMotrResponse(vehicleAndLatestMot);
+    }
+
+    @Override
+    @ProvideDbConnection
+    public MotrResponse getLatestMotTestForDvlaVehicleByRegistration(String registration) {
+
+        List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleByRegistration(registration);
+
+        if (CollectionUtils.isNullOrEmpty(vehicles)) {
+            return null;
+        }
+
+        return getLatestDvlaVehicleAndMapToMotrResponse(vehicles);
     }
 
     @Override
@@ -69,6 +96,26 @@ public class MotrReadServiceDatabase implements MotrReadService {
             return null;
         }
         return mapVehicleAndLatestMotToMotrResponse(vehicleAndLatestMot);
+    }
+
+    private MotrResponse getLatestDvlaVehicleAndMapToMotrResponse(List<DvlaVehicle> vehicles) {
+        DvlaVehicle dvlaVehicle = selectMostRecentDvlaVehicle(vehicles);
+        MotrResponse motrResponse = mapDvlaVehicleToMotrResponse(dvlaVehicle);
+
+        if (dvlaVehicle.getEuClassification() == null
+                || dvlaVehicle.getEuClassification().equals("N2")
+                || dvlaVehicle.getEuClassification().equals("N3")) {
+            return motrResponse;
+        }
+
+        Date firstMotDueDate = DvlaVehicleFirstMotDueDateCalculator.calculateFirstMotDueDate(dvlaVehicle);
+
+        if (firstMotDueDate != null) {
+            motrResponse.setMotTestExpiryDate(
+                    SDF_DATE_ISO_8601.format(firstMotDueDate));
+        }
+
+        return motrResponse;
     }
 
     private VehicleAndLatestMot getVehicleAndLatestMotTestPass(List<Vehicle> vehicles) {

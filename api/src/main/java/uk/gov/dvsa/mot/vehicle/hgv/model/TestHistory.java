@@ -1,0 +1,88 @@
+package uk.gov.dvsa.mot.vehicle.hgv.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TestHistory {
+    private String testType;
+    private String location;
+    private String testResult;
+    private String testDate;
+    private String testCertificateExpiryDateAtTest;
+    private int numberOfDefectsAtTest;
+    private int numberOfAdvisoryDefectsAtTest;
+    private String vehicleIdentifierAtTest;
+    private String testCertificateSerialNo;
+
+    public String getTestType() {
+        return testType;
+    }
+
+    public String getTestCertificateSerialNo() {
+        return testCertificateSerialNo;
+    }
+
+    public void setTestCertificateSerialNo(String testCertificateSerialNo) {
+        this.testCertificateSerialNo = testCertificateSerialNo;
+    }
+
+    public void setTestType(String testType) {
+        this.testType = testType;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getTestResult() {
+        return testResult;
+    }
+
+    public void setTestResult(String testResult) {
+        this.testResult = testResult;
+    }
+
+    public String getTestDate() {
+        return testDate;
+    }
+
+    public void setTestDate(String testDate) {
+        this.testDate = testDate;
+    }
+
+    public String getTestCertificateExpiryDateAtTest() {
+        return testCertificateExpiryDateAtTest;
+    }
+
+    public void setTestCertificateExpiryDateAtTest(String testCertificateExpiryDateAtTest) {
+        this.testCertificateExpiryDateAtTest = testCertificateExpiryDateAtTest;
+    }
+
+    public int getNumberOfDefectsAtTest() {
+        return numberOfDefectsAtTest;
+    }
+
+    public void setNumberOfDefectsAtTest(int numberOfDefectsAtTest) {
+        this.numberOfDefectsAtTest = numberOfDefectsAtTest;
+    }
+
+    public int getNumberOfAdvisoryDefectsAtTest() {
+        return numberOfAdvisoryDefectsAtTest;
+    }
+
+    public void setNumberOfAdvisoryDefectsAtTest(int numberOfAdvisoryDefectsAtTest) {
+        this.numberOfAdvisoryDefectsAtTest = numberOfAdvisoryDefectsAtTest;
+    }
+
+    public String getVehicleIdentifierAtTest() {
+        return vehicleIdentifierAtTest;
+    }
+
+    public void setVehicleIdentifierAtTest(String vehicleIdentifierAtTest) {
+        this.vehicleIdentifierAtTest = vehicleIdentifierAtTest;
+    }
+}

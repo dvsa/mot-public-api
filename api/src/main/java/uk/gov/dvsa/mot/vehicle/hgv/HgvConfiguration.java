@@ -22,7 +22,7 @@ public class HgvConfiguration {
         }
 
         this.apiUrl = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiUrl);
-        this.timeoutInSeconds = Integer.parseInt(ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiConnectionTimeoutMs));
+        this.timeoutInSeconds = Integer.parseInt(ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiConnectionTimeout));
         this.proxyHost = ConfigManager.getEnvironmentVariable(ConfigKeys.ProxyHost);
         this.proxyPort = ConfigManager.getEnvironmentVariable(ConfigKeys.ProxyPort);
     }
