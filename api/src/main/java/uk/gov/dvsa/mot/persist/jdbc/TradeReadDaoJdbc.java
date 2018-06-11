@@ -111,9 +111,12 @@ public class TradeReadDaoJdbc implements TradeReadDao {
         DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
         ResultSetExtractor<List<Vehicle>> mapper = new VehicleResultSetExtractor();
 
+        //System.out.print(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE);
+
         List<Vehicle> results =
-                runner.executeQuery(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE, mapper, startDateTs, endDateTs, startDateTs,
-                        endDateTs, endDateTs, startDateTs, endDateTs, startDateTs, endDateTs, endDateTs);
+                runner.executeQuery(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE, mapper,
+                        startDateTs, endDateTs, startDateTs, endDateTs, endDateTs,
+                        startDateTs, endDateTs, startDateTs, endDateTs, startDateTs, endDateTs, endDateTs);
 
         if (results == null) {
             return Collections.emptyList();
