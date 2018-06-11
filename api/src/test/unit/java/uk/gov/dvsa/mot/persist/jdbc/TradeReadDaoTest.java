@@ -90,6 +90,8 @@ public class TradeReadDaoTest {
         final Timestamp startTimestamp = new Timestamp(startDate.getTime());
         final Timestamp endTimestamp = new Timestamp(endDate.getTime());
 
+        //System.out.print(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE);
+
         when(connectionMock.prepareStatement(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE))
                 .thenReturn(preparedStatementMock);
         when(preparedStatementMock.executeQuery()).thenReturn(resultSetMock);
@@ -105,7 +107,9 @@ public class TradeReadDaoTest {
         verify(preparedStatementMock).setObject(7, endTimestamp);
         verify(preparedStatementMock).setObject(8, startTimestamp);
         verify(preparedStatementMock).setObject(9, endTimestamp);
-        verify(preparedStatementMock).setObject(10, endTimestamp);
+        verify(preparedStatementMock).setObject(10, startTimestamp);
+        verify(preparedStatementMock).setObject(11, endTimestamp);
+        verify(preparedStatementMock).setObject(12, endTimestamp);
     }
 
     //@Test(expected = InternalException.class)
