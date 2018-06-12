@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
 
+import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
 import uk.gov.dvsa.mot.trade.api.MotrResponse;
@@ -14,7 +15,6 @@ import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.read.core.MotrReadService;
 import uk.gov.dvsa.mot.trade.service.AnnualTestExpiryDateCalculator;
 import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
-import uk.gov.dvsa.mot.vehicle.hgv.model.HgvPsvVehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 
@@ -53,6 +53,14 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         this.motrReadService = motrReadService;
     }
 
+    /**
+     * Search for any vehicle by VRM
+     *
+     * @param registration
+     * @param requestContext
+     * @return Response
+     * @throws TradeException
+     */
     @GET
     @Path("motr/v2/search/registration/{registration}")
     @Produces("application/json")
@@ -93,7 +101,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                             awsRequestId);
                 }
 
-                HgvPsvVehicle hgvPsvVehicle = buildHgvPsvResponse(hgvPsvVehicleOptional.get(), dvlaVehicle);
+                MotrResponse hgvPsvVehicle = buildHgvPsvResponse(hgvPsvVehicleOptional.get(), dvlaVehicle);
 
                 return Response.ok(hgvPsvVehicle).build();
             } else {
@@ -110,6 +118,145 @@ public class MotrRequestHandler extends AbstractRequestHandler {
             throw new InternalServerErrorException(e, awsRequestId);
         } finally {
             logger.trace("Exiting getVehicle");
+        }
+    }
+
+    /**
+     * Search for commercial vehicles by registration. These include HGV, PSV
+     * (and in the future possibly trailers by trailer ID passed as registration)
+     *
+     * @param registration
+     * @param requestContext
+     * @return
+     * @throws TradeException
+     */
+    @GET
+    @Path("motr/v2/search/commercial/registration/{registration}")
+    @Produces("application/json")
+    public Response getCommercialVehicle(@PathParam("registration") String registration,
+                               ContainerRequestContext requestContext) throws TradeException {
+        try {
+            logger.trace("Entering getCommercialVehicle");
+            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
+                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
+            if (context != null) {
+                awsRequestId = context.getRequestId();
+            }
+
+            logger.info(String.format("Entering MotrRequestHandler.getCommercialVehicle, awsRequestId: %s", awsRequestId));
+
+            Optional<MotrResponse> dvlaVehicleOptional = getDvlaVehicle(registration);
+
+            if (dvlaVehicleOptional.isPresent()) {
+                MotrResponse dvlaVehicle = dvlaVehicleOptional.get();
+
+                Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
+
+                if (!hgvPsvVehicleOptional.isPresent()) {
+                    logger.info("No HGV/PSV vehicle retrieved");
+                    throw new InvalidResourceException(String.format("No HGV/PSV vehicle found for registration %s", registration),
+                            awsRequestId);
+                }
+
+                MotrResponse hgvPsvVehicle = buildHgvPsvResponse(hgvPsvVehicleOptional.get(), dvlaVehicle);
+                return Response.ok(hgvPsvVehicle).build();
+            } else {
+                logger.error("No DVLA vehicle found for registration.");
+                throw new InvalidResourceException(String.format("No DVLA vehicle found for registration %s", registration),
+                        awsRequestId);
+            }
+        } catch (TradeException e) {
+            // no need to log these errors, just throw them back
+            throw e;
+        } catch (Exception e) {
+            // log all unhandled exceptions and throw an internal server error
+            logger.error(e);
+            throw new InternalServerErrorException(e, awsRequestId);
+        } finally {
+            logger.trace("Exiting getCommercialVehicle");
+        }
+    }
+
+    @GET
+    @Path("motr/v2/search/dvla-id/{id}")
+    @Produces("application/json")
+    public Response getVehicleByDvlaId(@PathParam("id") Integer dvlaVehicleId,
+                                       ContainerRequestContext requestContext) throws TradeException {
+        try {
+            logger.trace("Entering getVehicleByDvlaId");
+            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
+                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
+            if (context != null) {
+                awsRequestId = context.getRequestId();
+            }
+
+            if (dvlaVehicleId != null) {
+                logger.info(String.format("Public API MOTR request for DVLA id = %d", dvlaVehicleId));
+
+                MotrResponse response = motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
+
+                if (response == null) {
+                    throw new InvalidResourceException(
+                            String.format("No MOT Test or DVLA vehicle found for DVLA vehicle id %d", dvlaVehicleId),
+                            awsRequestId);
+                }
+
+                logger.info(String.format("Public API MOTR request for DVLA id = %d returned 1 record", dvlaVehicleId));
+                return Response.ok(buildMotResponse(response)).build();
+            } else {
+                throw new BadRequestException("Invalid Parameters", awsRequestId);
+            }
+        } catch (TradeException e) {
+            // no need to log these errors, just throw them back
+            throw e;
+        } catch (Exception e) {
+            // log all unhandled exceptions and throw an internal server error
+            logger.error(e);
+            throw new InternalServerErrorException(e, awsRequestId);
+        } finally {
+            logger.trace("Exiting getVehicleByDvlaId");
+        }
+    }
+
+    @GET
+    @Path("motr/v2/search/mot-test/{motTestNumber}")
+    @Produces("application/json")
+    public Response getVehicleByMotTestNumber(@PathParam("motTestNumber") Long motTestNumber,
+                                       ContainerRequestContext requestContext) throws TradeException {
+        try {
+            logger.trace("Entering getVehicleByMotTestNumber");
+            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
+                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
+            if (context != null) {
+                awsRequestId = context.getRequestId();
+            }
+
+            if (motTestNumber != null) {
+                logger.info(String.format("Public API MOTR request for mot test number = %d", motTestNumber));
+
+                MotrResponse motrResponse =
+                        motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
+
+                if (motrResponse == null) {
+                    logger.debug(String.format("getVehicleByMotTestNumber for number = %d found 0", motTestNumber));
+                    throw new InvalidResourceException(String.format("No MOT Tests found with number: %d", motTestNumber),
+                            awsRequestId);
+                }
+
+                logger.info(String.format("Public API MOTR request for mot test number = %s returned 1 record", awsRequestId));
+                return Response.ok(buildMotResponse(motrResponse)).build();
+            } else {
+                throw new BadRequestException("Invalid Parameters", awsRequestId);
+            }
+        } catch (TradeException e) {
+            // no need to log these errors, just throw them back
+            throw e;
+        } catch (Exception e) {
+            // log all unhandled exceptions and throw an internal server error
+            logger.error(e);
+            throw new InternalServerErrorException(e, awsRequestId);
+        } finally {
+            logger.trace("Exiting getVehicleByMotTestNumber");
         }
     }
 
@@ -162,8 +309,8 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         return Optional.ofNullable(foundVehicle);
     }
 
-    private HgvPsvVehicle buildHgvPsvResponse(Vehicle vehicle, MotrResponse dvlaVehicle) throws Exception {
-        HgvPsvVehicle hgvPsvVehicle = new HgvPsvVehicle();
+    private MotrResponse buildHgvPsvResponse(Vehicle vehicle, MotrResponse dvlaVehicle) throws Exception {
+        MotrResponse hgvPsvVehicle = new MotrResponse();
         AnnualTestExpiryDateCalculator annualTestExpiryDateCalculator = new AnnualTestExpiryDateCalculator();
 
         hgvPsvVehicle.setMake(vehicle.getMake());
@@ -182,18 +329,9 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         return hgvPsvVehicle;
     }
 
-    private HgvPsvVehicle buildMotResponse(MotrResponse response) {
-        HgvPsvVehicle hgvPsvVehicle = new HgvPsvVehicle();
+    private MotrResponse buildMotResponse(MotrResponse response) {
+        response.setVehicleType("MOT");
 
-        hgvPsvVehicle.setDvlaId(response.getDvlaId());
-        hgvPsvVehicle.setMake(response.getMake());
-        hgvPsvVehicle.setManufactureYear(response.getManufactureYear());
-        hgvPsvVehicle.setModel(response.getModel());
-        hgvPsvVehicle.setMotTestExpiryDate(response.getMotTestExpiryDate());
-        hgvPsvVehicle.setRegistration(response.getRegistration());
-        hgvPsvVehicle.setMotTestNumber(response.getMotTestNumber());
-        hgvPsvVehicle.setVehicleType("MOT");
-
-        return hgvPsvVehicle;
+        return response;
     }
 }
