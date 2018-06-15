@@ -14,6 +14,7 @@ import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.
 import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasNoCause;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,6 +24,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(DataProviderRunner.class)
@@ -38,16 +40,11 @@ public class AnnualTestExpiryDateCalculatorTest {
     }
 
     @Test
-    public void whenVehicleWithoutTestCertificateExpiryDateAndRegistrationDate() throws Exception {
+    public void whenExpiryDateIsUnknown_returnNull() throws Exception {
         Vehicle vehicle = new Vehicle();
+        vehicle.setTestCertificateExpiryDate(null);
 
-        catchException(annualTestExpiryDateCalculator).determineAnnualTestExpiryDate(vehicle, "1");
-
-        assertThat(caughtException(), allOf(
-                instanceOf(BadRequestException.class),
-                hasMessageThat(containsString("Registration date is null or empty")),
-                hasNoCause()
-        ));
+        assertNull(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle, "1"));
     }
 
     @Test
