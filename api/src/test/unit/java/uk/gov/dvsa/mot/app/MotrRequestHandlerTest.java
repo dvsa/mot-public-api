@@ -7,18 +7,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import uk.gov.dvsa.mot.persist.model.ColourLookup;
-import uk.gov.dvsa.mot.trade.api.BadRequestException;
-import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
 import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.trade.read.core.MotrReadService;
-import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
 import uk.gov.dvsa.mot.vehicle.hgv.model.HgvPsvVehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
-
-import java.io.IOException;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
@@ -27,7 +21,6 @@ import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasMessageThat;
 import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasNoCause;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
@@ -40,7 +33,6 @@ import static org.mockito.Mockito.when;
 
 public class MotrRequestHandlerTest {
 
-    private static final String AWS_REQUEST_ID = "123456";
     private static final String REGISTRATION = "REG123456";
 
     @Mock
@@ -58,7 +50,7 @@ public class MotrRequestHandlerTest {
     private MotrRequestHandler motrRequestHandler;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(context.getRequestId()).thenReturn("1");
@@ -183,21 +175,21 @@ public class MotrRequestHandlerTest {
     }
 
     @Test
-    public void getVehicle_WhenVehicleTestHistoryIsEmptyAndRegistrationDateIsNull_ShouldThrowException() throws Exception {
+    public void getVehicle_whenHgvPsvExpiryDateIsUnknown_returnVehicleWithNullExpiry() throws Exception {
         MotrResponse dvlaVehicle = defaultMotrResponse(REGISTRATION);
-        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("HGV");
-        vehicle.setTestHistory(new TestHistory[0]);
+        dvlaVehicle.setMotTestExpiryDate(null);
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("PSV");
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(null);
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
         when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(vehicle);
 
-        catchException(motrRequestHandler).getVehicle(REGISTRATION, containerRequestContext);
+        Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        assertThat(caughtException(), allOf(
-                instanceOf(BadRequestException.class),
-                hasMessageThat(containsString("Registration date is null or empty"))
-        ));
+        HgvPsvVehicle expectedVehicle = createResponseVehicle("PSV", null);
+        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
     @Test
@@ -257,27 +249,6 @@ public class MotrRequestHandlerTest {
         HgvPsvVehicle expectedVehicle = createResponseVehicle("PSV", "2016-02-05");
         HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
         checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
-    }
-
-    private DvlaVehicle createDvlaVehicle() {
-        DvlaVehicle dvlaVehicle = new DvlaVehicle();
-
-        ColourLookup colourLookup = new ColourLookup();
-        colourLookup.setName("BLACK");
-        dvlaVehicle.setDvlaVehicleId(1);
-        dvlaVehicle.setRegistration("VIN13451");
-
-        return dvlaVehicle;
-    }
-
-    private Vehicle createMotVehicle(String vin) {
-        Vehicle motVehicle = new Vehicle();
-
-        motVehicle.setVin(vin);
-        motVehicle.setDvlaVehicleId(1);
-        motVehicle.setRegistration(REGISTRATION);
-
-        return motVehicle;
     }
 
     private uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle createVehicle(String vehicleType) {

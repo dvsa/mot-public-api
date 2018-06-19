@@ -29,8 +29,7 @@ public class AnnualTestExpiryDateCalculator {
             String registrationDate = vehicle.getRegistrationDate();
 
             if (Strings.isNullOrEmpty(registrationDate)) {
-                logger.error("Registration date is null or empty");
-                throw new BadRequestException("Registration date is null or empty", awsRequestId);
+                return null;
             }
 
             datetime = LocalDate.parse(registrationDate, oldPattern);
