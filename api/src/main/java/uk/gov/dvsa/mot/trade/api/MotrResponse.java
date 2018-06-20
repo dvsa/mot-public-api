@@ -13,6 +13,7 @@ public class MotrResponse {
     private String secondaryColour;
     private String motTestExpiryDate;
     private String motTestNumber;
+    private String vehicleType;
 
     public Integer getId() {
 
@@ -122,5 +123,13 @@ public class MotrResponse {
     public void setMotTestNumber(String motTestNumber) {
 
         this.motTestNumber = motTestNumber;
+    }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
 }

@@ -7,11 +7,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import uk.gov.dvsa.mot.trade.api.BadRequestException;
+import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
 import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.trade.read.core.MotrReadService;
 import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
-import uk.gov.dvsa.mot.vehicle.hgv.model.HgvPsvVehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -34,6 +35,8 @@ import static org.mockito.Mockito.when;
 public class MotrRequestHandlerTest {
 
     private static final String REGISTRATION = "REG123456";
+    private static final int DVLA_VEHICLE_ID = 213;
+    private static final long MOT_TEST_NUMBER = 12345L;
 
     @Mock
     private MotrReadService motrReadService;
@@ -60,6 +63,8 @@ public class MotrRequestHandlerTest {
         motrRequestHandler.setHgvVehicleProvider(hgvVehicleProvider);
         motrRequestHandler.setMotrReadService(motrReadService);
     }
+
+    // Tests for getVehicle method
 
     @Test
     public void getVehicle_WithoutRegistrationParam_ShouldThrowException() throws Exception {
@@ -123,8 +128,8 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        HgvPsvVehicle expectedVehicle = createResponseVehicle("MOT", "2018-01-01");
-        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        MotrResponse expectedVehicle = createResponseVehicle("MOT", "2018-01-01");
+        MotrResponse actualVehicle = (MotrResponse) response.getEntity();
         checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
@@ -145,8 +150,8 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        HgvPsvVehicle expectedVehicle = createResponseVehicle("HGV", "2018-01-01");
-        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        MotrResponse expectedVehicle = createResponseVehicle("HGV", "2018-01-01");
+        MotrResponse actualVehicle = (MotrResponse) response.getEntity();
         checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
@@ -168,9 +173,9 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        HgvPsvVehicle expectedVehicle = createResponseVehicle("PSV", "2018-01-01");
+        MotrResponse expectedVehicle = createResponseVehicle("PSV", "2018-01-01");
         expectedVehicle.setMotTestNumber("SERIAL");
-        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        MotrResponse actualVehicle = (MotrResponse) response.getEntity();
         checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
@@ -187,8 +192,8 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        HgvPsvVehicle expectedVehicle = createResponseVehicle("PSV", null);
-        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        MotrResponse expectedVehicle = createResponseVehicle("PSV", null);
+        MotrResponse actualVehicle = (MotrResponse) response.getEntity();
         checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
@@ -205,8 +210,8 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        HgvPsvVehicle expectedVehicle = createResponseVehicle("HGV", "2016-01-31");
-        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        MotrResponse expectedVehicle = createResponseVehicle("HGV", "2016-01-31");
+        MotrResponse actualVehicle = (MotrResponse) response.getEntity();
         checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
     }
 
@@ -218,7 +223,7 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        HgvPsvVehicle actualVehicles = (HgvPsvVehicle) response.getEntity();
+        MotrResponse actualVehicles = (MotrResponse) response.getEntity();
         checkIfMotVehicleIsCorrect(motrResponse, actualVehicles);
     }
 
@@ -229,7 +234,7 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        HgvPsvVehicle actualVehicles = (HgvPsvVehicle) response.getEntity();
+        MotrResponse actualVehicles = (MotrResponse) response.getEntity();
         checkIfMotVehicleIsCorrect(motrResponse, actualVehicles);
     }
 
@@ -246,9 +251,181 @@ public class MotrRequestHandlerTest {
 
         Response response = motrRequestHandler.getVehicle(REGISTRATION, containerRequestContext);
 
-        HgvPsvVehicle expectedVehicle = createResponseVehicle("PSV", "2016-02-05");
-        HgvPsvVehicle actualVehicle = (HgvPsvVehicle) response.getEntity();
+        MotrResponse expectedVehicle = createResponseVehicle("PSV", "2016-02-05");
+        MotrResponse actualVehicle = (MotrResponse) response.getEntity();
         checkIfHgvPsvVehicleIsCorrect(expectedVehicle, actualVehicle);
+    }
+
+    // Tests for getCommercialVehicle method
+
+    @Test
+    public void getCommercialVehicle_WhenVehicleReadServiceFindByRegistrationReturnsException_ShouldThrowException() throws Exception {
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenThrow(new IndexOutOfBoundsException());
+
+        catchException(motrRequestHandler).getCommercialVehicle(REGISTRATION, containerRequestContext);
+
+        assertThat(caughtException(), allOf(
+                instanceOf(InvalidResourceException.class),
+                hasMessageThat(containsString("There was an error retrieving dvla vehicle")),
+                hasNoCause()
+        ));
+    }
+
+    @Test
+    public void getCommercialVehicle_WhenVehicleReadServiceFindByRegistrationReturnsNull_ShouldThrowException() throws Exception {
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(null);
+
+        catchException(motrRequestHandler).getCommercialVehicle(REGISTRATION, containerRequestContext);
+
+        assertThat(caughtException(), allOf(
+                instanceOf(InvalidResourceException.class),
+                hasMessageThat(containsString("No DVLA vehicle found for registration " + REGISTRATION)),
+                hasNoCause()
+        ));
+    }
+
+    @Test
+    public void getCommercialVehicle_WhenHgvVehicleProviderThrowsException_ShouldThrowException() throws Exception {
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(defaultMotrResponse(REGISTRATION));
+        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenThrow(new Exception());
+
+        catchException(motrRequestHandler).getCommercialVehicle(REGISTRATION, containerRequestContext);
+
+        assertThat(caughtException(), allOf(
+                instanceOf(InternalServerErrorException.class),
+                hasMessageThat(containsString("There was an error retrieving the HGV/PSV history")),
+                hasNoCause()
+        ));
+    }
+
+    @Test
+    public void getCommercialVehicle_WhenHgvVehicleProviderReturnsNull_ShouldThrowException() throws Exception {
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(defaultMotrResponse(REGISTRATION));
+        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(null);
+
+        catchException(motrRequestHandler).getCommercialVehicle(REGISTRATION, containerRequestContext);
+
+        assertThat(caughtException(), allOf(
+                instanceOf(InvalidResourceException.class),
+                hasMessageThat(containsString("No HGV/PSV vehicle found for registration " + REGISTRATION)),
+                hasNoCause()
+        ));
+    }
+
+    @Test
+    public void getCommercialVehicle_WhenHgvVehicleProviderReturnsVehicleWithoutTestHistory_ResponseShouldBeCorrect() throws Exception {
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("HGV");
+        vehicle.setRegistrationDate("05/01/2015");
+
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(defaultMotrResponse(REGISTRATION));
+        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(vehicle);
+
+        Response response = motrRequestHandler.getCommercialVehicle(REGISTRATION, containerRequestContext);
+
+        assertEquals(response.getStatus(), 200);
+
+        MotrResponse expectedVehicle = createResponseVehicle("HGV", "2016-01-31");
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, (MotrResponse) response.getEntity());
+    }
+
+    @Test
+    public void getCommercialVehicle_WhenHgvVehicleProviderReturnsVehicleWithTestHistory_MotTestNumberShouldBeSet() throws Exception {
+        TestHistory[] testHistory = new TestHistory[1];
+        TestHistory historyItem =  new TestHistory();
+        historyItem.setTestCertificateSerialNo("SERIAL");
+        testHistory[0] = historyItem;
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("HGV");
+        vehicle.setRegistrationDate("05/01/2015");
+        vehicle.setTestHistory(testHistory);
+
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(defaultMotrResponse(REGISTRATION));
+        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(vehicle);
+
+        Response response = motrRequestHandler.getCommercialVehicle(REGISTRATION, containerRequestContext);
+
+        assertEquals(response.getStatus(), 200);
+
+        MotrResponse expectedVehicle = createResponseVehicle("HGV", "2016-01-31");
+        expectedVehicle.setMotTestNumber("SERIAL");
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, (MotrResponse) response.getEntity());
+    }
+
+    // Tests for getVehicleByDvlaId method
+
+    @Test
+    public void getVehicleByDvlaId_WhenDvlaVehicleIdIsNull_ShouldThrowException() throws Exception {
+        catchException(motrRequestHandler).getVehicleByDvlaId(null, containerRequestContext);
+
+        assertThat(caughtException(), allOf(
+                instanceOf(BadRequestException.class),
+                hasMessageThat(containsString("Invalid Parameters")),
+                hasNoCause()
+        ));
+    }
+
+    @Test
+    public void getVehicleByDvlaId_WhenMotrReadServiceReturnsNull_ShouldThrowException() throws Exception {
+        when(motrReadService.getLatestMotTestByDvlaVehicleId(DVLA_VEHICLE_ID)).thenReturn(null);
+
+        catchException(motrRequestHandler).getVehicleByDvlaId(DVLA_VEHICLE_ID, containerRequestContext);
+
+        assertThat(caughtException(), allOf(
+                instanceOf(InvalidResourceException.class),
+                hasMessageThat(containsString("No MOT Test or DVLA vehicle found for DVLA vehicle id " + DVLA_VEHICLE_ID)),
+                hasNoCause()
+        ));
+    }
+
+    @Test
+    public void getVehicleByDvlaId_WhenMotrReadServiceReturnsVehicle_ShouldReturnCorrectResponse() throws Exception {
+        when(motrReadService.getLatestMotTestByDvlaVehicleId(DVLA_VEHICLE_ID)).thenReturn(defaultMotrResponse(REGISTRATION));
+
+        Response response = motrRequestHandler.getVehicleByDvlaId(DVLA_VEHICLE_ID, containerRequestContext);
+
+        assertEquals(response.getStatus(), 200);
+
+        MotrResponse expectedVehicle = createResponseVehicle("MOT", "2018-01-01");
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, (MotrResponse) response.getEntity());
+    }
+
+    // Tests for getVehicleByMotTestNumber method
+
+    @Test
+    public void getVehicleByMotTestNumber_WhenMotTestNumberIsNull_ShouldThrowException() throws Exception {
+        catchException(motrRequestHandler).getVehicleByMotTestNumber(null, containerRequestContext);
+
+        assertThat(caughtException(), allOf(
+                instanceOf(BadRequestException.class),
+                hasMessageThat(containsString("Invalid Parameters")),
+                hasNoCause()
+        ));
+    }
+
+    @Test
+    public void getVehicleByMotTestNumber_WhenMotrReadServiceReturnsNull_ShouldThrowException() throws Exception {
+        when(motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(MOT_TEST_NUMBER)).thenReturn(null);
+
+        catchException(motrRequestHandler).getVehicleByMotTestNumber(MOT_TEST_NUMBER, containerRequestContext);
+
+        assertThat(caughtException(), allOf(
+                instanceOf(InvalidResourceException.class),
+                hasMessageThat(containsString("No MOT Tests found with number: " + Long.toString(MOT_TEST_NUMBER))),
+                hasNoCause()
+        ));
+    }
+
+    @Test
+    public void getVehicleByMotTestNumber_WhenMotrReadServiceReturnsVehicle_ShouldReturnCorrectResponse() throws Exception {
+        when(motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(MOT_TEST_NUMBER))
+                .thenReturn(defaultMotrResponse(REGISTRATION));
+
+        Response response = motrRequestHandler.getVehicleByMotTestNumber(MOT_TEST_NUMBER, containerRequestContext);
+
+        assertEquals(response.getStatus(), 200);
+
+        MotrResponse expectedVehicle = createResponseVehicle("MOT", "2018-01-01");
+        checkIfHgvPsvVehicleIsCorrect(expectedVehicle, (MotrResponse) response.getEntity());
     }
 
     private uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle createVehicle(String vehicleType) {
@@ -263,8 +440,8 @@ public class MotrRequestHandlerTest {
         return vehicle;
     }
 
-    private HgvPsvVehicle createResponseVehicle(String vehicleType, String testExpiryDate) {
-        HgvPsvVehicle hgvPsvVehicle = new HgvPsvVehicle();
+    private MotrResponse createResponseVehicle(String vehicleType, String testExpiryDate) {
+        MotrResponse hgvPsvVehicle = new MotrResponse();
 
         hgvPsvVehicle.setMake("MAKE");
         hgvPsvVehicle.setModel("MODEL");
@@ -277,21 +454,21 @@ public class MotrRequestHandlerTest {
         return hgvPsvVehicle;
     }
 
-    private void checkIfHgvPsvVehicleIsCorrect(HgvPsvVehicle expectedVehicle, HgvPsvVehicle actualVehicle) {
-        assertEquals(actualVehicle.getMake(), expectedVehicle.getMake());
-        assertEquals(actualVehicle.getManufactureYear(), expectedVehicle.getManufactureYear());
-        assertEquals(actualVehicle.getModel(), expectedVehicle.getModel());
-        assertEquals(actualVehicle.getMotTestExpiryDate(), expectedVehicle.getMotTestExpiryDate());
-        assertEquals(actualVehicle.getRegistration(), expectedVehicle.getRegistration());
-        assertEquals(actualVehicle.getVehicleType(), expectedVehicle.getVehicleType());
-        assertEquals(actualVehicle.getDvlaId(), expectedVehicle.getDvlaId());
+    private void checkIfHgvPsvVehicleIsCorrect(MotrResponse expectedVehicle, MotrResponse actualVehicle) {
+        assertEquals(expectedVehicle.getMake(), actualVehicle.getMake());
+        assertEquals(expectedVehicle.getManufactureYear(), actualVehicle.getManufactureYear());
+        assertEquals(expectedVehicle.getModel(), actualVehicle.getModel());
+        assertEquals(expectedVehicle.getMotTestExpiryDate(), actualVehicle.getMotTestExpiryDate());
+        assertEquals(expectedVehicle.getRegistration(), actualVehicle.getRegistration());
+        assertEquals(expectedVehicle.getVehicleType(), actualVehicle.getVehicleType());
+        assertEquals(expectedVehicle.getDvlaId(), actualVehicle.getDvlaId());
 
         if (expectedVehicle.getMotTestNumber() != null) {
-            assertEquals(actualVehicle.getMotTestNumber(), expectedVehicle.getMotTestNumber());
+            assertEquals(expectedVehicle.getMotTestNumber(), actualVehicle.getMotTestNumber());
         }
     }
 
-    private void checkIfMotVehicleIsCorrect(MotrResponse expectedVehicle, HgvPsvVehicle actualVehicle) {
+    private void checkIfMotVehicleIsCorrect(MotrResponse expectedVehicle, MotrResponse actualVehicle) {
         assertEquals(actualVehicle.getRegistration(), expectedVehicle.getRegistration());
         assertSame(actualVehicle.getDvlaId(), expectedVehicle.getDvlaId());
     }
