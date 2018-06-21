@@ -135,11 +135,6 @@ public class TradeReadSql {
                     + "  AND     `mot_test_history`.`last_updated_on` < ? "
                     + "  AND     `mot_test_type`.`code` IN ('NT','PL', 'PV', 'RT') "
                     + "  AND     `mot_test_status`.`code` IN ('P' , 'F') "
-                    + "  UNION "
-                    + "  SELECT  `vehicle`.`id` "
-                    + "  FROM    `mot2`.`vehicle` "
-                    + "  WHERE   `vehicle`.`last_updated_on` >= ? "
-                    + "  AND     `vehicle`.`last_updated_on` < ? "
                     + ") as `vehicles` on `vehicles`.`vehicle_id` = `mot_test`.`vehicle_id` ";
 
     static final String MOT_TEST_UPDATED_BEFORE =
