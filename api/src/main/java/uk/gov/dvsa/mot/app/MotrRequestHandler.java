@@ -87,22 +87,21 @@ public class MotrRequestHandler extends AbstractRequestHandler {
             Optional<MotrResponse> dvlaVehicleOptional = getDvlaVehicle(registration);
 
             if (shouldGetHgvPsvHistory(dvlaVehicleOptional, registration)) {
-                MotrResponse dvlaVehicle = dvlaVehicleOptional.get();
 
                 Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
 
                 if (!hgvPsvVehicleOptional.isPresent()) {
                     logger.info("No HGV/PSV vehicle retrieved");
 
-                    if (dvlaVehicle.getMotTestExpiryDate() != null) {
-                        return Response.ok(buildMotResponse(dvlaVehicle)).build();
+                    if (dvlaVehicleOptional.isPresent() && dvlaVehicleOptional.get().getMotTestExpiryDate() != null) {
+                        return Response.ok(buildMotResponse(dvlaVehicleOptional.get())).build();
                     }
 
                     throw new InvalidResourceException("Could not determine test expiry date for registration " + registration,
                             awsRequestId);
                 }
 
-                MotrResponse hgvPsvVehicle = buildHgvPsvResponse(hgvPsvVehicleOptional.get(), dvlaVehicle);
+                MotrResponse hgvPsvVehicle = buildHgvPsvResponse(hgvPsvVehicleOptional.get(), dvlaVehicleOptional);
 
                 return Response.ok(hgvPsvVehicle).build();
             } else {
@@ -149,7 +148,6 @@ public class MotrRequestHandler extends AbstractRequestHandler {
             Optional<MotrResponse> dvlaVehicleOptional = getDvlaVehicle(registration);
 
             if (dvlaVehicleOptional.isPresent()) {
-                MotrResponse dvlaVehicle = dvlaVehicleOptional.get();
 
                 Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
 
@@ -159,7 +157,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                             awsRequestId);
                 }
 
-                MotrResponse hgvPsvVehicle = buildHgvPsvResponse(hgvPsvVehicleOptional.get(), dvlaVehicle);
+                MotrResponse hgvPsvVehicle = buildHgvPsvResponse(hgvPsvVehicleOptional.get(), dvlaVehicleOptional);
                 return Response.ok(hgvPsvVehicle).build();
             } else {
                 logger.error("No DVLA vehicle found for registration.");
@@ -310,7 +308,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         return Optional.ofNullable(foundVehicle);
     }
 
-    private MotrResponse buildHgvPsvResponse(Vehicle vehicle, MotrResponse dvlaVehicle) throws Exception {
+    private MotrResponse buildHgvPsvResponse(Vehicle vehicle, Optional<MotrResponse> dvlaVehicle) throws Exception {
         MotrResponse hgvPsvVehicle = new MotrResponse();
         AnnualTestExpiryDateCalculator annualTestExpiryDateCalculator = new AnnualTestExpiryDateCalculator();
 
@@ -321,7 +319,9 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         if (vehicle.getYearOfManufacture() != null) {
             hgvPsvVehicle.setManufactureYear(vehicle.getYearOfManufacture().toString());
         }
-        hgvPsvVehicle.setDvlaId(dvlaVehicle.getDvlaId());
+        if (dvlaVehicle.isPresent()) {
+            hgvPsvVehicle.setDvlaId(dvlaVehicle.get().getDvlaId());
+        }
         hgvPsvVehicle.setMotTestExpiryDate(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle));
 
         if (vehicle.getTestHistory() != null && vehicle.getTestHistory().length > 0) {
