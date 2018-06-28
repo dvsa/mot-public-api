@@ -31,6 +31,7 @@ import static org.junit.Assert.assertTrue;
 public class AnnualTestExpiryDateCalculatorTest {
     private static final String HGV_VEHICLE_TYPE = "HGV";
     private static final String PSV_VEHICLE_TYPE = "PSV";
+    private static final String TRAILER_VEHICLE_TYPE = "Trailer";
 
     private AnnualTestExpiryDateCalculator annualTestExpiryDateCalculator;
 
@@ -42,9 +43,19 @@ public class AnnualTestExpiryDateCalculatorTest {
     @Test
     public void whenExpiryDateIsUnknown_returnNull() throws Exception {
         Vehicle vehicle = new Vehicle();
+        vehicle.setVehicleType(HGV_VEHICLE_TYPE);
         vehicle.setTestCertificateExpiryDate(null);
 
-        assertNull(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle, "1"));
+        assertNull(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle));
+    }
+
+    @Test
+    public void whenExpiryDateIsUnknownForTrailer_returnNull() throws Exception {
+        Vehicle vehicle = new Vehicle();
+        vehicle.setVehicleType(TRAILER_VEHICLE_TYPE);
+        vehicle.setTestCertificateExpiryDate(null);
+
+        assertNull(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle));
     }
 
     @Test
@@ -52,9 +63,16 @@ public class AnnualTestExpiryDateCalculatorTest {
     public void whenHgvVehicleWithoutTestCertificateExpiryDate(String registrationDate, String expectedAnnualTestDate) throws Exception {
         Vehicle vehicle = defaultHgvVehicleWithRegistrationDate(HGV_VEHICLE_TYPE, registrationDate);
 
-        String annualTestExpiryCate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle, "1");
+        String annualTestExpiryCate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
 
         assertTrue(annualTestExpiryCate.equals(expectedAnnualTestDate));
+    }
+
+    @Test
+    public void whenTrailerWithoutTestCertificateExpiryDate_returnNull() throws Exception {
+        Vehicle vehicle = defaultHgvVehicleWithRegistrationDate(TRAILER_VEHICLE_TYPE, "31/03/2017");
+
+        assertNull(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle));
     }
 
     @Test
@@ -62,7 +80,7 @@ public class AnnualTestExpiryDateCalculatorTest {
     public void whenPsvVehicleWithoutTestCertificateExpiryDate(String registrationDate, String expectedAnnualTestDate) throws Exception {
         Vehicle vehicle = defaultHgvVehicleWithRegistrationDate(PSV_VEHICLE_TYPE, registrationDate);
 
-        String annualTestExpiryCate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle, "1");
+        String annualTestExpiryCate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
 
         assertTrue(annualTestExpiryCate.equals(expectedAnnualTestDate));
     }
@@ -72,7 +90,7 @@ public class AnnualTestExpiryDateCalculatorTest {
         Vehicle vehicle = new Vehicle();
         vehicle.setTestCertificateExpiryDate("28/01/2016");
 
-        String annualTestExpiryCate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle, "1");
+        String annualTestExpiryCate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
 
         assertTrue(annualTestExpiryCate.equals("2016-01-28"));
     }
@@ -83,7 +101,7 @@ public class AnnualTestExpiryDateCalculatorTest {
         Vehicle vehicle = new Vehicle();
         vehicle.setTestCertificateExpiryDate(expiryDate);
 
-        annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle, "1");
+        annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
     }
 
     private Vehicle defaultHgvVehicleWithRegistrationDate(String vehicleType, String registrationDate) {

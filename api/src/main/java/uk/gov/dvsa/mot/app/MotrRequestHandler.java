@@ -17,6 +17,7 @@ import uk.gov.dvsa.mot.trade.service.AnnualTestExpiryDateCalculator;
 import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
+import uk.gov.dvsa.mot.vehicle.hgv.validation.TrailerIdFormat;
 
 import java.util.Optional;
 
@@ -85,7 +86,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
 
             Optional<MotrResponse> dvlaVehicleOptional = getDvlaVehicle(registration);
 
-            if (dvlaVehicleOptional.isPresent()) {
+            if (shouldGetHgvPsvHistory(dvlaVehicleOptional, registration)) {
                 MotrResponse dvlaVehicle = dvlaVehicleOptional.get();
 
                 Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
@@ -321,7 +322,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
             hgvPsvVehicle.setManufactureYear(vehicle.getYearOfManufacture().toString());
         }
         hgvPsvVehicle.setDvlaId(dvlaVehicle.getDvlaId());
-        hgvPsvVehicle.setMotTestExpiryDate(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle, awsRequestId));
+        hgvPsvVehicle.setMotTestExpiryDate(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle));
 
         if (vehicle.getTestHistory() != null && vehicle.getTestHistory().length > 0) {
             TestHistory[] testHistory = vehicle.getTestHistory();
@@ -335,5 +336,12 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         response.setVehicleType("MOT");
 
         return response;
+    }
+
+    private boolean shouldGetHgvPsvHistory(Optional<MotrResponse> dvlaVehicleOptional, String vrm) {
+        TrailerIdFormat trailerIdFormat = new TrailerIdFormat();
+
+        return dvlaVehicleOptional.isPresent()
+                || trailerIdFormat.matches(vrm);
     }
 }
