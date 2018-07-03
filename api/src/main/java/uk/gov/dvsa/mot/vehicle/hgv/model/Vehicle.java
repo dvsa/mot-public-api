@@ -9,13 +9,13 @@ public class Vehicle {
     private String vehicleType;
     private String chassisType;
     private String manufactureDate;
-    private int yearOfManufacture;
+    private Integer yearOfManufacture;
     private String testCertificateExpiryDate;
     private String outOfTestMarker;
     private String vehicleIdentifier;
     private String previousRegmark;
     private String registrationDate;
-    private int numberOfAxles;
+    private Integer numberOfAxles;
     private String make;
     private String model;
 

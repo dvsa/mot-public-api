@@ -317,7 +317,9 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         hgvPsvVehicle.setModel(vehicle.getModel());
         hgvPsvVehicle.setRegistration(vehicle.getVehicleIdentifier());
         hgvPsvVehicle.setVehicleType(vehicle.getVehicleType());
-        hgvPsvVehicle.setManufactureYear(vehicle.getYearOfManufacture().toString());
+        if (vehicle.getYearOfManufacture() != null) {
+            hgvPsvVehicle.setManufactureYear(vehicle.getYearOfManufacture().toString());
+        }
         hgvPsvVehicle.setDvlaId(dvlaVehicle.getDvlaId());
         hgvPsvVehicle.setMotTestExpiryDate(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle, awsRequestId));
 
