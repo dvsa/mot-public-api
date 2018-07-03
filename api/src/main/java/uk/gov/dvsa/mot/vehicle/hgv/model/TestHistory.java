@@ -9,8 +9,8 @@ public class TestHistory {
     private String testResult;
     private String testDate;
     private String testCertificateExpiryDateAtTest;
-    private int numberOfDefectsAtTest;
-    private int numberOfAdvisoryDefectsAtTest;
+    private Integer numberOfDefectsAtTest;
+    private Integer numberOfAdvisoryDefectsAtTest;
     private String vehicleIdentifierAtTest;
     private String testCertificateSerialNo;
 
@@ -62,19 +62,19 @@ public class TestHistory {
         this.testCertificateExpiryDateAtTest = testCertificateExpiryDateAtTest;
     }
 
-    public int getNumberOfDefectsAtTest() {
+    public Integer getNumberOfDefectsAtTest() {
         return numberOfDefectsAtTest;
     }
 
-    public void setNumberOfDefectsAtTest(int numberOfDefectsAtTest) {
+    public void setNumberOfDefectsAtTest(Integer numberOfDefectsAtTest) {
         this.numberOfDefectsAtTest = numberOfDefectsAtTest;
     }
 
-    public int getNumberOfAdvisoryDefectsAtTest() {
+    public Integer getNumberOfAdvisoryDefectsAtTest() {
         return numberOfAdvisoryDefectsAtTest;
     }
 
-    public void setNumberOfAdvisoryDefectsAtTest(int numberOfAdvisoryDefectsAtTest) {
+    public void setNumberOfAdvisoryDefectsAtTest(Integer numberOfAdvisoryDefectsAtTest) {
         this.numberOfAdvisoryDefectsAtTest = numberOfAdvisoryDefectsAtTest;
     }
 
