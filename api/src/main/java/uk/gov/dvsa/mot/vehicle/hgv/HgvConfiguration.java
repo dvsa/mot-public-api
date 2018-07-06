@@ -1,6 +1,7 @@
 package uk.gov.dvsa.mot.vehicle.hgv;
 
 import com.amazonaws.util.StringUtils;
+
 import uk.gov.dvsa.mot.app.ConfigKeys;
 import uk.gov.dvsa.mot.app.ConfigManager;
 
