@@ -18,11 +18,9 @@ public class HgvConfiguration {
 
     public HgvConfiguration() throws IOException {
 
-        // check if the value is not empty (api does not require api-key)
-        String apiKeyEncrypted = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKeyEncrypted, false);
-
-        if (!StringUtils.isNullOrEmpty(apiKeyEncrypted)) {
-            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKeyEncrypted, true);
+        // if api key is not already set
+        if (StringUtils.isNullOrEmpty(apiKey)) {
+            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKeyEncrypted);
         }
 
         this.apiUrl = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiUrl);
