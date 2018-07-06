@@ -20,7 +20,7 @@ public class HgvConfiguration {
         // check if the value is not empty (api does not require api-key)
         String apiKeyEncrypted = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKeyEncrypted, false);
 
-        if(!StringUtils.isNullOrEmpty(apiKeyEncrypted)) {
+        if (!StringUtils.isNullOrEmpty(apiKeyEncrypted)) {
             apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKeyEncrypted, true);
         }
 
