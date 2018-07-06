@@ -1,5 +1,6 @@
 package uk.gov.dvsa.mot.vehicle.hgv;
 
+import com.amazonaws.util.StringUtils;
 import uk.gov.dvsa.mot.app.ConfigKeys;
 import uk.gov.dvsa.mot.app.ConfigManager;
 
@@ -15,10 +16,12 @@ public class HgvConfiguration {
     private String proxyPort;
 
     public HgvConfiguration() throws IOException {
-        if (apiKey == null) {
-            String apiKeyFromConfig = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKey, false);
-            apiKey = (apiKeyFromConfig == null || apiKeyFromConfig.isEmpty()) ? apiKey
-                    : ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKey, true);
+
+        // check if the value is not empty (api does not require api-key)
+        String apiKeyEncrypted = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKeyEncrypted, false);
+
+        if(!StringUtils.isNullOrEmpty(apiKeyEncrypted)) {
+            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKeyEncrypted, true);
         }
 
         this.apiUrl = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiUrl);
