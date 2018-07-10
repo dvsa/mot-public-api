@@ -15,16 +15,20 @@ public class AnnualTestExpiryDateCalculator {
     private static final Logger logger = Logger.getLogger(AnnualTestExpiryDateCalculator.class);
 
     private static final String HGV_VEHICLE_TYPE = "HGV";
+    private static final String TRAILER_VEHICLE_TYPE = "Trailer";
     private DateTimeFormatter oldPattern = DateTimeFormatter.ofPattern("d/M/yyyy");
     private DateTimeFormatter newPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
-    public String determineAnnualTestExpiryDate(Vehicle vehicle, String awsRequestId) throws Exception {
+    public String determineAnnualTestExpiryDate(Vehicle vehicle) throws Exception {
         LocalDate datetime;
 
         String date = vehicle.getTestCertificateExpiryDate();
 
         if (Strings.isNullOrEmpty(date)) {
+            if (vehicle.getVehicleType().equals(TRAILER_VEHICLE_TYPE)) {
+                return null;
+            }
 
             String registrationDate = vehicle.getRegistrationDate();
 
