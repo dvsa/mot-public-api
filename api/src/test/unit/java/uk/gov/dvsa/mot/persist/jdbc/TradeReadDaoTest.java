@@ -91,8 +91,6 @@ public class TradeReadDaoTest {
         final Timestamp startTimestamp = new Timestamp(startDate.getTime());
         final Timestamp endTimestamp = new Timestamp(endDate.getTime());
 
-        System.out.print(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE);
-
         when(connectionMock.prepareStatement(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE))
                 .thenReturn(preparedStatementMock);
         when(preparedStatementMock.executeQuery()).thenReturn(resultSetMock);
