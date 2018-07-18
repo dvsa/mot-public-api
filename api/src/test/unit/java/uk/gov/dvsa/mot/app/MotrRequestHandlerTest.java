@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -349,6 +350,18 @@ public class MotrRequestHandlerTest {
         MotrResponse expectedVehicle = createResponseVehicle("HGV", "2016-01-31");
         expectedVehicle.setMotTestNumber("SERIAL");
         checkIfHgvPsvVehicleIsCorrect(expectedVehicle, (MotrResponse) response.getEntity());
+    }
+
+    @Test
+    public void getCommercialVehicle_forTrailer() throws Exception {
+        String trailerRegistration = "A123456";
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = createVehicle("TRAILER");
+        when(hgvVehicleProvider.getVehicle(eq(trailerRegistration))).thenReturn(vehicle);
+
+        Response response = motrRequestHandler.getCommercialVehicle(trailerRegistration, containerRequestContext);
+
+        assertEquals(response.getStatus(), 200);
+        assertNotNull(response.getEntity());
     }
 
     // Tests for getVehicleByDvlaId method
