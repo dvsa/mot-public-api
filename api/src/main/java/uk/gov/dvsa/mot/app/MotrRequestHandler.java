@@ -147,7 +147,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
 
             Optional<MotrResponse> dvlaVehicleOptional = getDvlaVehicle(registration);
 
-            if (dvlaVehicleOptional.isPresent()) {
+            if (shouldGetHgvPsvHistory(dvlaVehicleOptional, registration)) {
 
                 Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
 
