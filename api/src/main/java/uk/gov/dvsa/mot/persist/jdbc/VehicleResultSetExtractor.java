@@ -48,6 +48,8 @@ public class VehicleResultSetExtractor implements ResultSetExtractor<List<Vehicl
     private static final String RFR_TYPE = "rfr_type";
     private static final String RFR_TEXT = "rfr_and_comments";
     private static final String RFR_DANGEROUS = "rfr_dangerous";
+    private static final String RFR_DEFICIENCY_CODE = "rfr_deficiency_code";
+    private static final String RFR_DEFICIENCY_DESCRIPTION = "rfr_deficiency_description";
 
     @Override
     public List<Vehicle> extractData(ResultSet rs) throws SQLException {
@@ -115,6 +117,8 @@ public class VehicleResultSetExtractor implements ResultSetExtractor<List<Vehicl
                     rfrAndAdvisoryItem.setType(rs.getString(RFR_TYPE));
                     rfrAndAdvisoryItem.setText(rs.getString(RFR_TEXT));
                     rfrAndAdvisoryItem.setDangerous(rs.getBoolean(RFR_DANGEROUS));
+                    rfrAndAdvisoryItem.setDeficiencyCategoryCode(rs.getString(RFR_DEFICIENCY_CODE));
+                    rfrAndAdvisoryItem.setDeficiencyCategoryDescription(rs.getString(RFR_DEFICIENCY_DESCRIPTION));
                     rfrAndAdvisoryItems.add(rfrAndAdvisoryItem);
                 }
             }

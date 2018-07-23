@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -14,6 +15,9 @@ import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
+import uk.gov.dvsa.mot.trade.api.response.VehicleResponse;
+import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleResponseMapperFactory;
+import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleV4ResponseMapper;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
 import java.util.ArrayList;
@@ -22,16 +26,25 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class TradeServiceRequestHandlerTest {
     @Mock
     private TradeReadService tradeReadService;
+
+    @Mock
+    private VehicleResponseMapperFactory vehicleResponseMapperFactory;
+
+    @Mock
+    private VehicleV4ResponseMapper vehicleMapper;
 
     @Mock
     private Context lambdaContext;
@@ -57,6 +70,7 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setVehicleResponseMapperFactory(vehicleResponseMapperFactory);
 
         return sut.getTradeMotTests(request.getVehicleId(), request.getNumber(),
                 request.getRegistration(), request.getDate(), request.getPage(), requestContext);
@@ -74,13 +88,14 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setVehicleResponseMapperFactory(vehicleResponseMapperFactory);
 
         return sut.getTradeMotTestsLegacy(registration, make, requestContext);
     }
 
     @Before
     public void setup() {
-
+        when(vehicleResponseMapperFactory.getMapper(any())).thenReturn(vehicleMapper);
         request = new TradeServiceRequest();
     }
 
@@ -119,7 +134,7 @@ public class TradeServiceRequestHandlerTest {
     }
 
     /**
-     * Really unexpected conditions should give us an InternalServerErrorException.
+     * Really unexpected conditions should give us an BadRequestException.
      * <p>
      * Here we pass in a null request, which will result in a NullPointerException which gets caught and converted.
      */
@@ -145,7 +160,7 @@ public class TradeServiceRequestHandlerTest {
     }
 
     /**
-     * If we ask for a vehicle ID which does exist we should get back the vehicle with that ID
+     * If search by vehicle ID and service returns a matching vehicle, we have it returned
      */
     @Test
     public void getTradeMotTests_VehicleId_VehicleExists() throws TradeException {
@@ -154,13 +169,15 @@ public class TradeServiceRequestHandlerTest {
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicle);
         final int vehicleId = 4;
+        List<VehicleResponse> mappedVehicles = Arrays.asList(new VehicleResponse());
         when(tradeReadService.getVehiclesByVehicleId(vehicleId)).thenReturn(vehicles);
+        when(vehicleMapper.map(eq(vehicles))).thenReturn(mappedVehicles);
 
         request.setVehicleId(vehicleId);
 
         List<?> receivedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
-        assertEquals(vehicles, receivedVehicles);
+        assertEquals(mappedVehicles, receivedVehicles);
     }
 
     /**
@@ -174,14 +191,16 @@ public class TradeServiceRequestHandlerTest {
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicle1);
         vehicles.add(vehicle2);
+        List<VehicleResponse> mappedVehicles = Arrays.asList(new VehicleResponse(), new VehicleResponse());
         final int vehicleId = 4;
         when(tradeReadService.getVehiclesByVehicleId(vehicleId)).thenReturn(vehicles);
+        when(vehicleMapper.map(eq(vehicles))).thenReturn(mappedVehicles);
 
         request.setVehicleId(vehicleId);
 
         List<?> receivedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
-        assertEquals(vehicles, receivedVehicles);
+        assertEquals(mappedVehicles, receivedVehicles);
     }
 
     /**
@@ -218,17 +237,20 @@ public class TradeServiceRequestHandlerTest {
     @Test
     public void getTradeMotTests_Number_TestExists() throws TradeException {
 
+        final long motNumber = 233432;
         Vehicle vehicle = new Vehicle();
         List<Vehicle> vehicles = new ArrayList<>();
         vehicles.add(vehicle);
-        final long motNumber = 233432;
+        vehicle.setMotTestNumber(String.valueOf(motNumber));
+        List<VehicleResponse> mappedVehicles = Arrays.asList(new VehicleResponse());
         when(tradeReadService.getVehiclesMotTestsByMotTestNumber(motNumber)).thenReturn(vehicles);
+        when(vehicleMapper.map(eq(vehicles))).thenReturn(mappedVehicles);
 
         request.setNumber(motNumber);
 
         List<?> receivedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
-        assertEquals(vehicles, receivedVehicles);
+        assertEquals(mappedVehicles, receivedVehicles);
     }
 
     /**
@@ -266,15 +288,18 @@ public class TradeServiceRequestHandlerTest {
         final String registration = "AA44VBG";
         final Vehicle vehicle = new Vehicle();
         vehicle.setRegistration(registration);
+        List<VehicleResponse> mappedVehicles = Arrays.asList(new VehicleResponse());
+        mappedVehicles.get(0).setRegistration(vehicle.getRegistration());
 
         when(tradeReadService.getVehiclesByRegistration(registration)).thenReturn(Arrays.asList(vehicle));
+        when(vehicleMapper.map(eq(Arrays.asList(vehicle)))).thenReturn(mappedVehicles);
 
         request.setRegistration(registration);
 
         List<?> retrievedVehicles =  (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
         assertEquals("Should retrieve only one vehicle", 1, retrievedVehicles.size());
-        assertEquals("Should pass through the vehicle from the DB layer", vehicle, retrievedVehicles.get(0));
+        assertEquals("Should pass through the vehicle from mapper", mappedVehicles, retrievedVehicles);
     }
 
     /**
@@ -323,7 +348,7 @@ public class TradeServiceRequestHandlerTest {
     }
 
     /**
-     * We should get an InvalidResourceException when we request a date/page that has nothing in it
+     * We should get an InternalServerErrorException when we request a date/page that has nothing in it
      * <p>
      * This variant of the test does not explicitly set the page
      */
@@ -368,15 +393,19 @@ public class TradeServiceRequestHandlerTest {
         final Vehicle vehicle2 = new Vehicle();
         vehicle1.setRegistration("ONE");
         vehicle2.setRegistration("TWO");
+        List<VehicleResponse> mappedVehicles = Arrays.asList(new VehicleResponse(), new VehicleResponse());
+        mappedVehicles.get(0).setRegistration(vehicle1.getRegistration());
+        mappedVehicles.get(1).setRegistration(vehicle2.getRegistration());
 
         request.setDate(dateString);
         request.setPage(page);
 
         when(tradeReadService.getVehiclesByDatePage(any(Date.class), eq(page))).thenReturn(Arrays.asList(vehicle1, vehicle2));
+        when(vehicleMapper.map(eq(Arrays.asList(vehicle1, vehicle2)))).thenReturn(mappedVehicles);
 
         List<?> returnedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
-        assertEquals(Arrays.asList(vehicle1, vehicle2), returnedVehicles);
+        assertEquals(mappedVehicles, returnedVehicles);
     }
 
     /**
@@ -407,14 +436,82 @@ public class TradeServiceRequestHandlerTest {
         final Vehicle vehicle2 = new Vehicle();
         vehicle1.setRegistration("ONE");
         vehicle2.setRegistration("TWO");
+        List<VehicleResponse> mappedVehicles = Arrays.asList(new VehicleResponse(), new VehicleResponse());
+        mappedVehicles.get(0).setRegistration(vehicle1.getRegistration());
+        mappedVehicles.get(1).setRegistration(vehicle2.getRegistration());
 
         request.setPage(page);
 
         when(tradeReadService.getVehiclesByPage(page)).thenReturn(Arrays.asList(vehicle1, vehicle2));
+        when(vehicleMapper.map(eq(Arrays.asList(vehicle1, vehicle2)))).thenReturn(mappedVehicles);
 
         List<?> returnedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
-        assertEquals(Arrays.asList(vehicle1, vehicle2), returnedVehicles);
+        assertEquals(mappedVehicles, returnedVehicles);
+    }
+
+    /**
+     * When called with appropriate header, API version is parsed correctly
+     */
+    @Test
+    public void getTradeMotTests_ParsesApiVersionCorrectly() throws TradeException {
+
+        final int page = 3;
+        request.setPage(page);
+        MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
+        headers.put("Accept", Arrays.asList("application/json+v3"));
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(requestContext.getHeaders()).thenReturn(headers);
+        when(tradeReadService.getVehiclesByPage(page)).thenReturn(Arrays.asList(new Vehicle()));
+        when(vehicleMapper.map(any())).thenReturn(Arrays.asList(new VehicleResponse()));
+
+        createHandlerAndGetTradeMotTests(request).getEntity();
+
+        verify(vehicleResponseMapperFactory).getMapper(argumentCaptor.capture());
+        assertEquals("v3", argumentCaptor.getValue());
+    }
+
+    /**
+     * When called with appropriate header but no version specified, endpoint works properly
+     */
+    @Test
+    public void getTradeMotTests_WorksAsV1WhenNoApiVersionSpecified() throws TradeException {
+
+        final int page = 3;
+        request.setPage(page);
+        MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
+        headers.put("Accept", Arrays.asList("application/json"));
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(requestContext.getHeaders()).thenReturn(headers);
+        when(tradeReadService.getVehiclesByPage(page)).thenReturn(Arrays.asList(new Vehicle()));
+        when(vehicleMapper.map(any())).thenReturn(Arrays.asList(new VehicleResponse()));
+
+        createHandlerAndGetTradeMotTests(request).getEntity();
+
+        verify(vehicleResponseMapperFactory).getMapper(argumentCaptor.capture());
+        assertEquals(null, argumentCaptor.getValue());
+    }
+
+    /**
+     * When called with appropriate header but no version specified, endpoint works properly
+     */
+    @Test
+    public void getTradeMotTests_WorksAsV1WhenHeadersAreNotSet() throws TradeException {
+
+        final int page = 3;
+        request.setPage(page);
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(requestContext.getHeaders()).thenReturn(null);
+        when(tradeReadService.getVehiclesByPage(page)).thenReturn(Arrays.asList(new Vehicle()));
+        when(vehicleMapper.map(any())).thenReturn(Arrays.asList(new VehicleResponse()));
+
+        createHandlerAndGetTradeMotTests(request).getEntity();
+
+        verify(vehicleResponseMapperFactory).getMapper(argumentCaptor.capture());
+        assertEquals(null, argumentCaptor.getValue());
     }
 
     /**
@@ -448,7 +545,7 @@ public class TradeServiceRequestHandlerTest {
     }
 
     /**
-     * A null request should get us an InternalServerErrorException
+     * A null request should get us an InvalidResourceException
      *
      * @throws TradeException always if the test is working correctly
      */

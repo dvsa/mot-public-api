@@ -16,6 +16,8 @@ import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
+import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleResponseMapper;
+import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleResponseMapperFactory;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
 import java.text.SimpleDateFormat;
@@ -28,6 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -42,6 +45,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     private static final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
 
     private TradeReadService tradeReadService;
+    private VehicleResponseMapperFactory vehicleResponseMapperFactory;
 
     public TradeServiceRequestHandler() {
 
@@ -67,6 +71,12 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
         logger.trace("Exiting setTradeReadService");
     }
 
+    @Inject
+    public void setVehicleResponseMapperFactory(VehicleResponseMapperFactory vehicleResponseMapperFactory) {
+
+        this.vehicleResponseMapperFactory = vehicleResponseMapperFactory;
+    }
+
     /**
      * Get MOT tests as per the provided request, grouped by vehicle.
      *
@@ -82,13 +92,19 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
      */
     @GET
     @Path("trade/vehicles/mot-tests")
-    @Produces("application/json")
+    @Produces({MediaType.APPLICATION_JSON,
+            MediaType.WILDCARD,
+            "application/json+v1",
+            "application/json+v2",
+            "application/json+v3",
+            "application/json+v4"})
     public Response getTradeMotTests(@QueryParam("vehicleId") Integer vehicleId,
                                           @QueryParam("number") Long number,
                                           @QueryParam("registration") String registration,
                                           @QueryParam("date") String motTestDate,
                                           @QueryParam("page") Integer page,
                                      ContainerRequestContext requestContext) throws TradeException {
+
         String awsRequestId = null;
         try {
             logger.info("Entering getTradeMotTests");
@@ -98,9 +114,12 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 awsRequestId = context.getRequestId();
             }
 
+            VehicleResponseMapper mapper = vehicleResponseMapperFactory.getMapper(this.parseVersionNumber(requestContext));
+            List<Vehicle> vehicles;
+
             if (vehicleId != null) {
-                logger.info("Trade API request for vehicle_id = " + vehicleId.toString());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByVehicleId(vehicleId);
+                logger.info("Trade API request for vehicle_id = {}", vehicleId);
+                vehicles = tradeReadService.getVehiclesByVehicleId(vehicleId);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException(
@@ -111,11 +130,10 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for vehicle_id = " + vehicleId.toString() + " returned " + vehicles
                         .size() + " records");
                 logger.trace("Exiting getTradeMotTests");
-                return Response.ok(vehicles).build();
 
             } else if (number != null) {
                 logger.info("Trade API request for mot test number = " + number);
-                List<Vehicle> vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(number);
+                vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(number);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException("No MOT Tests found with number : " + number.toString(),
@@ -125,11 +143,10 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for mot test number = " + number.toString() + " returned " + vehicles
                         .size() + " records");
                 logger.trace("Exiting getTradeMotTests");
-                return Response.ok(vehicles).build();
 
             } else if ((registration != null)) {
                 logger.info("Trade API request for registration = " + registration);
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByRegistration(registration);
+                vehicles = tradeReadService.getVehiclesByRegistration(registration);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException("No MOT Tests found with vehicle registration : " + registration,
@@ -139,12 +156,11 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for registration = " + registration + " returned " +
                         vehicles.size() + " records");
                 logger.trace("Exiting getTradeMotTests");
-                return Response.ok(vehicles).build();
 
             } else if (motTestDate != null) {
                 Date date = sdfDate.parse(motTestDate);
                 logger.info("Trade API request for date = " + date + " and page = " + page.toString());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByDatePage(date, page);
+                vehicles = tradeReadService.getVehiclesByDatePage(date, page);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException("No MOT Tests found for date : " + motTestDate + " page : " +
@@ -154,11 +170,10 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for date = " + date + " and page = " + page.toString() + " returned " +
                         vehicles.size() + " records");
                 logger.trace("Exiting getTradeMotTests");
-                return Response.ok(vehicles).build();
 
             } else if (page != null) {
                 logger.info("Trade API request for page = " + page.toString());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByPage(page);
+                vehicles = tradeReadService.getVehiclesByPage(page);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException("No MOT Tests found for page: " + page.toString(), awsRequestId);
@@ -167,12 +182,14 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.info("Trade API request for page = " + page.toString() + " returned " + vehicles.size() + " " +
                         "records");
                 logger.trace("Exiting getTradeMotTests");
-                return Response.ok(vehicles).build();
 
             } else {
                 logger.info("Unrecognised parameter set");
                 throw new BadRequestException("Unrecognised parameter set", awsRequestId);
             }
+
+            return Response.ok(mapper.map(vehicles)).build();
+
         } catch (TradeException e) {
             logger.error(e.getMessage(), e);
             throw e;
@@ -253,5 +270,24 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
         } finally {
             logger.info("Exiting getTradeMotTestsLegacy");
         }
+    }
+
+    private String parseVersionNumber(ContainerRequestContext requestContext) {
+        logger.trace("Entering parseVersionNumber");
+        if (requestContext.getHeaders() != null && requestContext.getHeaders().containsKey("Accept")) {
+            List<String> versionHeaderList = requestContext.getHeaders().get("Accept");
+            if (versionHeaderList.size() > 0 && versionHeaderList.get(0) != null) {
+
+                String[] headerSplit = versionHeaderList.get(0).split("\\+");
+                String version = headerSplit.length > 1 ? headerSplit[1] : null;
+
+                logger.trace("Exiting parseVersionNumber");
+                return version;
+            }
+        }
+
+        logger.warn("Accept mime type header not set. TAPI will use default API version");
+        logger.trace("Exiting parseVersionNumber");
+        return null;
     }
 }
