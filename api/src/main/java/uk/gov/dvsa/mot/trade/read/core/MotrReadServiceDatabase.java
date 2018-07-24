@@ -33,20 +33,6 @@ public class MotrReadServiceDatabase implements MotrReadService {
 
     @Override
     @ProvideDbConnection
-    public MotrResponse getLatestMotTestForMotOrDvlaVehicleByRegistration(String registration) {
-
-        List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
-        MotrReadServiceDatabase.VehicleAndLatestMot vehicleAndLatestMot = getVehicleAndLatestMotTestPass(vehicles);
-
-        if (vehicleAndLatestMot == null || !vehicleAndLatestMot.hasMotTest()) {
-            return getDvlaVehicleByRegistration(registration);
-        }
-
-        return mapVehicleAndLatestMotToMotrResponse(vehicleAndLatestMot);
-    }
-
-    @Override
-    @ProvideDbConnection
     public MotrResponse getLatestMotTestByRegistration(String registration) {
 
         List<Vehicle> vehicles = vehicleReadService.findByRegistration(registration);
@@ -145,13 +131,6 @@ public class MotrReadServiceDatabase implements MotrReadService {
     private MotrResponse getDvlaVehicleById(Integer dvlaVehicleId) {
 
         List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleById(dvlaVehicleId);
-
-        return getLatestDvlaVehicleAndMapToTradeVehicle(vehicles);
-    }
-
-    private MotrResponse getDvlaVehicleByRegistration(String registration) {
-
-        List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleByRegistration(registration);
 
         return getLatestDvlaVehicleAndMapToTradeVehicle(vehicles);
     }
