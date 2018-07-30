@@ -2,12 +2,14 @@ package uk.gov.dvsa.mot.vehicle.hgv;
 
 import com.google.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 
+import uk.gov.dvsa.mot.app.logging.CompletableFutureWrapper;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.response.ResponseTestHistory;
@@ -20,7 +22,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
 public class HgvVehicleProvider {
-    private static final Logger logger = Logger.getLogger(HgvVehicleProvider.class);
+    private static final Logger logger = LogManager.getLogger(HgvVehicleProvider.class);
 
     private HgvConfiguration configuration;
 
@@ -35,9 +37,9 @@ public class HgvVehicleProvider {
         TestHistory[] vehicleTestHistory;
 
         try {
-            CompletableFuture<Vehicle> vehicleFuture = CompletableFuture.supplyAsync(() -> getHgvVehicle(registration));
+            CompletableFuture<Vehicle> vehicleFuture = CompletableFutureWrapper.supplyAsync(() -> getHgvVehicle(registration));
 
-            CompletableFuture<TestHistory[]> vehicleTestHistoryFuture = CompletableFuture.supplyAsync(
+            CompletableFuture<TestHistory[]> vehicleTestHistoryFuture = CompletableFutureWrapper.supplyAsync(
                     () -> getHgvVehicleTestHistory(registration));
 
             vehicle = vehicleFuture.get();

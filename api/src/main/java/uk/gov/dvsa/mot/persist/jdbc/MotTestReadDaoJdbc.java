@@ -2,7 +2,8 @@ package uk.gov.dvsa.mot.persist.jdbc;
 
 import com.google.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvsa.mot.persist.ConnectionManager;
 import uk.gov.dvsa.mot.persist.MotTestReadDao;
@@ -56,7 +57,7 @@ import java.util.List;
  * MotTestReadDao implementation for JDBC connections to a MySQL database.
  */
 public class MotTestReadDaoJdbc implements MotTestReadDao {
-    private static final Logger logger = Logger.getLogger(MotTestReadDaoJdbc.class);
+    private static final Logger logger = LogManager.getLogger(MotTestReadDaoJdbc.class);
     private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy.MM.dd");
     private static final SimpleDateFormat SDF_DATE_TIME = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 

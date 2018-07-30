@@ -2,7 +2,8 @@ package uk.gov.dvsa.mot.persist.jdbc;
 
 import com.google.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvsa.mot.persist.ConnectionManager;
 import uk.gov.dvsa.mot.persist.TradeReadDao;
@@ -17,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TradeReadDaoJdbc implements TradeReadDao {
-    private static final Logger logger = Logger.getLogger(MotTestReadDaoJdbc.class);
+    private static final Logger logger = LogManager.getLogger(MotTestReadDaoJdbc.class);
 
     private ConnectionManager connectionManager;
 

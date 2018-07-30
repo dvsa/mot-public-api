@@ -4,11 +4,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public abstract class AbstractRequestHandler {
-    private static final Logger logger = Logger.getLogger(AbstractRequestHandler.class);
+    private static final Logger logger = LogManager.getLogger(AbstractRequestHandler.class);
     private final Injector injector;
 
     public AbstractRequestHandler() {
@@ -56,35 +58,35 @@ public abstract class AbstractRequestHandler {
 
                 switch (logLevel.toUpperCase()) {
                     case "OFF":
-                        Logger.getRootLogger().setLevel(Level.OFF);
+                        Configurator.setLevel(LogManager.getRootLogger().getName(), Level.OFF);
                         break;
 
                     case "ALL":
-                        Logger.getRootLogger().setLevel(Level.ALL);
+                        Configurator.setLevel(LogManager.getRootLogger().getName(), Level.ALL);
                         break;
 
                     case "INFO":
-                        Logger.getRootLogger().setLevel(Level.INFO);
+                        Configurator.setLevel(LogManager.getRootLogger().getName(), Level.INFO);
                         break;
 
                     case "TRACE":
-                        Logger.getRootLogger().setLevel(Level.TRACE);
+                        Configurator.setLevel(LogManager.getRootLogger().getName(), Level.TRACE);
                         break;
 
                     case "DEBUG":
-                        Logger.getRootLogger().setLevel(Level.DEBUG);
+                        Configurator.setLevel(LogManager.getRootLogger().getName(), Level.DEBUG);
                         break;
 
                     case "WARN":
-                        Logger.getRootLogger().setLevel(Level.WARN);
+                        Configurator.setLevel(LogManager.getRootLogger().getName(), Level.WARN);
                         break;
 
                     case "ERROR":
-                        Logger.getRootLogger().setLevel(Level.ERROR);
+                        Configurator.setLevel(LogManager.getRootLogger().getName(), Level.ERROR);
                         break;
 
                     case "FATAL":
-                        Logger.getRootLogger().setLevel(Level.FATAL);
+                        Configurator.setLevel(LogManager.getRootLogger().getName(), Level.FATAL);
                         break;
 
                     /* log if environment variable found but not in valid list */
@@ -93,7 +95,7 @@ public abstract class AbstractRequestHandler {
                         break;
                 }
 
-                logger.info("Changed log level to " + logLevel.toUpperCase());
+                logger.info("Log level changed to " + logLevel.toUpperCase());
             }
         } catch (Exception e) {
             logger.error("Unable to override log level", e);

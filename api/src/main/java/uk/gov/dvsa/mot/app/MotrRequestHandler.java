@@ -5,7 +5,8 @@ import com.amazonaws.serverless.proxy.model.ApiGatewayRequestContext;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
@@ -30,7 +31,7 @@ import javax.ws.rs.core.Response;
 
 @Path("/")
 public class MotrRequestHandler extends AbstractRequestHandler {
-    private static final Logger logger = Logger.getLogger(MotrRequestHandler.class);
+    private static final Logger logger = LogManager.getLogger(MotrRequestHandler.class);
 
     private MotrReadService motrReadService;
     private HgvVehicleProvider hgvVehicleProvider;
@@ -105,16 +106,15 @@ public class MotrRequestHandler extends AbstractRequestHandler {
 
                 return Response.ok(hgvPsvVehicle).build();
             } else {
-                logger.error("No MOT Test or DVLA vehicle found for registration.");
                 throw new InvalidResourceException("No MOT Test or DVLA vehicle found for registration " + registration,
                         awsRequestId);
             }
         } catch (TradeException e) {
-            // no need to log these errors, just throw them back
+            logger.error(e.getMessage(), e);
             throw e;
         } catch (Exception e) {
             // log all unhandled exceptions and throw an internal server error
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             throw new InternalServerErrorException(e, awsRequestId);
         } finally {
             logger.trace("Exiting getVehicle");
@@ -160,16 +160,15 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                 MotrResponse hgvPsvVehicle = buildHgvPsvResponse(hgvPsvVehicleOptional.get(), dvlaVehicleOptional);
                 return Response.ok(hgvPsvVehicle).build();
             } else {
-                logger.error("No DVLA vehicle found for registration.");
                 throw new InvalidResourceException(String.format("No DVLA vehicle found for registration %s", registration),
                         awsRequestId);
             }
         } catch (TradeException e) {
-            // no need to log these errors, just throw them back
+            logger.error(e.getMessage(), e);
             throw e;
         } catch (Exception e) {
             // log all unhandled exceptions and throw an internal server error
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             throw new InternalServerErrorException(e, awsRequestId);
         } finally {
             logger.trace("Exiting getCommercialVehicle");
@@ -206,11 +205,11 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                 throw new BadRequestException("Invalid Parameters", awsRequestId);
             }
         } catch (TradeException e) {
-            // no need to log these errors, just throw them back
+            logger.error(e.getMessage(), e);
             throw e;
         } catch (Exception e) {
             // log all unhandled exceptions and throw an internal server error
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             throw new InternalServerErrorException(e, awsRequestId);
         } finally {
             logger.trace("Exiting getVehicleByDvlaId");
@@ -248,11 +247,11 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                 throw new BadRequestException("Invalid Parameters", awsRequestId);
             }
         } catch (TradeException e) {
-            // no need to log these errors, just throw them back
+            logger.error(e.getMessage(), e);
             throw e;
         } catch (Exception e) {
             // log all unhandled exceptions and throw an internal server error
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             throw new InternalServerErrorException(e, awsRequestId);
         } finally {
             logger.trace("Exiting getVehicleByMotTestNumber");

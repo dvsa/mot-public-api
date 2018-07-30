@@ -1,17 +1,15 @@
 package uk.gov.dvsa.mot.app;
 
-import com.amazonaws.services.lambda.runtime.Context;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.gov.dvsa.mot.app.TradeServiceRequestHandler;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
-import uk.gov.dvsa.mot.trade.api.Vehicle;
 
 import java.io.IOException;
 import java.util.List;
+
+import javax.ws.rs.container.ContainerRequestContext;
 
 /**
  * A simple test harness for locally invoking your Lambda function handler.
@@ -26,11 +24,11 @@ public class GetTradeMotTestsBulk {
         input.setPage(0);
     }
 
-    private Context createContext() {
+    private ContainerRequestContext createContext() {
 
-        TestContext ctx = new TestContext();
+        ContainerRequestContext ctx = new RequestContext();
 
-        ctx.setFunctionName("TradeHandler");
+        ctx.setMethod("TradeHandler");
 
         return ctx;
     }
@@ -40,9 +38,10 @@ public class GetTradeMotTestsBulk {
 
         try {
             TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
-            Context ctx = createContext();
+            ContainerRequestContext ctx = createContext();
 
-            List<Vehicle> output = tradeServiceRequestHandler.getTradeMotTests(input, ctx);
+            List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTests(input.getVehicleId(), input.getNumber(),
+                    input.getRegistration(), input.getDate(), input.getPage(), ctx).getEntity();
 
             if (output != null) {
                 System.out.println(output.toString());

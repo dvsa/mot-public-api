@@ -1,26 +1,34 @@
 package uk.gov.dvsa.mot.app;
 
+import com.amazonaws.serverless.proxy.RequestReader;
+import com.amazonaws.serverless.proxy.model.ApiGatewayRequestContext;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.util.CollectionUtils;
 import com.google.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
-import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
-import uk.gov.dvsa.mot.trade.read.core.MotrReadService;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Response;
 
 /**
  * Entry point class for Lambdas.
@@ -28,12 +36,12 @@ import java.util.List;
  * Various public methods in this class are called on Lambda invocation for
  * trade service queries.
  */
+@Path("/")
 public class TradeServiceRequestHandler extends AbstractRequestHandler {
-    private static final Logger logger = Logger.getLogger(TradeServiceRequestHandler.class);
+    private static final Logger logger = LogManager.getLogger(TradeServiceRequestHandler.class);
     private static final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
 
     private TradeReadService tradeReadService;
-    private MotrReadService motrReadService;
 
     public TradeServiceRequestHandler() {
 
@@ -60,132 +68,120 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     }
 
     /**
-     * Set the MOTR read service which will be used to make queries required by this
-     * class.
-     *
-     * @param motrReadService an instance of something which implements {@link MotrReadService}
-     */
-    @Inject
-    public void setMotrReadService(MotrReadService motrReadService) {
-
-        logger.trace("Entering setMotrReadService");
-        this.motrReadService = motrReadService;
-        logger.trace("Exiting setMotrReadService");
-    }
-
-    /**
      * Get MOT tests as per the provided request, grouped by vehicle.
      *
-     * @param request a {@link TradeServiceRequest} which describes the parameters to search for MOT tests by. This method only uses query
-     *                parameters, and the valid options are: vehicleId, number (MOT test number), registration and make (must be specified
-     *                together), date and page, or page.
-     * @param context AWS Lambda context object
+     * @param vehicleId query parameter
+     * @param number query parameter
+     * @param registration query parameter
+     * @param motTestDate date query parameter
+     * @param page query parameter
+     * @param requestContext AWS Lambda context object
      * @return A list of {@link Vehicle}, with each vehicle populated with its MOT tests matching the search parameters.
      * @throws TradeException Under various error conditions, including no tests found. It is expected that the surrounding integration will
      *                        interpret this exception appropriately.
      */
-    public List<Vehicle> getTradeMotTests(TradeServiceRequest request, Context context) throws TradeException {
-
+    @GET
+    @Path("trade/vehicles/mot-tests")
+    @Produces("application/json")
+    public Response getTradeMotTests(@QueryParam("vehicleId") Integer vehicleId,
+                                          @QueryParam("number") Long number,
+                                          @QueryParam("registration") String registration,
+                                          @QueryParam("date") String motTestDate,
+                                          @QueryParam("page") Integer page,
+                                     ContainerRequestContext requestContext) throws TradeException {
+        String awsRequestId = null;
         try {
-            logger.trace("Entering getTradeMotTests");
-            request.setRequestId(context.getAwsRequestId());
+            logger.info("Entering getTradeMotTests");
+            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
+                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
+            if (context != null) {
+                awsRequestId = context.getRequestId();
+            }
 
-            if (request.getVehicleId() != null) {
-
-                logger.info("Trade API request for vehicle_id = " + request.getVehicleId());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByVehicleId(request.getVehicleId());
+            if (vehicleId != null) {
+                logger.info("Trade API request for vehicle_id = " + vehicleId.toString());
+                List<Vehicle> vehicles = tradeReadService.getVehiclesByVehicleId(vehicleId);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    logger.debug("getTradeMotTests for vehicle_id = " + request.getVehicleId() + " found 0 ");
                     throw new InvalidResourceException(
-                            "No MOT Tests found with vehicle id : " + request.getVehicleId(),
-                            context.getAwsRequestId());
+                            "No MOT Tests found with vehicle id : " + vehicleId.toString(),
+                            awsRequestId);
                 }
 
-                logger.info("Trade API request for vehicle_id = " + request.getVehicleId() + " returned " + vehicles
+                logger.info("Trade API request for vehicle_id = " + vehicleId.toString() + " returned " + vehicles
                         .size() + " records");
                 logger.trace("Exiting getTradeMotTests");
-                return vehicles;
+                return Response.ok(vehicles).build();
 
-            } else if (request.getNumber() != null) {
-
-                logger.info("Trade API request for mot test number = " + request.getNumber());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(request.getNumber());
+            } else if (number != null) {
+                logger.info("Trade API request for mot test number = " + number);
+                List<Vehicle> vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(number);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    logger.debug("getTradeMotTests for number = " + request.getNumber() + " found 0");
-                    throw new InvalidResourceException("No MOT Tests found with number : " + request.getNumber(),
-                            context.getAwsRequestId());
+                    throw new InvalidResourceException("No MOT Tests found with number : " + number.toString(),
+                            awsRequestId);
                 }
 
-                logger.info("Trade API request for mot test number = " + request.getNumber() + " returned " + vehicles
+                logger.info("Trade API request for mot test number = " + number.toString() + " returned " + vehicles
                         .size() + " records");
                 logger.trace("Exiting getTradeMotTests");
-                return vehicles;
+                return Response.ok(vehicles).build();
 
-            } else if ((request.getRegistration() != null)) {
-
-                String registration = URLDecoder.decode(request.getRegistration(), "UTF-8");
-
+            } else if ((registration != null)) {
                 logger.info("Trade API request for registration = " + registration);
                 List<Vehicle> vehicles = tradeReadService.getVehiclesByRegistration(registration);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    logger.debug("getTradeMotTests for registration = " + request.getNumber() + " found 0");
                     throw new InvalidResourceException("No MOT Tests found with vehicle registration : " + registration,
-                            context.getAwsRequestId());
+                            awsRequestId);
                 }
 
                 logger.info("Trade API request for registration = " + registration + " returned " +
                         vehicles.size() + " records");
                 logger.trace("Exiting getTradeMotTests");
-                return vehicles;
+                return Response.ok(vehicles).build();
 
-            } else if (request.getDate() != null) {
-
-                Date date = sdfDate.parse(request.getDate());
-                logger.info("Trade API request for date = " + date + " and page = " + request.getPage());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByDatePage(date, request.getPage());
+            } else if (motTestDate != null) {
+                Date date = sdfDate.parse(motTestDate);
+                logger.info("Trade API request for date = " + date + " and page = " + page.toString());
+                List<Vehicle> vehicles = tradeReadService.getVehiclesByDatePage(date, page);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    throw new InvalidResourceException("No MOT Tests found for date : " + request.getDate() + " page : " +
-                            request.getPage(), context.getAwsRequestId());
+                    throw new InvalidResourceException("No MOT Tests found for date : " + motTestDate + " page : " +
+                            page.toString(), awsRequestId);
                 }
 
-                logger.info("Trade API request for date = " + date + " and page = " + request.getPage() + " returned " +
+                logger.info("Trade API request for date = " + date + " and page = " + page.toString() + " returned " +
                         vehicles.size() + " records");
                 logger.trace("Exiting getTradeMotTests");
-                return vehicles;
+                return Response.ok(vehicles).build();
 
-            } else if (request.getPage() != null) {
-
-                logger.info("Trade API request for page = " + request.getPage());
-                List<Vehicle> vehicles = tradeReadService.getVehiclesByPage(request.getPage());
+            } else if (page != null) {
+                logger.info("Trade API request for page = " + page.toString());
+                List<Vehicle> vehicles = tradeReadService.getVehiclesByPage(page);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    throw new InvalidResourceException("No MOT Tests found for page: " + request.getPage(), context
-                            .getAwsRequestId());
+                    throw new InvalidResourceException("No MOT Tests found for page: " + page.toString(), awsRequestId);
                 }
 
-                logger.info("Trade API request for page = " + request.getPage() + " returned " + vehicles.size() + " " +
+                logger.info("Trade API request for page = " + page.toString() + " returned " + vehicles.size() + " " +
                         "records");
                 logger.trace("Exiting getTradeMotTests");
-                return vehicles;
+                return Response.ok(vehicles).build();
 
             } else {
-
-                logger.trace("Exiting getTradeMotTests");
-                throw new BadRequestException("Unrecognised parameter set", context.getAwsRequestId());
+                logger.info("Unrecognised parameter set");
+                throw new BadRequestException("Unrecognised parameter set", awsRequestId);
             }
         } catch (TradeException e) {
-            // no need to log these errors, just throw them back
-            logger.trace("Exiting getTradeMotTests");
+            logger.error(e.getMessage(), e);
             throw e;
         } catch (Exception e) {
             // log all unhandled exceptions and throw an internal server error
             logger.error(e);
-            logger.trace("Exiting getTradeMotTests");
-            throw new InternalServerErrorException(e, context.getAwsRequestId());
+            throw new InternalServerErrorException(e, "1");
+        } finally {
+            logger.info("Exiting getTradeMotTests");
         }
     }
 
@@ -205,7 +201,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             logger.trace("Exiting getMakes");
             return makes;
         } catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getMessage(), e);
             logger.trace("Exiting getMakes");
             throw new InternalServerErrorException(e, context.getAwsRequestId());
         }
@@ -214,44 +210,48 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     /**
      * Retrieve MOT tests in legacy format, based on the provided request.
      *
-     * @param request a {@link TradeServiceRequest} object describing the search to perform for MOTs. This method requires the provision of
-     *                a vehicle registration as a path parameter, along with a vehicle make also as a path parameter.
-     * @param context AWS Lambda request context
-     * @return A list of MOTs in the legacy format.
+     * @param registration a vehicle registration as a path parameter
+     * @param make a vehicle make as a path parameter.
+     * @param requestContext AWS Lambda request context
+     * @return Response A list of MOTs in the legacy format.
      * @throws TradeException If there's an error retrieving data or a not-found condition.
      */
-    public List<DisplayMotTestItem> getTradeMotTestsLegacy(TradeServiceRequest request, Context context) throws TradeException {
-
+    @GET
+    @Path("mot-history/{registration}/{make}")
+    @Produces("application/json")
+    public Response getTradeMotTestsLegacy(@PathParam("registration") String registration,
+                                                           @PathParam("make") String make,
+                                           ContainerRequestContext requestContext) throws TradeException {
+        String awsRequestId = "";
         try {
-            logger.trace("Entering getTradeMotTestsLegacy");
-            if (request.getPathParams().getRegistration() != null) {
-                String registration = URLDecoder.decode(request.getPathParams().getRegistration(), "UTF-8");
-                String make = URLDecoder.decode(request.getPathParams().getMake(), "UTF-8");
-                logger.info("Trade API MOTH request for registration = " + registration + " and make = " + make);
-                List<DisplayMotTestItem> items = tradeReadService.getMotTestsByRegistrationAndMake(registration, make);
-
-                if (CollectionUtils.isNullOrEmpty(items)) {
-                    throw new InvalidResourceException("No MOT Tests found for registration : " + registration + " and make : " + make,
-                            context.getAwsRequestId());
-                }
-
-                logger.info("Trade API MOTR request for registration = " + registration + " and make = " + make + " returned " + items
-                        .size() + " records");
-                logger.trace("Exiting getTradeMotTestsLegacy");
-                return items;
-            } else {
-                logger.trace("Exiting getTradeMotTestsLegacy");
-                throw new BadRequestException("Invalid Parameters", context.getAwsRequestId());
+            logger.info("Entering getMakes");
+            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
+                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
+            if (context != null) {
+                awsRequestId = context.getRequestId();
             }
+
+            logger.info("Entering getTradeMotTestsLegacy");
+            logger.info("Trade API MOTH request for registration = " + registration + " and make = " + make);
+            List<DisplayMotTestItem> items = tradeReadService.getMotTestsByRegistrationAndMake(registration, make);
+
+            if (CollectionUtils.isNullOrEmpty(items)) {
+                throw new InvalidResourceException("No MOT Tests found for registration : " + registration + " and make : " + make,
+                        awsRequestId);
+            }
+
+            logger.info("Trade API MOTR request for registration = " + registration + " and make = " + make + " returned " + items
+                    .size() + " records");
+            return Response.ok(items).build();
         } catch (TradeException e) {
-            // no need to log these errors, just throw them back
-            logger.trace("Exiting getTradeMotTestsLegacy");
+            logger.error(e.getMessage(), e);
             throw e;
         } catch (Exception e) {
             // log all unhandled exceptions and throw an internal server error
-            logger.error(e);
-            logger.trace("Exiting getTradeMotTestsLegacy");
-            throw new InternalServerErrorException(e, context.getAwsRequestId());
+            logger.error(e.getMessage(), e);
+            throw new InternalServerErrorException(e, awsRequestId);
+        } finally {
+            logger.info("Exiting getTradeMotTestsLegacy");
         }
     }
 }

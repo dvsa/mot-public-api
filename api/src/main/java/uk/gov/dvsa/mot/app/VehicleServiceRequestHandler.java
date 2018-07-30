@@ -3,20 +3,26 @@ package uk.gov.dvsa.mot.app;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.google.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import uk.gov.dvsa.mot.app.logging.LoggerParamsManager;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 import uk.gov.dvsa.mot.vehicle.read.core.VehicleReadService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This is an entry point class for an AWS Lambda.
  */
 public class VehicleServiceRequestHandler extends AbstractRequestHandler {
-    private static final Logger logger = Logger.getLogger(VehicleServiceRequestHandler.class);
+    private static final Logger logger = LogManager.getLogger(VehicleServiceRequestHandler.class);
 
+    private LoggerParamsManager loggerParamsManager = new LoggerParamsManager();
     private VehicleReadService vehicleReadService;
 
     public VehicleServiceRequestHandler() {
@@ -47,8 +53,13 @@ public class VehicleServiceRequestHandler extends AbstractRequestHandler {
      */
     public Vehicle getVehicleById(Integer id, Context context) throws TradeException {
 
-        logger.debug("getVehicleById : " + id);
         try {
+            Map<String, String> params = new HashMap<>();
+            params.put("vehicleId", id.toString());
+            loggerParamsManager.populateRequestIdToLogger(context.getAwsRequestId());
+            loggerParamsManager.populateUrlParamsToLogger(params);
+
+            logger.debug("getVehicleById : " + id);
             Vehicle vehicle = vehicleReadService.getVehicleById(id);
 
             if (vehicle != null) {
