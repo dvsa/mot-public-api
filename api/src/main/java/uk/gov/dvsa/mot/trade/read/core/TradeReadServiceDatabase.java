@@ -2,7 +2,8 @@ package uk.gov.dvsa.mot.trade.read.core;
 
 import com.google.inject.Inject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvsa.mot.app.util.CollectionUtils;
 import uk.gov.dvsa.mot.mottest.api.MotTest;
@@ -29,7 +30,8 @@ import javax.annotation.Resource;
 
 @Resource
 public class TradeReadServiceDatabase implements TradeReadService {
-    private static final Logger logger = Logger.getLogger(TradeReadServiceDatabase.class);
+    private static final Logger logger = LogManager.getLogger(TradeReadServiceDatabase.class);
+
     private static final int VEHICLE_PAGE_SIZE = 1000;
 
     private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy.MM.dd");

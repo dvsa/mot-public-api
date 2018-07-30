@@ -1,38 +1,34 @@
 package uk.gov.dvsa.mot.app;
 
-import com.amazonaws.services.lambda.runtime.Context;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.TradeException;
-import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 
 import java.io.IOException;
 import java.util.List;
+
+import javax.ws.rs.container.ContainerRequestContext;
 
 /**
  * A simple test harness for locally invoking your Lambda function handler.
  */
 public class GetTradeMotTestsTest {
 
-    private static TradeServiceRequest input = new TradeServiceRequest();
+    private static String make;
+    private static String registration;
 
     @BeforeClass
     public static void createInput() throws IOException {
-        // input.setId( 729084574L ) ;
-        input.setId(900000000L);
-        TradeServiceRequest.MotTestPathParams pathParams = new TradeServiceRequest().new MotTestPathParams();
-        pathParams.setRegistration("REGI");
-        input.setPathParams(pathParams);
+        registration = "REGI";
+        make = "MAKE";
     }
 
-    private Context createContext() {
+    private ContainerRequestContext createContext() {
 
-        TestContext ctx = new TestContext();
+        ContainerRequestContext ctx = new RequestContext();
 
-        ctx.setFunctionName("TradeHandler");
+        ctx.setMethod("TradeHandler");
 
         return ctx;
     }
@@ -42,9 +38,10 @@ public class GetTradeMotTestsTest {
 
         try {
             TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
-            Context ctx = createContext();
+            ContainerRequestContext ctx = createContext();
 
-            List<DisplayMotTestItem> output = tradeServiceRequestHandler.getTradeMotTestsLegacy(input, ctx);
+            List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTestsLegacy(registration,
+                    make, ctx).getEntity();
 
             if (output != null) {
                 System.out.println(output.toString());

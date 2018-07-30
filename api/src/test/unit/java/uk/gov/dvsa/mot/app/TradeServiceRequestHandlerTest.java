@@ -11,17 +11,18 @@ import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
-import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
-import uk.gov.dvsa.mot.trade.read.core.MotrReadService;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -33,10 +34,10 @@ public class TradeServiceRequestHandlerTest {
     private TradeReadService tradeReadService;
 
     @Mock
-    private MotrReadService motrReadService;
+    private Context lambdaContext;
 
     @Mock
-    private Context lambdaContext;
+    private ContainerRequestContext requestContext;
 
     private TradeServiceRequest request;
 
@@ -52,29 +53,29 @@ public class TradeServiceRequestHandlerTest {
      * @return The result of the call to getTradeMotTests
      * @throws TradeException if getTradeMotTests throws
      */
-    private List<Vehicle> createHandlerAndGetTradeMotTests(TradeServiceRequest request) throws TradeException {
+    private Response createHandlerAndGetTradeMotTests(TradeServiceRequest request) throws TradeException {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
-        sut.setMotrReadService(motrReadService);
 
-        return sut.getTradeMotTests(request, lambdaContext);
+        return sut.getTradeMotTests(request.getVehicleId(), request.getNumber(),
+                request.getRegistration(), request.getDate(), request.getPage(), requestContext);
     }
 
     /**
      * Convenience function for testing getTradeMotTestsLegacy calls with less boilerplate
      *
-     * @param request the request to pass to getTradeMotTestsLegacy
+     * @param registration is a path parameter passed to getTradeMotTestsLegacy
+     * @param make is a path parameter passed to getTradeMotTestsLegacy
      * @return the return value of getTradeMotTestsLegacy
      * @throws TradeException if getTradeMotTestsLegacy throws
      */
-    private List<DisplayMotTestItem> createHandlerAndGetLegacy(TradeServiceRequest request) throws TradeException {
+    private Response createHandlerAndGetLegacy(String registration, String make) throws TradeException {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
-        sut.setMotrReadService(motrReadService);
 
-        return sut.getTradeMotTestsLegacy(request, lambdaContext);
+        return sut.getTradeMotTestsLegacy(registration, make, requestContext);
     }
 
     @Before
@@ -97,7 +98,6 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
-        sut.setMotrReadService(motrReadService);
 
         List<String> makes = sut.getMakes(null, lambdaContext);
 
@@ -114,7 +114,6 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
-        sut.setMotrReadService(motrReadService);
 
         sut.getMakes(null, lambdaContext);
     }
@@ -124,10 +123,10 @@ public class TradeServiceRequestHandlerTest {
      * <p>
      * Here we pass in a null request, which will result in a NullPointerException which gets caught and converted.
      */
-    @Test(expected = InternalServerErrorException.class)
+    @Test(expected = BadRequestException.class)
     public void getTradeMotTests_NullRequest_Throws() throws TradeException {
 
-        createHandlerAndGetTradeMotTests(null);
+        createHandlerAndGetTradeMotTests(new TradeServiceRequest());
     }
 
     /**
@@ -159,7 +158,7 @@ public class TradeServiceRequestHandlerTest {
 
         request.setVehicleId(vehicleId);
 
-        List<Vehicle> receivedVehicles = createHandlerAndGetTradeMotTests(request);
+        List<?> receivedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
         assertEquals(vehicles, receivedVehicles);
     }
@@ -180,7 +179,7 @@ public class TradeServiceRequestHandlerTest {
 
         request.setVehicleId(vehicleId);
 
-        List<Vehicle> receivedVehicles = createHandlerAndGetTradeMotTests(request);
+        List<?> receivedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
         assertEquals(vehicles, receivedVehicles);
     }
@@ -227,7 +226,7 @@ public class TradeServiceRequestHandlerTest {
 
         request.setNumber(motNumber);
 
-        List<Vehicle> receivedVehicles = createHandlerAndGetTradeMotTests(request);
+        List<?> receivedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
         assertEquals(vehicles, receivedVehicles);
     }
@@ -272,7 +271,7 @@ public class TradeServiceRequestHandlerTest {
 
         request.setRegistration(registration);
 
-        List<Vehicle> retrievedVehicles = createHandlerAndGetTradeMotTests(request);
+        List<?> retrievedVehicles =  (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
         assertEquals("Should retrieve only one vehicle", 1, retrievedVehicles.size());
         assertEquals("Should pass through the vehicle from the DB layer", vehicle, retrievedVehicles.get(0));
@@ -328,7 +327,7 @@ public class TradeServiceRequestHandlerTest {
      * <p>
      * This variant of the test does not explicitly set the page
      */
-    @Test(expected = InvalidResourceException.class)
+    @Test(expected = InternalServerErrorException.class)
     public void getTradeMotTests_Date_NothingForDate() throws TradeException {
 
         final String dateString = "2014-01-01";
@@ -375,7 +374,7 @@ public class TradeServiceRequestHandlerTest {
 
         when(tradeReadService.getVehiclesByDatePage(any(Date.class), eq(page))).thenReturn(Arrays.asList(vehicle1, vehicle2));
 
-        List<Vehicle> returnedVehicles = createHandlerAndGetTradeMotTests(request);
+        List<?> returnedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
         assertEquals(Arrays.asList(vehicle1, vehicle2), returnedVehicles);
     }
@@ -413,7 +412,7 @@ public class TradeServiceRequestHandlerTest {
 
         when(tradeReadService.getVehiclesByPage(page)).thenReturn(Arrays.asList(vehicle1, vehicle2));
 
-        List<Vehicle> returnedVehicles = createHandlerAndGetTradeMotTests(request);
+        List<?> returnedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
         assertEquals(Arrays.asList(vehicle1, vehicle2), returnedVehicles);
     }
@@ -453,22 +452,10 @@ public class TradeServiceRequestHandlerTest {
      *
      * @throws TradeException always if the test is working correctly
      */
-    @Test(expected = InternalServerErrorException.class)
+    @Test(expected = InvalidResourceException.class)
     public void getTradeMotTestsLegacy_NullRequest() throws TradeException {
 
-        createHandlerAndGetLegacy(null);
-    }
-
-    /**
-     * A null registration should get us a BadRequestException
-     *
-     * @throws TradeException always
-     */
-    @Test(expected = BadRequestException.class)
-    public void getTradeMotTestsLegacy_NullRegistration() throws TradeException {
-
-        request.getPathParams().setRegistration(null);
-        createHandlerAndGetLegacy(request);
+        createHandlerAndGetLegacy(null, null);
     }
 
     /**
@@ -481,12 +468,10 @@ public class TradeServiceRequestHandlerTest {
 
         final String registration = "NOTACAR";
         final String make = "NOTAMAKE";
-        request.getPathParams().setRegistration(registration);
-        request.getPathParams().setMake(make);
 
         when(tradeReadService.getMotTestsByRegistrationAndMake(registration, make)).thenReturn(Arrays.asList());
 
-        createHandlerAndGetLegacy(request);
+        createHandlerAndGetLegacy(registration, make);
     }
 
     /**
@@ -500,9 +485,6 @@ public class TradeServiceRequestHandlerTest {
         final String registration = "AA88UJM";
         final String make = "FERRARI";
 
-        request.getPathParams().setRegistration(registration);
-        request.getPathParams().setMake(make);
-
         DisplayMotTestItem test1 = new DisplayMotTestItem();
         test1.setMotTestNumber("1");
         test1.setRegistration(registration);
@@ -515,7 +497,7 @@ public class TradeServiceRequestHandlerTest {
 
         when(tradeReadService.getMotTestsByRegistrationAndMake(registration, make)).thenReturn(tests);
 
-        List<DisplayMotTestItem> receivedTests = createHandlerAndGetLegacy(request);
+        List<?> receivedTests = (List<?>) createHandlerAndGetLegacy(registration, make).getEntity();
 
         assertEquals(tests, receivedTests);
     }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration packages="com.amazonaws.services.lambda.runtime.log4j2">
+    <Appenders>
+        <Lambda name="Lambda">
+            <JSONLayout/>
+        </Lambda>
+    </Appenders>
+    <Loggers>
+        <Root level="warn">
+            <AppenderRef ref="Lambda" />
+        </Root>
+    </Loggers>
+</Configuration>

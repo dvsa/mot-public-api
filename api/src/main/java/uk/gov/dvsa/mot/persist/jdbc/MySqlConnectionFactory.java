@@ -1,6 +1,7 @@
 package uk.gov.dvsa.mot.persist.jdbc;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvsa.mot.app.ConfigKeys;
 import uk.gov.dvsa.mot.app.ConfigManager;
@@ -16,7 +17,7 @@ import java.sql.DriverManager;
  * provided by {@link ConfigManager}
  */
 public class MySqlConnectionFactory implements ConnectionFactory {
-    private static final Logger logger = Logger.getLogger(MySqlConnectionFactory.class);
+    private static final Logger logger = LogManager.getLogger(MySqlConnectionFactory.class);
 
     private static final DatabasePasswordLoader DB_PASSWORD_LOADER = new DatabasePasswordLoader();
 

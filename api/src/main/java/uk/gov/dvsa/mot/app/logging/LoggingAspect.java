@@ -1,7 +1,8 @@
-package uk.gov.dvsa.mot.app;
+package uk.gov.dvsa.mot.app.logging;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,7 +14,7 @@ import java.text.MessageFormat;
 @Aspect
 public class LoggingAspect {
 
-    private static final Logger logger = Logger.getLogger(LoggingAspect.class);
+    private static final Logger logger = LogManager.getLogger(LoggingAspect.class);
 
     @Pointcut("execution(public * uk.gov.dvsa.mot.persist.jdbc.*Jdbc.*(..))")
     public void anyPublicJdbcMethod() {
