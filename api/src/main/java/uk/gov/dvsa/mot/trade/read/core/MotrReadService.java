@@ -4,8 +4,6 @@ import uk.gov.dvsa.mot.trade.api.MotrResponse;
 
 public interface MotrReadService {
 
-    MotrResponse getLatestMotTestForMotOrDvlaVehicleByRegistration(String registration);
-
     MotrResponse getLatestMotTestByRegistration(String registration);
 
     MotrResponse getLatestMotTestForDvlaVehicleByRegistration(String registration);
