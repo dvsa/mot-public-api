@@ -37,7 +37,9 @@ public class TradeReadSql {
                     + "  CASE "
                     + "  WHEN `rfr`.`inspection_manual_reference` IS NOT NULL THEN "
                     + "  CONCAT(' (', `rfr`.`inspection_manual_reference`, ')') ELSE ' ' END)) `rfr_and_comments` "
-                    + ", `rfrmap`.`failure_dangerous` AS `rfr_dangerous` ";
+                    + ", `rfrmap`.`failure_dangerous` AS `rfr_dangerous` "
+                    + ", `rfr_dc`.`code` AS `rfr_deficiency_code` "
+                    + ", `rfr_dc`.`description` AS `rfr_deficiency_description` ";
 
     static final String FROM_MOT_TEST_CURRENT = "FROM    `mot2`.`mot_test_current` AS `mot_test` ";
     static final String JOIN_MOT_TEST_CURRENT_RFR_MAP = "LEFT JOIN `mot2`.`mot_test_current_rfr_map` AS `rfrmap` ON `rfrmap`" +
@@ -52,6 +54,7 @@ public class TradeReadSql {
                     + "LEFT JOIN `mot2`.`reason_for_rejection_type` AS `rfr_type` ON `rfr_type`.`id` = `rfrmap`.`rfr_type_id` "
                     + "LEFT JOIN `mot2`.`language_type` AS `l` ON `l`.`code` = 'EN' "
                     + "LEFT JOIN `mot2`.`reason_for_rejection` AS `rfr` ON `rfrmap`.`rfr_id` = `rfr`.`id` "
+                    + "LEFT JOIN `mot2`.`rfr_deficiency_category` AS `rfr_dc` ON `rfr`.`rfr_deficiency_category_id` = `rfr_dc`.`id` "
                     + "LEFT JOIN `mot2`.`rfr_language_content_map` AS `rfrl` ON `rfrl`.`rfr_id` = `rfr`.`id` AND `rfrl`" +
                     ".`language_type_id` = `l`.`id` "
                     + "LEFT JOIN `mot2`.`test_item_category` AS `ti` ON `rfr`.`test_item_category_id` = `ti`.`id` "

@@ -5,6 +5,8 @@ public class RfrAndAdvisoryItem {
     private String text;
     private String type;
     private boolean dangerous;
+    private String deficiencyCategoryCode;
+    private String deficiencyCategoryDescription;
 
     public RfrAndAdvisoryItem() {
 
@@ -41,5 +43,21 @@ public class RfrAndAdvisoryItem {
 
         this.dangerous = dangerous;
         return this;
+    }
+
+    public String getDeficiencyCategoryCode() {
+        return deficiencyCategoryCode;
+    }
+
+    public void setDeficiencyCategoryCode(String deficiencyCategoryCode) {
+        this.deficiencyCategoryCode = deficiencyCategoryCode;
+    }
+
+    public String getDeficiencyCategoryDescription() {
+        return deficiencyCategoryDescription;
+    }
+
+    public void setDeficiencyCategoryDescription(String deficiencyCategoryDescription) {
+        this.deficiencyCategoryDescription = deficiencyCategoryDescription;
     }
 }

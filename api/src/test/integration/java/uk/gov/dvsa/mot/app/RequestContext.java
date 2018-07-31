@@ -24,6 +24,7 @@ import javax.ws.rs.core.UriInfo;
  */
 public class RequestContext implements ContainerRequestContext {
     private String method;
+    private MultivaluedMap<String, String> headers;
 
     @Override
     public Object getProperty(String name) {
@@ -77,7 +78,7 @@ public class RequestContext implements ContainerRequestContext {
 
     @Override
     public MultivaluedMap<String, String> getHeaders() {
-        return null;
+        return headers;
     }
 
     @Override
@@ -148,5 +149,9 @@ public class RequestContext implements ContainerRequestContext {
     @Override
     public void abortWith(Response response) {
 
+    }
+
+    public void setHeaders(MultivaluedMap<String, String> headers) {
+        this.headers = headers;
     }
 }
