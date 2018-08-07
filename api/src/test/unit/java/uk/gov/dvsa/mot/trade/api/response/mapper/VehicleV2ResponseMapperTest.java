@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class VehicleV2ResponseMapperTest {
 
@@ -29,7 +30,8 @@ public class VehicleV2ResponseMapperTest {
     public void map_mapsAllPropertiesCorrectly() {
         List<Vehicle> vehiclesFromDb = Arrays.asList(
                 MockVehicleDataHelper.getVehicle(12),
-                MockVehicleDataHelper.getVehicle(33)
+                MockVehicleDataHelper.getVehicle(33),
+                MockVehicleDataHelper.getVehicleWithNoTests(44)
         );
 
         List<VehicleResponse> mappedVehicles = vehicleResponseMapper.map(vehiclesFromDb);
@@ -66,6 +68,10 @@ public class VehicleV2ResponseMapperTest {
     }
 
     private void assertMotTestMapped(List<MotTest> motTests, List<MotTestV2Response> mappedMotTests) {
+        if (motTests == null) {
+            assertNull(mappedMotTests);
+            return;
+        }
         assertEquals(motTests.size(), mappedMotTests.size());
 
         for (int i = 0; i < motTests.size(); i++) {

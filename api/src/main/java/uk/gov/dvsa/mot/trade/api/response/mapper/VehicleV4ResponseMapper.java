@@ -2,6 +2,7 @@ package uk.gov.dvsa.mot.trade.api.response.mapper;
 
 import com.amazonaws.util.StringUtils;
 
+import uk.gov.dvsa.mot.app.util.CollectionUtils;
 import uk.gov.dvsa.mot.trade.api.MotTest;
 import uk.gov.dvsa.mot.trade.api.RfrAndAdvisoryItem;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
@@ -27,9 +28,11 @@ public class VehicleV4ResponseMapper extends VehicleResponseMapper {
         this.fillBaseVehicleResponseProperties(vehicleResponse, vehicle);
 
         vehicleResponse.setMotTestDueDate(vehicle.getMotTestDueDate());
-        vehicleResponse.setMotTests(
-                vehicle.getMotTests().stream().map(this::mapTest).collect(Collectors.toList())
-        );
+        if (!CollectionUtils.isNullOrEmpty(vehicle.getMotTests())) {
+            vehicleResponse.setMotTests(
+                    vehicle.getMotTests().stream().map(this::mapTest).collect(Collectors.toList())
+            );
+        }
 
         return vehicleResponse;
     }
