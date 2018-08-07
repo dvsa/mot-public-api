@@ -36,6 +36,15 @@ public class MockVehicleDataHelper {
         return vehicle;
     }
 
+    public static Vehicle getVehicleWithNoTests(int id) {
+
+        Vehicle vehicle = getVehicle(id);
+        vehicle.setMotTests(null);
+        vehicle.setMotTestNumber(null);
+
+        return vehicle;
+    }
+
     private static MotTest getMotTest(Integer year, String testResult) {
         MotTest motTest = new MotTest();
 

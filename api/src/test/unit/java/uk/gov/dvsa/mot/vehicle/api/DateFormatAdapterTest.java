@@ -25,7 +25,7 @@ public class DateFormatAdapterTest {
 
         adapter = new DateFormatAdapter();
     }
-
+    
     @Test
     public void marshal() throws Exception {
 
