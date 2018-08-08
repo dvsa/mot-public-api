@@ -1,5 +1,8 @@
 package uk.gov.dvsa.mot.trade.api.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RfrAndAdvisoryResponse {
 
     private String text;
