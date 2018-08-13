@@ -195,8 +195,8 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             throw e;
         } catch (Exception e) {
             // log all unhandled exceptions and throw an internal server error
-            logger.error(e);
-            throw new InternalServerErrorException(e, "1");
+            logger.error("error occurred", e);
+            throw new InternalServerErrorException(e, awsRequestId);
         } finally {
             logger.info("Exiting getTradeMotTests");
         }
