@@ -5,6 +5,7 @@ import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.google.common.net.HttpHeaders;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,33 +17,58 @@ import uk.gov.dvsa.mot.trade.api.TradeExceptionMapper;
 
 import java.util.Map;
 
+import static uk.gov.dvsa.mot.app.util.CollectionUtils.isNullOrEmpty;
+
 public class LambdaHandler implements RequestHandler<AwsProxyRequest, AwsProxyResponse> {
-    private static final Logger logger = LogManager.getLogger(LambdaHandler.class);
+    private final Logger logger;
 
-    private LoggerParamsManager loggerParamsManager = new LoggerParamsManager();
+    private final LoggerParamsManager loggerParamsManager;
 
-    private static final ResourceConfig jerseyApplication = new ResourceConfig()
-            .packages("uk.gov.dvsa.mot.app")
-            .register(JacksonFeature.class)
-            .register(TradeExceptionMapper.class);
+    private final ResourceConfig jerseyApplication;
 
-    private static final JerseyLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler =
-            JerseyLambdaContainerHandler.getAwsProxyHandler(jerseyApplication);
+    private final JerseyLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
+
+    public LambdaHandler() {
+        configureJulLog4jBridge();
+        logger = LogManager.getLogger(LambdaHandler.class);
+        loggerParamsManager = new LoggerParamsManager();
+
+        jerseyApplication = new ResourceConfig()
+                .packages("uk.gov.dvsa.mot.app")
+                .register(JacksonFeature.class)
+                .register(TradeExceptionMapper.class);
+        handler = JerseyLambdaContainerHandler.getAwsProxyHandler(jerseyApplication);
+        turnOffJerseyAccessLog();
+    }
 
     @Override
     public AwsProxyResponse handleRequest(AwsProxyRequest request, Context context) {
+        populateLoggerContextWithParams(request);
+        logger.trace("Entering lambda handler");
+        return handler.proxy(request, context);
+    }
 
-        Map<String, String> params = request.getPathParameters();
-        if (request.getQueryStringParameters() != null && !request.getQueryStringParameters().isEmpty()) {
-            params.putAll(request.getQueryStringParameters());
-        }
+    private void configureJulLog4jBridge() {
+        System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
+    }
 
+    private void turnOffJerseyAccessLog() {
+        handler.setLogFormatter(null);
+    }
+
+    private void populateLoggerContextWithParams(AwsProxyRequest request) {
+        loggerParamsManager.resetContext();
         loggerParamsManager.populateRequestIdToLogger(request.getRequestContext().getRequestId());
         loggerParamsManager.populateApiKeyIdToLogger(request.getRequestContext().getIdentity().getApiKeyId());
-        loggerParamsManager.populateUrlParamsToLogger(params);
+        loggerParamsManager.populateUrlParamsToLogger(readPathParameters(request));
+        loggerParamsManager.populateAcceptVersion(request.getHeaders().get(HttpHeaders.ACCEPT));
+    }
 
-        logger.info("Entering lambda handler");
-
-        return handler.proxy(request, context);
+    private Map<String, String> readPathParameters(AwsProxyRequest request) {
+        Map<String, String> params = request.getPathParameters();
+        if (!isNullOrEmpty(request.getQueryStringParameters())) {
+            params.putAll(request.getQueryStringParameters());
+        }
+        return params;
     }
 }

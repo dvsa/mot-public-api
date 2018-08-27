@@ -27,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 @Path("/")
@@ -66,17 +67,16 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     @GET
     @Path("motr/v2/search/registration/{registration}")
     @Produces("application/json")
-    public Response getVehicle(@PathParam("registration") String registration,
-                               ContainerRequestContext requestContext) throws TradeException {
+    public Response getVehicle(
+            @PathParam("registration") String registration,
+            @Context ContainerRequestContext requestContext
+    ) throws TradeException {
         try {
 
-            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
-                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
-            if (context != null) {
-                awsRequestId = context.getRequestId();
-            }
+            readAwsRequestId(requestContext);
 
-            logger.info(String.format("Entering MotrRequestHandler, awsRequestId: %s", awsRequestId));
+            logger.trace("Entering MotrRequestHandler");
+            logger.info("MOTR request for vehicle with registraiton = {}", registration);
 
             Optional<MotrResponse> motVehiclesOptional = getMotVehicle(registration);
 
@@ -92,7 +92,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                 Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
 
                 if (!hgvPsvVehicleOptional.isPresent()) {
-                    logger.info("No HGV/PSV vehicle retrieved");
+                    logger.debug("No HGV/PSV vehicle retrieved");
 
                     if (dvlaVehicleOptional.isPresent() && dvlaVehicleOptional.get().getMotTestExpiryDate() != null) {
                         return Response.ok(buildMotResponse(dvlaVehicleOptional.get())).build();
@@ -133,17 +133,16 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     @GET
     @Path("motr/v2/search/commercial/registration/{registration}")
     @Produces("application/json")
-    public Response getCommercialVehicle(@PathParam("registration") String registration,
-                               ContainerRequestContext requestContext) throws TradeException {
+    public Response getCommercialVehicle(
+            @PathParam("registration") String registration,
+            @Context ContainerRequestContext requestContext
+    ) throws TradeException {
         try {
             logger.trace("Entering getCommercialVehicle");
-            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
-                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
-            if (context != null) {
-                awsRequestId = context.getRequestId();
-            }
+            logger.info("MOTR request for commercial vehicle with registraiton = {}", registration);
+            readAwsRequestId(requestContext);
 
-            logger.info(String.format("Entering MotrRequestHandler.getCommercialVehicle, awsRequestId: %s", awsRequestId));
+            logger.trace(String.format("Entering MotrRequestHandler.getCommercialVehicle, awsRequestId: %s", awsRequestId));
 
             Optional<MotrResponse> dvlaVehicleOptional = getDvlaVehicle(registration);
 
@@ -152,7 +151,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                 Optional<Vehicle> hgvPsvVehicleOptional = getHgvPsvVehicle(registration);
 
                 if (!hgvPsvVehicleOptional.isPresent()) {
-                    logger.info("No HGV/PSV vehicle retrieved");
+                    logger.debug("No HGV/PSV vehicle retrieved");
                     throw new InvalidResourceException(String.format("No HGV/PSV vehicle found for registration %s", registration),
                             awsRequestId);
                 }
@@ -178,18 +177,17 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     @GET
     @Path("motr/v2/search/dvla-id/{id}")
     @Produces("application/json")
-    public Response getVehicleByDvlaId(@PathParam("id") Integer dvlaVehicleId,
-                                       ContainerRequestContext requestContext) throws TradeException {
+    public Response getVehicleByDvlaId(
+            @PathParam("id") Integer dvlaVehicleId,
+            @Context ContainerRequestContext requestContext
+    ) throws TradeException {
         try {
             logger.trace("Entering getVehicleByDvlaId");
-            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
-                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
-            if (context != null) {
-                awsRequestId = context.getRequestId();
-            }
+            logger.info("MOTR request for vehicle with dvla_id = {}", dvlaVehicleId);
+            readAwsRequestId(requestContext);
 
             if (dvlaVehicleId != null) {
-                logger.info(String.format("Public API MOTR request for DVLA id = %d", dvlaVehicleId));
+                logger.debug(String.format("Public API MOTR request for DVLA id = %d", dvlaVehicleId));
 
                 MotrResponse response = motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
 
@@ -199,7 +197,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                             awsRequestId);
                 }
 
-                logger.info(String.format("Public API MOTR request for DVLA id = %d returned 1 record", dvlaVehicleId));
+                logger.debug(String.format("Public API MOTR request for DVLA id = %d returned 1 record", dvlaVehicleId));
                 return Response.ok(buildMotResponse(response)).build();
             } else {
                 throw new BadRequestException("Invalid Parameters", awsRequestId);
@@ -219,18 +217,16 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     @GET
     @Path("motr/v2/search/mot-test/{motTestNumber}")
     @Produces("application/json")
-    public Response getVehicleByMotTestNumber(@PathParam("motTestNumber") Long motTestNumber,
-                                       ContainerRequestContext requestContext) throws TradeException {
+    public Response getVehicleByMotTestNumber(
+            @PathParam("motTestNumber") Long motTestNumber,
+            @Context ContainerRequestContext requestContext
+    ) throws TradeException {
         try {
             logger.trace("Entering getVehicleByMotTestNumber");
-            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
-                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
-            if (context != null) {
-                awsRequestId = context.getRequestId();
-            }
+            readAwsRequestId(requestContext);
 
             if (motTestNumber != null) {
-                logger.info(String.format("Public API MOTR request for mot test number = %d", motTestNumber));
+                logger.debug(String.format("Public API MOTR request for mot test number = %d", motTestNumber));
 
                 MotrResponse motrResponse =
                         motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
@@ -241,7 +237,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
                             awsRequestId);
                 }
 
-                logger.info(String.format("Public API MOTR request for mot test number = %s returned 1 record", awsRequestId));
+                logger.debug(String.format("Public API MOTR request for mot test number = %s returned 1 record", awsRequestId));
                 return Response.ok(buildMotResponse(motrResponse)).build();
             } else {
                 throw new BadRequestException("Invalid Parameters", awsRequestId);
@@ -258,8 +254,16 @@ public class MotrRequestHandler extends AbstractRequestHandler {
         }
     }
 
+    private void readAwsRequestId(@Context ContainerRequestContext requestContext) {
+        ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
+                RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
+        if (context != null) {
+            awsRequestId = context.getRequestId();
+        }
+    }
+
     private Optional<MotrResponse> getMotVehicle(String registration) throws Exception {
-        logger.info(String.format("Retrieving vehicle by registration: %s", registration));
+        logger.trace(String.format("Retrieving vehicle by registration: %s", registration));
 
         MotrResponse motVehicles;
 
@@ -275,7 +279,7 @@ public class MotrRequestHandler extends AbstractRequestHandler {
     }
 
     private Optional<MotrResponse> getDvlaVehicle(String registration) throws Exception {
-        logger.info(String.format("Retrieving dvla vehicle by registration: %s", registration));
+        logger.trace(String.format("Retrieving dvla vehicle by registration: %s", registration));
 
         MotrResponse dvlaVehicle;
 

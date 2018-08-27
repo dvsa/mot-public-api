@@ -98,16 +98,18 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             "application/json+v2",
             "application/json+v3",
             "application/json+v4"})
-    public Response getTradeMotTests(@QueryParam("vehicleId") Integer vehicleId,
-                                          @QueryParam("number") Long number,
-                                          @QueryParam("registration") String registration,
-                                          @QueryParam("date") String motTestDate,
-                                          @QueryParam("page") Integer page,
-                                     ContainerRequestContext requestContext) throws TradeException {
+    public Response getTradeMotTests(
+            @QueryParam("vehicleId") Integer vehicleId,
+            @QueryParam("number") Long number,
+            @QueryParam("registration") String registration,
+            @QueryParam("date") String motTestDate,
+            @QueryParam("page") Integer page,
+            @javax.ws.rs.core.Context ContainerRequestContext requestContext
+    ) throws TradeException {
 
         String awsRequestId = null;
         try {
-            logger.info("Entering getTradeMotTests");
+            logger.trace("Entering getTradeMotTests");
             ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
                     RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
             if (context != null) {
@@ -127,12 +129,11 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                             awsRequestId);
                 }
 
-                logger.info("Trade API request for vehicle_id = " + vehicleId.toString() + " returned " + vehicles
-                        .size() + " records");
+                logger.debug("Trade API request for vehicle_id = {} returned {} records", vehicleId, vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
             } else if (number != null) {
-                logger.info("Trade API request for mot test number = " + number);
+                logger.info("Trade API request for mot test number = {}", number);
                 vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(number);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
@@ -140,12 +141,11 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                             awsRequestId);
                 }
 
-                logger.info("Trade API request for mot test number = " + number.toString() + " returned " + vehicles
-                        .size() + " records");
+                logger.debug("Trade API request for mot test number = {}  returned {} records", number, vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
             } else if ((registration != null)) {
-                logger.info("Trade API request for registration = " + registration);
+                logger.info("Trade API request for registration {}", registration);
                 vehicles = tradeReadService.getVehiclesByRegistration(registration);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
@@ -153,13 +153,12 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                             awsRequestId);
                 }
 
-                logger.info("Trade API request for registration = " + registration + " returned " +
-                        vehicles.size() + " records");
+                logger.debug("Trade API request for registration = {} returned {} records", registration, vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
             } else if (motTestDate != null) {
                 Date date = sdfDate.parse(motTestDate);
-                logger.info("Trade API request for date = " + date + " and page = " + page.toString());
+                logger.info("Trade API request for date = {} and page {}", date, page);
                 vehicles = tradeReadService.getVehiclesByDatePage(date, page);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
@@ -167,24 +166,22 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                             page.toString(), awsRequestId);
                 }
 
-                logger.info("Trade API request for date = " + date + " and page = " + page.toString() + " returned " +
-                        vehicles.size() + " records");
+                logger.debug("Trade API request for date = {} and page {} returned {} records", date, page, vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
             } else if (page != null) {
-                logger.info("Trade API request for page = " + page.toString());
+                logger.info("Trade API request for page = {}",  page);
                 vehicles = tradeReadService.getVehiclesByPage(page);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException("No MOT Tests found for page: " + page.toString(), awsRequestId);
                 }
 
-                logger.info("Trade API request for page = " + page.toString() + " returned " + vehicles.size() + " " +
-                        "records");
+                logger.debug("Trade API request for page = {} returned {} records",  page, vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
             } else {
-                logger.info("Unrecognised parameter set");
+                logger.warn("Unrecognised parameter set");
                 throw new BadRequestException("Unrecognised parameter set", awsRequestId);
             }
 
@@ -200,7 +197,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             logger.error("error occurred", e);
             throw new InternalServerErrorException(e, awsRequestId);
         } finally {
-            logger.info("Exiting getTradeMotTests");
+            logger.trace("Exiting getTradeMotTests");
         }
     }
 
@@ -217,12 +214,12 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
         try {
             logger.trace("Entering getMakes");
             List<String> makes = tradeReadService.getMakes();
-            logger.trace("Exiting getMakes");
             return makes;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            logger.trace("Exiting getMakes");
             throw new InternalServerErrorException(e, context.getAwsRequestId());
+        } finally {
+            logger.trace("Exiting getMakes");
         }
     }
 
@@ -238,20 +235,22 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     @GET
     @Path("mot-history/{registration}/{make}")
     @Produces("application/json")
-    public Response getTradeMotTestsLegacy(@PathParam("registration") String registration,
-                                                           @PathParam("make") String make,
-                                           ContainerRequestContext requestContext) throws TradeException {
+    public Response getTradeMotTestsLegacy(
+            @PathParam("registration") String registration,
+            @PathParam("make") String make,
+            @javax.ws.rs.core.Context ContainerRequestContext requestContext
+    ) throws TradeException {
         String awsRequestId = "";
         try {
-            logger.info("Entering getMakes");
+            logger.trace("Entering getMakes");
             ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
                     RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
             if (context != null) {
                 awsRequestId = context.getRequestId();
             }
 
-            logger.info("Entering getTradeMotTestsLegacy");
-            logger.info("Trade API MOTH request for registration = " + registration + " and make = " + make);
+            logger.trace("Entering getTradeMotTestsLegacy");
+            logger.info("Trade API MOTH request for registration = {} and make = {} ", registration, make);
             List<DisplayMotTestItem> items = tradeReadService.getMotTestsByRegistrationAndMake(registration, make);
 
             if (CollectionUtils.isNullOrEmpty(items)) {
@@ -259,8 +258,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                         awsRequestId);
             }
 
-            logger.info("Trade API MOTR request for registration = " + registration + " and make = " + make + " returned " + items
-                    .size() + " records");
+            logger.debug("Trade API MOTR request for registration = {} and make {} returned {} records", registration, make, items.size());
             return Response.ok(items)
                     .type(MediaType.APPLICATION_JSON)
                     .build();
@@ -272,7 +270,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             logger.error(e.getMessage(), e);
             throw new InternalServerErrorException(e, awsRequestId);
         } finally {
-            logger.info("Exiting getTradeMotTestsLegacy");
+            logger.trace("Exiting getTradeMotTestsLegacy");
         }
     }
 

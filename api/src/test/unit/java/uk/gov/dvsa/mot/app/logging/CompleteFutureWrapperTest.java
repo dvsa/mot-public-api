@@ -13,7 +13,7 @@ public class CompleteFutureWrapperTest {
     @Test
     public void supplyAsync_shouldCopyImmutableThreadContextToChildThread() throws Exception {
         CompletableFuture<Boolean> answer;
-        ThreadContext.put(LoggerParamsManager.AWSRequestIdKey, value);
+        ThreadContext.put(LoggerParamsManager.AWS_REQUEST_ID_KEY, value);
 
         answer = CompletableFutureWrapper.supplyAsync(() -> isChildThreadImmutableContextDuplicated(value));
 
@@ -21,7 +21,7 @@ public class CompleteFutureWrapperTest {
     }
 
     private Boolean isChildThreadImmutableContextDuplicated(String expectedValue) {
-        String value = ThreadContext.get(LoggerParamsManager.AWSRequestIdKey);
+        String value = ThreadContext.get(LoggerParamsManager.AWS_REQUEST_ID_KEY);
 
         return expectedValue.equals(value);
     }
