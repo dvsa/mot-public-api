@@ -188,7 +188,9 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 throw new BadRequestException("Unrecognised parameter set", awsRequestId);
             }
 
-            return Response.ok(mapper.map(vehicles)).build();
+            return Response.ok(mapper.map(vehicles))
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
 
         } catch (TradeException e) {
             logger.error(e.getMessage(), e);
@@ -259,7 +261,9 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
 
             logger.info("Trade API MOTR request for registration = " + registration + " and make = " + make + " returned " + items
                     .size() + " records");
-            return Response.ok(items).build();
+            return Response.ok(items)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         } catch (TradeException e) {
             logger.error(e.getMessage(), e);
             throw e;
