@@ -10,7 +10,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-
+api/out/
 # Eclipse Core
 .project
 
