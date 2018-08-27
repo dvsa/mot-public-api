@@ -2,11 +2,19 @@ package uk.gov.dvsa.mot.vehicle.api;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class DateFormatAdapter extends XmlAdapter<String, Date> {
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+    private final SimpleDateFormat dateFormat;
+
+    public DateFormatAdapter() {
+
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     @Override
     public String marshal(Date v) throws Exception {
@@ -19,5 +27,4 @@ public class DateFormatAdapter extends XmlAdapter<String, Date> {
 
         return dateFormat.parse(v);
     }
-
 }
