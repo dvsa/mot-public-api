@@ -17,7 +17,7 @@ public class DateFormatAdapterTest {
     private DateFormatAdapter adapter;
 
     {
-        theDate = Date.from(ZonedDateTime.of(2012, 3, 1, 4, 2, 4, 0, ZoneId.systemDefault()).toInstant());
+        theDate = Date.from(ZonedDateTime.of(2012, 3, 1, 4, 2, 4, 0, ZoneId.of("UTC")).toInstant());
     }
 
     @Before
