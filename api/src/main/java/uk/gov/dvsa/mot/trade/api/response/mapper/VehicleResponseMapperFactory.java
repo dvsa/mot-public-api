@@ -13,7 +13,7 @@ public class VehicleResponseMapperFactory {
         VehicleResponseMapper mapper;
 
         if (version == null) {
-            logger.info("API version requested is null, using v1");
+            logger.debug("API version requested is null, using v1");
             mapper = new VehicleV1ResponseMapper();
         } else {
             switch (version) {
@@ -35,7 +35,7 @@ public class VehicleResponseMapperFactory {
             }
         }
 
-        logger.info("Mapper version selected: " + mapper.getClass().getSimpleName());
+        logger.debug("Mapper version selected: " + mapper.getClass().getSimpleName());
         logger.trace("Exiting VehicleResponseMapperFactory.getMapper");
         return mapper;
     }

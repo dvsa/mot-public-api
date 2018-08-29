@@ -6,6 +6,9 @@
         </Lambda>
     </Appenders>
     <Loggers>
+        <Logger name="com.amazonaws" level="warn" additivity="false">
+            <AppenderRef ref="Lambda"/>
+        </Logger>
         <Root level="warn">
             <AppenderRef ref="Lambda" />
         </Root>

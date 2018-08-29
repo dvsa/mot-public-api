@@ -88,7 +88,7 @@ public class JsonLayout extends AbstractStringLayout {
             final Map<String, String> map = mapMessage.getData();
             writeStringMap("message", map, jsonGenerator);
         } else {
-            jsonGenerator.writeStringField("message", message.toString());
+            jsonGenerator.writeStringField("message", message.getFormattedMessage());
         }
     }
 
@@ -128,8 +128,8 @@ public class JsonLayout extends AbstractStringLayout {
         // TreeSet orders fields alphabetically by key:
         final Set<String> keys = new TreeSet<String>(stringMap.keySet());
         for (final String key : keys) {
-            if (key.equals(LoggerParamsManager.UrlParamsKey)) {
-                jsonGenerator.writeFieldName(LoggerParamsManager.UrlParamsKey);
+            if (key.equals(LoggerParamsManager.URL_PARAMS_KEY)) {
+                jsonGenerator.writeFieldName(LoggerParamsManager.URL_PARAMS_KEY);
                 jsonGenerator.writeRawValue(stringMap.get(key));
             } else {
                 jsonGenerator.writeStringField(key, stringMap.get(key));

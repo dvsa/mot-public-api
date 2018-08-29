@@ -2,8 +2,8 @@ package uk.gov.dvsa.mot.trade.service;
 
 import com.google.common.base.Strings;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 
@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 
 public class AnnualTestExpiryDateCalculator {
-    private static final Logger logger = LoggerFactory.getLogger(AnnualTestExpiryDateCalculator.class);
+    private static final Logger logger = LogManager.getLogger(AnnualTestExpiryDateCalculator.class);
 
     private static final String HGV_VEHICLE_TYPE = "HGV";
     private static final String TRAILER_VEHICLE_TYPE = "Trailer";
@@ -26,7 +26,7 @@ public class AnnualTestExpiryDateCalculator {
         String date = vehicle.getTestCertificateExpiryDate();
 
         if (Strings.isNullOrEmpty(date)) {
-            logger.info("Vehicle without test certificate expiry date");
+            logger.debug("Vehicle without test certificate expiry date");
 
             if (vehicle.getVehicleType().equals(TRAILER_VEHICLE_TYPE)) {
                 logger.debug("Trailer without test certificate expiry date");
@@ -36,7 +36,7 @@ public class AnnualTestExpiryDateCalculator {
             String registrationDate = vehicle.getRegistrationDate();
 
             if (Strings.isNullOrEmpty(registrationDate)) {
-                logger.info("Vehicle without test registration date");
+                logger.debug("Vehicle without test registration date");
                 return null;
             }
 

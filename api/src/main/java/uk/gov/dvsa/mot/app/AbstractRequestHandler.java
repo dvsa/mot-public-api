@@ -48,13 +48,11 @@ public abstract class AbstractRequestHandler {
      */
     private void overrideLogLevel() {
 
-        logger.trace("Entering overrideLogLevel");
-
         try {
             String logLevel = ConfigManager.getEnvironmentVariable(ConfigKeys.LogLevel);
 
             if (logLevel != null) {
-                logger.info("Changing log level to " + logLevel.toUpperCase());
+                logger.trace("Changing log level to " + logLevel.toUpperCase());
 
                 switch (logLevel.toUpperCase()) {
                     case "OFF":
@@ -94,8 +92,6 @@ public abstract class AbstractRequestHandler {
                         logger.warn("Unknown log level " + logLevel);
                         break;
                 }
-
-                logger.info("Log level changed to " + logLevel.toUpperCase());
             }
         } catch (Exception e) {
             logger.error("Unable to override log level", e);

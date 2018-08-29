@@ -79,7 +79,7 @@ public class HgvVehicleProvider {
                     .get();
 
             int status = response.getStatus();
-            logger.info("HGV response status code: " + status);
+            logger.debug("HGV response status code: " + status);
 
             switch (status) {
                 case 200:
