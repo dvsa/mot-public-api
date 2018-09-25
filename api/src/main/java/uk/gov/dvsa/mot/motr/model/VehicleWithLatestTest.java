@@ -28,7 +28,13 @@ public interface VehicleWithLatestTest {
 
     String getTestNumber();
 
+    boolean hasTestDate();
+
+    LocalDate getTestDate();
+
     String getDvlaVehicleId();
 
     String getVehicleType();
+
+    String getMotVehicleClass();
 }

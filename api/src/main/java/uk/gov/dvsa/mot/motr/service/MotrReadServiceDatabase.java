@@ -3,13 +3,12 @@ package uk.gov.dvsa.mot.motr.service;
 import com.google.inject.Inject;
 
 import uk.gov.dvsa.mot.app.util.CollectionUtils;
-import uk.gov.dvsa.mot.motr.model.DvlaVehicleWithLatestTest;
+import uk.gov.dvsa.mot.motr.model.DvlaVehicle;
 import uk.gov.dvsa.mot.motr.model.MotVehicleWithLatestTest;
 import uk.gov.dvsa.mot.motr.model.VehicleWithLatestTest;
 import uk.gov.dvsa.mot.mottest.api.MotTest;
 import uk.gov.dvsa.mot.mottest.read.core.MotTestReadService;
 import uk.gov.dvsa.mot.persist.ProvideDbConnection;
-import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 import uk.gov.dvsa.mot.trade.service.DvlaVehicleFirstMotDueDateCalculator;
 import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 import uk.gov.dvsa.mot.vehicle.read.core.VehicleReadService;
@@ -43,16 +42,16 @@ public class MotrReadServiceDatabase implements MotrReadService {
     @Override
     @ProvideDbConnection
     public Optional<VehicleWithLatestTest> getLatestMotTestForDvlaVehicleByRegistration(String registration) {
-        List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleByRegistration(registration);
+        List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleByRegistration(registration);
 
         if (CollectionUtils.isNullOrEmpty(vehicles)) {
             return Optional.empty();
         }
 
-        DvlaVehicle dvlaVehicle = selectMostRecentDvlaVehicle(vehicles);
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicle = selectMostRecentDvlaVehicle(vehicles);
         LocalDate firstMotDueDate = DateConverter.toLocalDate(DvlaVehicleFirstMotDueDateCalculator.calculateFirstMotDueDate(dvlaVehicle));
 
-        return Optional.of(new DvlaVehicleWithLatestTest(dvlaVehicle, firstMotDueDate));
+        return Optional.of(new DvlaVehicle(dvlaVehicle, firstMotDueDate));
     }
 
     @Override
@@ -101,17 +100,17 @@ public class MotrReadServiceDatabase implements MotrReadService {
 
     private Optional<VehicleWithLatestTest> getDvlaVehicleById(Integer dvlaVehicleId) {
 
-        List<DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleById(dvlaVehicleId);
+        List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> vehicles = vehicleReadService.findDvlaVehicleById(dvlaVehicleId);
 
         return getLatestDvlaVehicleWithTestDueDate(vehicles);
     }
 
-    private Optional<VehicleWithLatestTest> getLatestDvlaVehicleWithTestDueDate(List<DvlaVehicle> vehicles) {
+    private Optional<VehicleWithLatestTest> getLatestDvlaVehicleWithTestDueDate(List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> vehicles) {
         if (CollectionUtils.isNullOrEmpty(vehicles)) {
             return Optional.empty();
         }
 
-        DvlaVehicle dvlaVehicle = selectMostRecentDvlaVehicle(vehicles);
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicle = selectMostRecentDvlaVehicle(vehicles);
 
         if (dvlaVehicle.getEuClassification() == null
                 || dvlaVehicle.getEuClassification().equals("N2")
@@ -121,16 +120,16 @@ public class MotrReadServiceDatabase implements MotrReadService {
 
         LocalDate firstMotDueDate = DateConverter.toLocalDate(DvlaVehicleFirstMotDueDateCalculator.calculateFirstMotDueDate(dvlaVehicle));
 
-        return Optional.of(new DvlaVehicleWithLatestTest(dvlaVehicle, firstMotDueDate));
+        return Optional.of(new DvlaVehicle(dvlaVehicle, firstMotDueDate));
     }
 
     // This should be taken care of in sql query not in code - extracted to method and kept for backward compatibility with MOTR query
-    private DvlaVehicle selectMostRecentDvlaVehicle(List<DvlaVehicle> vehicles) {
+    private uk.gov.dvsa.mot.trade.api.DvlaVehicle selectMostRecentDvlaVehicle(List<uk.gov.dvsa.mot.trade.api.DvlaVehicle> vehicles) {
 
-        DvlaVehicle dvlaVehicle = vehicles.get(0);
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicle = vehicles.get(0);
 
         if (vehicles.size() > 1 && dvlaVehicle.getLastUpdatedOn() != null) {
-            for (DvlaVehicle dvlaVehicle1 : vehicles) {
+            for (uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicle1 : vehicles) {
 
                 if (dvlaVehicle1.getLastUpdatedOn() != null && dvlaVehicle1.getLastUpdatedOn().after(dvlaVehicle.getLastUpdatedOn())) {
                     dvlaVehicle = dvlaVehicle1;

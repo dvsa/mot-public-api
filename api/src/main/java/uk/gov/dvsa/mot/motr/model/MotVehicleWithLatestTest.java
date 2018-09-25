@@ -10,6 +10,7 @@ import java.time.Year;
 import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.dvsa.mot.motr.service.DateConverter.toLocalDate;
 
 public class MotVehicleWithLatestTest implements VehicleWithLatestTest {
 
@@ -70,7 +71,7 @@ public class MotVehicleWithLatestTest implements VehicleWithLatestTest {
 
     @Override
     public LocalDate getTestExpiryDate() {
-        return test != null ? DateConverter.toLocalDate(test.getExpiryDate()) : null;
+        return test != null ? toLocalDate(test.getExpiryDate()) : null;
     }
 
     @Override
@@ -84,12 +85,28 @@ public class MotVehicleWithLatestTest implements VehicleWithLatestTest {
     }
 
     @Override
+    public boolean hasTestDate() {
+        return test != null && test.getIssuedDate() != null;
+    }
+
+    @Override
+    public LocalDate getTestDate() {
+        return test != null && test.getIssuedDate() != null
+            ? toLocalDate(test.getIssuedDate()) : null;
+    }
+
+    @Override
     public String getDvlaVehicleId() {
-        return null;
+        return vehicle.getDvlaVehicleId() != 0 ? Integer.toString(vehicle.getDvlaVehicleId()) : null;
     }
 
     @Override
     public String getVehicleType() {
         return VehicleType.MOT.name();
+    }
+
+    @Override
+    public String getMotVehicleClass() {
+        return vehicle.getVehicleClass();
     }
 }

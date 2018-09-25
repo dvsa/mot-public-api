@@ -16,6 +16,11 @@ public class MotrGetVehicleHandlerTest extends MotrHandlerAbstractTest {
     }
 
     @Test
+    public void testMotHgv() {
+        executeCall("KI88VQI");
+    }
+
+    @Test
     public void testHgv() {
         executeCall("INVTHGV");
     }
@@ -23,6 +28,22 @@ public class MotrGetVehicleHandlerTest extends MotrHandlerAbstractTest {
     @Test
     public void testPsv() {
         executeCall("INVTPSV");
+    }
+
+    /**
+     * Get vehicle with both MOT tests and PSV annual tests (MOT more recent).
+     */
+    @Test
+    public void testPsvToMot() {
+        executeCall("PSVMOT");
+    }
+
+    /**
+     * Get vehicle with both MOT tests and PSV annual tests (annual test more recent).
+     */
+    @Test
+    public void testMotToPsv() {
+        executeCall("MOTPSV");
     }
 
     @Test

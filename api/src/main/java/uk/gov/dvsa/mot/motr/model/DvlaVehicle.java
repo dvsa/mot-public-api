@@ -1,7 +1,6 @@
 package uk.gov.dvsa.mot.motr.model;
 
 import uk.gov.dvsa.mot.motr.service.DateConverter;
-import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
 
 import java.time.LocalDate;
 import java.time.Year;
@@ -10,12 +9,12 @@ import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
-public class DvlaVehicleWithLatestTest implements VehicleWithLatestTest {
+public class DvlaVehicle implements VehicleWithLatestTest {
 
-    private final DvlaVehicle dvlaVehicle;
+    private final uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicle;
     private final LocalDate firstMotDueDate;
 
-    public DvlaVehicleWithLatestTest(@NotNull DvlaVehicle dvlaVehicle, LocalDate firstMotDueDate) {
+    public DvlaVehicle(@NotNull uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicle, LocalDate firstMotDueDate) {
         requireNonNull(dvlaVehicle);
         this.dvlaVehicle = dvlaVehicle;
         this.firstMotDueDate = firstMotDueDate;
@@ -82,6 +81,16 @@ public class DvlaVehicleWithLatestTest implements VehicleWithLatestTest {
     }
 
     @Override
+    public boolean hasTestDate() {
+        return false;
+    }
+
+    @Override
+    public LocalDate getTestDate() {
+        return null;
+    }
+
+    @Override
     public String getDvlaVehicleId() {
         return Integer.toString(dvlaVehicle.getDvlaVehicleId());
     }
@@ -89,5 +98,10 @@ public class DvlaVehicleWithLatestTest implements VehicleWithLatestTest {
     @Override
     public String getVehicleType() {
         return VehicleType.MOT.name();
+    }
+
+    @Override
+    public String getMotVehicleClass() {
+        return null;
     }
 }

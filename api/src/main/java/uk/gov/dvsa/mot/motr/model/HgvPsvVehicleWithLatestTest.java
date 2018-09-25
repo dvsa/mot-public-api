@@ -6,6 +6,7 @@ import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 
 import javax.validation.constraints.NotNull;
 
@@ -13,10 +14,12 @@ import static java.util.Objects.requireNonNull;
 
 public class HgvPsvVehicleWithLatestTest implements VehicleWithLatestTest {
 
+    private static final DateTimeFormatter HGV_PSV_API_DATE_PATTERN = DateTimeFormatter.ofPattern("d/M/yyyy");
+
     private Vehicle vehicle;
     private String dvlaVehicleId;
     private LocalDate testExpiryDate;
-    private String testNumber;
+    private TestHistory latestTest;
 
     public HgvPsvVehicleWithLatestTest(@NotNull Vehicle vehicle, String dvlaVehicleId) {
         requireNonNull(vehicle);
@@ -24,12 +27,12 @@ public class HgvPsvVehicleWithLatestTest implements VehicleWithLatestTest {
         this.dvlaVehicleId = dvlaVehicleId;
 
         testExpiryDate = calculateTestExpiryDate(vehicle);
-        testNumber = findLatestTestNumber(vehicle);
+        latestTest = findLatestTest(vehicle);
     }
 
     @Override
     public boolean hasTest() {
-        return vehicle.getTestHistory() != null && vehicle.getTestHistory().length > 0;
+        return latestTest != null;
     }
 
     @Override
@@ -79,12 +82,23 @@ public class HgvPsvVehicleWithLatestTest implements VehicleWithLatestTest {
 
     @Override
     public boolean hasTestNumber() {
-        return testNumber != null;
+        return latestTest != null && latestTest.getTestCertificateSerialNo() != null;
     }
 
     @Override
     public String getTestNumber() {
-        return testNumber;
+        return latestTest != null ? latestTest.getTestCertificateSerialNo() : null;
+    }
+
+    @Override
+    public boolean hasTestDate() {
+        return latestTest != null && latestTest.getTestDate() != null;
+    }
+
+    @Override
+    public LocalDate getTestDate() {
+        return latestTest != null && latestTest.getTestDate() != null
+            ?  LocalDate.parse(latestTest.getTestDate(), HGV_PSV_API_DATE_PATTERN) : null;
     }
 
     @Override
@@ -97,19 +111,23 @@ public class HgvPsvVehicleWithLatestTest implements VehicleWithLatestTest {
         return vehicle.getVehicleType();
     }
 
+    @Override
+    public String getMotVehicleClass() {
+        return null;
+    }
+
     private static LocalDate calculateTestExpiryDate(Vehicle vehicle) {
         AnnualTestExpiryDateCalculator annualTestExpiryDateCalculator = new AnnualTestExpiryDateCalculator();
         return annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle)
                 .orElse(null);
     }
 
-    private static String findLatestTestNumber(Vehicle vehicle) {
+    private static TestHistory findLatestTest(Vehicle vehicle) {
         if (vehicle.getTestHistory() != null && vehicle.getTestHistory().length > 0) {
             TestHistory[] testHistory = vehicle.getTestHistory();
-            return testHistory[testHistory.length - 1].getTestCertificateSerialNo();
+            return testHistory[testHistory.length - 1];
         } else {
             return null;
         }
     }
-
 }

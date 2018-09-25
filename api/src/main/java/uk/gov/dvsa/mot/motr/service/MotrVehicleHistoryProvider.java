@@ -11,6 +11,7 @@ import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.validation.TrailerIdFormat;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -33,16 +34,18 @@ public class MotrVehicleHistoryProvider {
         Optional<VehicleWithLatestTest> optionalMotVehicle = motrReadService.getLatestMotTestByRegistration(registration);
 
         if (optionalMotVehicle.isPresent()) {
-            return optionalMotVehicle.get();
+            return getVehicleDetailsFromMostRecentSource(optionalMotVehicle.get());
         }
 
         Optional<VehicleWithLatestTest> optionalDvlaVehicle = motrReadService.getLatestMotTestForDvlaVehicleByRegistration(registration);
 
         if (shouldGetHgvPsvHistory(optionalDvlaVehicle.isPresent(), registration)) {
+            logger.trace("Fetching HGV/PSV test history for registration: {}", registration);
 
             Optional<Vehicle> optionalHgvPsvVehicle = Optional.ofNullable(hgvVehicleProvider.getVehicle(registration));
 
             if (optionalHgvPsvVehicle.isPresent()) {
+                logger.debug("HGV/PSV history found for registration: {}", registration);
                 return new HgvPsvVehicleWithLatestTest(optionalHgvPsvVehicle.get(),
                         optionalDvlaVehicle.map(VehicleWithLatestTest::getDvlaVehicleId).orElse(null));
             } else {
@@ -95,6 +98,47 @@ public class MotrVehicleHistoryProvider {
         return vehicle.orElseThrow(() ->
             new InvalidResourceException(String.format("No MOT Tests found with number: %d", motTestNumber))
         );
+    }
+
+    private VehicleWithLatestTest getVehicleDetailsFromMostRecentSource(VehicleWithLatestTest motVehicle) throws Exception {
+        logger.trace("Selecting more recent vehicle history");
+        if (!hasHgvPsvCompatibileVehicleClass(motVehicle) || motVehicle.getDvlaVehicleId() == null) {
+            logger.debug("MOT vehicle without dvla id nor matching HGV/PSV vehicle class");
+            return motVehicle;
+        }
+
+        Vehicle hgvVehicle = hgvVehicleProvider.getVehicle(motVehicle.getRegistration());
+        if (hgvVehicle == null) {
+            logger.debug("No HGV/PSV history found for registration{}", motVehicle.getRegistration());
+            return motVehicle;
+        }
+        return selectMostRecentVehicleHistory(motVehicle, new HgvPsvVehicleWithLatestTest(hgvVehicle, motVehicle.getDvlaVehicleId()));
+    }
+
+    private boolean hasHgvPsvCompatibileVehicleClass(VehicleWithLatestTest motVehicle) {
+        String vehicleClass = motVehicle.getMotVehicleClass();
+        return "5".equals(vehicleClass) || "7".equals(vehicleClass);
+    }
+
+    private VehicleWithLatestTest selectMostRecentVehicleHistory(VehicleWithLatestTest motVehicle, VehicleWithLatestTest hgvVehicle) {
+        if (motVehicle.hasTestDate() && hgvVehicle.hasTestDate()) {
+            logger.trace("Selecting most recent history based on test dates, MOT: {}, annual: {}",
+                    motVehicle.getTestDate(), hgvVehicle.getTestDate());
+            if (motVehicle.getTestDate().isAfter(hgvVehicle.getTestDate())) {
+                return motVehicle;
+            } else {
+                return hgvVehicle;
+            }
+        }
+
+        logger.trace("Selecting most recent history based on test due date, MOT: {}, annual: {}",
+                motVehicle.getTestExpiryDate(), hgvVehicle.getTestExpiryDate());
+        if (!hgvVehicle.hasTestExpiryDate()
+                || motVehicle.getTestExpiryDate().isAfter(hgvVehicle.getTestExpiryDate())) {
+            return motVehicle;
+        } else {
+            return hgvVehicle;
+        }
     }
 
     private boolean shouldGetHgvPsvHistory(boolean hasDvlaVehicle, String vrm) {

@@ -6,15 +6,19 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import uk.gov.dvsa.mot.motr.model.DvlaVehicleWithLatestTest;
+import uk.gov.dvsa.mot.motr.model.DvlaVehicle;
 import uk.gov.dvsa.mot.motr.model.MotVehicleWithLatestTest;
 import uk.gov.dvsa.mot.motr.model.VehicleType;
 import uk.gov.dvsa.mot.motr.model.VehicleWithLatestTest;
-import uk.gov.dvsa.mot.trade.api.DvlaVehicle;
+import uk.gov.dvsa.mot.mottest.api.MotTest;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
 import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
+import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Optional;
 
 import static com.googlecode.catchexception.CatchException.catchException;
@@ -68,8 +72,8 @@ public class MotrVehicleHistoryProviderTest {
 
     @Test
     public void searchVehicleByRegistration_WhenGetHgvPsvVehicleNotReturnVehicle_ShouldThrowException() throws Exception {
-        DvlaVehicle dvlaVehicleEntity = new DvlaVehicle();
-        Optional<VehicleWithLatestTest> dvlaVehicle = Optional.of(new DvlaVehicleWithLatestTest(dvlaVehicleEntity, null));
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicleEntity = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
+        Optional<VehicleWithLatestTest> dvlaVehicle = Optional.of(new DvlaVehicle(dvlaVehicleEntity, null));
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(Optional.empty());
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
@@ -86,8 +90,7 @@ public class MotrVehicleHistoryProviderTest {
 
     @Test
     public void searchVehicleByRegistration_WhenMotVehicleFound_ShouldReturnVehicle() throws Exception {
-        uk.gov.dvsa.mot.vehicle.api.Vehicle vehicle = new uk.gov.dvsa.mot.vehicle.api.Vehicle();
-        vehicle.setRegistration(REGISTRATION);
+        uk.gov.dvsa.mot.vehicle.api.Vehicle vehicle = buildMotVehicle();
         Optional<VehicleWithLatestTest> motVehicle = Optional.of(
                 new MotVehicleWithLatestTest(vehicle, null)
         );
@@ -99,14 +102,85 @@ public class MotrVehicleHistoryProviderTest {
         assertCorrectMotVehicle(vehicle, result);
     }
 
+    private uk.gov.dvsa.mot.vehicle.api.Vehicle buildMotVehicle() {
+        uk.gov.dvsa.mot.vehicle.api.Vehicle vehicle = new uk.gov.dvsa.mot.vehicle.api.Vehicle();
+        vehicle.setRegistration(REGISTRATION);
+        vehicle.setDvlaVehicleId(DVLA_VEHICLE_ID);
+        return vehicle;
+    }
+
     @Test
     public void searchVehicleByRegistration_WhenGetHgvPsvVehicleFound_ShouldReturnVehicle() throws Exception {
-        DvlaVehicle dvlaVehicleEntity = new DvlaVehicle();
-        Optional<VehicleWithLatestTest> dvlaVehicle = Optional.of(new DvlaVehicleWithLatestTest(dvlaVehicleEntity, null));
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicleEntity = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
+        Optional<VehicleWithLatestTest> dvlaVehicle = Optional.of(new DvlaVehicle(dvlaVehicleEntity, null));
         Vehicle hgvPsvVehicle = buildHgvPsvVehicle();
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(Optional.empty());
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
+        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
+
+        VehicleWithLatestTest result = motrVehicleHistoryProvider.searchVehicleByRegistration(REGISTRATION);
+
+        assertCorrectHgvPSvVehicle(hgvPsvVehicle, result);
+    }
+
+    @Test
+    public void searchVehicleByRegistration_WhenBothMothAndHgvVehicleFound_ShouldReturnNewestHistoryHgv() throws Exception {
+        uk.gov.dvsa.mot.vehicle.api.Vehicle vehicle = buildMotVehicle();
+        vehicle.setVehicleClass("5");
+        MotTest motTest = new MotTest();
+        motTest.setIssuedDate(createDate(2016, Calendar.MARCH, 1));
+        motTest.setExpiryDate(createDate(2019, Calendar.FEBRUARY, 11));
+        Optional<VehicleWithLatestTest> motVehicle = Optional.of(new MotVehicleWithLatestTest(vehicle, motTest));
+
+        Vehicle hgvPsvVehicle = buildHgvPsvVehicle();
+        hgvPsvVehicle.setTestCertificateExpiryDate("01/03/2018");
+        TestHistory historyItem = new TestHistory();
+        historyItem.setTestDate("02/02/2017");
+        hgvPsvVehicle.setTestHistory(new TestHistory[] { historyItem });
+
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(motVehicle);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(Optional.empty());
+        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
+
+        VehicleWithLatestTest result = motrVehicleHistoryProvider.searchVehicleByRegistration(REGISTRATION);
+
+        assertCorrectHgvPSvVehicle(hgvPsvVehicle, result);
+    }
+
+    @Test
+    public void searchVehicleByRegistration_WhenBothMothAndHgvVehicleFound_ShouldReturnLatestDueDateMot() throws Exception {
+        uk.gov.dvsa.mot.vehicle.api.Vehicle vehicle = buildMotVehicle();
+        vehicle.setVehicleClass("5");
+        MotTest motTest = new MotTest();
+        motTest.setExpiryDate(createDate(2019, Calendar.FEBRUARY, 11));
+        Optional<VehicleWithLatestTest> motVehicle = Optional.of(new MotVehicleWithLatestTest(vehicle, motTest));
+
+        Vehicle hgvPsvVehicle = buildHgvPsvVehicle();
+        hgvPsvVehicle.setTestCertificateExpiryDate("01/03/2018");
+
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(motVehicle);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(Optional.empty());
+        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
+
+        VehicleWithLatestTest result = motrVehicleHistoryProvider.searchVehicleByRegistration(REGISTRATION);
+
+        assertCorrectMotVehicle(vehicle, result);
+    }
+
+    @Test
+    public void searchVehicleByRegistration_WhenBothMothAndHgvVehicleFound_ShouldReturnLatestDueDateHgv() throws Exception {
+        uk.gov.dvsa.mot.vehicle.api.Vehicle vehicle = buildMotVehicle();
+        vehicle.setVehicleClass("5");
+        MotTest motTest = new MotTest();
+        motTest.setExpiryDate(createDate(2017, Calendar.FEBRUARY, 11));
+        Optional<VehicleWithLatestTest> motVehicle = Optional.of(new MotVehicleWithLatestTest(vehicle, motTest));
+
+        Vehicle hgvPsvVehicle = buildHgvPsvVehicle();
+        hgvPsvVehicle.setTestCertificateExpiryDate("01/03/2018");
+
+        when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(motVehicle);
+        when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(Optional.empty());
         when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
 
         VehicleWithLatestTest result = motrVehicleHistoryProvider.searchVehicleByRegistration(REGISTRATION);
@@ -131,8 +205,8 @@ public class MotrVehicleHistoryProviderTest {
     @Test
     public void searchForCommercialVehicleByRegistration_WhenHgvVehicleProviderReturnsNull_ShouldThrowException()
         throws Exception {
-        DvlaVehicle dvlaVehicleEntity = new DvlaVehicle();
-        Optional<VehicleWithLatestTest> dvlaVehicle = Optional.of(new DvlaVehicleWithLatestTest(dvlaVehicleEntity, null));
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicleEntity = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
+        Optional<VehicleWithLatestTest> dvlaVehicle = Optional.of(new DvlaVehicle(dvlaVehicleEntity, null));
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
         when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(null);
 
@@ -147,8 +221,8 @@ public class MotrVehicleHistoryProviderTest {
 
     @Test
     public void searchForCommercialVehicleByRegistration_WhenGetHgvPsvVehicleFound_ShouldReturnVehicle() throws Exception {
-        DvlaVehicle dvlaVehicleEntity = new DvlaVehicle();
-        Optional<VehicleWithLatestTest> dvlaVehicle = Optional.of(new DvlaVehicleWithLatestTest(dvlaVehicleEntity, null));
+        uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicleEntity = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
+        Optional<VehicleWithLatestTest> dvlaVehicle = Optional.of(new DvlaVehicle(dvlaVehicleEntity, null));
         Vehicle hgvPsvVehicle = buildHgvPsvVehicle();
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(Optional.empty());
@@ -201,8 +275,6 @@ public class MotrVehicleHistoryProviderTest {
         ));
     }
 
-
-
     private Vehicle buildHgvPsvVehicle() {
         Vehicle hgvPsvVehicle = new Vehicle();
         hgvPsvVehicle.setVehicleType("PSV");
@@ -218,5 +290,9 @@ public class MotrVehicleHistoryProviderTest {
     private void assertCorrectMotVehicle(uk.gov.dvsa.mot.vehicle.api.Vehicle vehicle, VehicleWithLatestTest result) {
         assertEquals(vehicle.getRegistration(), result.getRegistration());
         assertEquals(VehicleType.MOT.name(), result.getVehicleType());
+    }
+
+    private static Date createDate(int year, int month, int dayOfMonth) {
+        return new GregorianCalendar(year, month, dayOfMonth).getTime();
     }
 }

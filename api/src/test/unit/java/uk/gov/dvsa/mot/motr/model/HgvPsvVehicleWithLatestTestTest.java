@@ -31,6 +31,7 @@ public class HgvPsvVehicleWithLatestTestTest {
         assertEquals(MAKE, vehicleModel.getMake());
         assertEquals(MODEL, vehicleModel.getModel());
         assertEquals(Year.of(YEAR_OF_MANUFACTURE), vehicleModel.getManufactureYear());
+        assertEquals(LocalDate.of(2013, 1, 3), vehicleModel.getTestDate());
     }
 
     @Test
@@ -70,6 +71,7 @@ public class HgvPsvVehicleWithLatestTestTest {
         TestHistory[] testHistory = new TestHistory[1];
         TestHistory historyItem =  new TestHistory();
         historyItem.setTestCertificateSerialNo(TEST_NUMBER);
+        historyItem.setTestDate("03/01/2013");
         testHistory[0] = historyItem;
 
         Vehicle vehicle = createVehicle(vehicleType);
