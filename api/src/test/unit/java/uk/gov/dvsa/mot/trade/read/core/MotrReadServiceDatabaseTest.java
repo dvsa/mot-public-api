@@ -7,9 +7,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import uk.gov.dvsa.mot.motr.model.VehicleWithLatestTest;
+import uk.gov.dvsa.mot.motr.service.MotrReadServiceDatabase;
 import uk.gov.dvsa.mot.mottest.api.MotTest;
 import uk.gov.dvsa.mot.mottest.read.core.MotTestReadService;
-import uk.gov.dvsa.mot.persist.TradeReadDao;
 import uk.gov.dvsa.mot.trade.api.MotrResponse;
 import uk.gov.dvsa.mot.vehicle.api.Vehicle;
 import uk.gov.dvsa.mot.vehicle.read.core.VehicleReadService;
@@ -21,14 +22,18 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MotrReadServiceTest {
+public class MotrReadServiceDatabaseTest {
 
     MotrReadServiceDatabase motrReadService;
 
@@ -37,9 +42,6 @@ public class MotrReadServiceTest {
 
     @Mock
     MotTestReadService motTestReadServiceMock;
-
-    @Mock
-    TradeReadDao tradeReadDaoMock;
 
     /**
      * Returns a copy of the provided LocalDateTime with its time fields all set
@@ -132,34 +134,32 @@ public class MotrReadServiceTest {
         when(vehicleReadServiceMock.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber)).thenReturn(Arrays.asList(backendVehicle));
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(backendTest);
 
-        MotrResponse motrResponse =
+        Optional<VehicleWithLatestTest> vehicleWithLatestTest =
                 motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
 
-        assertNotNull("Returned vehicle is null", motrResponse);
-        assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
-        assertEquals("Make is incorrect", make, motrResponse.getMake());
-        assertEquals("Model is incorrect", model, motrResponse.getModel());
-        assertEquals("Manufacturing year is incorrect", Integer.toString(manufactureYear),
-                motrResponse.getManufactureYear());
-        assertEquals("Test expiry date is incorrect", expiryDateTime.format(DateTimeFormatter.ISO_DATE),
-                motrResponse.getMotTestExpiryDate());
-        assertEquals("Test number is incorrect", Long.toString(motTestNumber), motrResponse.getMotTestNumber());
-        assertEquals("Primary colour is incorrect", primaryColour, motrResponse.getPrimaryColour());
-        assertEquals("Secondary colour is incorrect", secondaryColour, motrResponse.getSecondaryColour());
+        assertTrue("Returned vehicle is null", vehicleWithLatestTest.isPresent());
+        assertEquals("Registration is incorrect", registration, vehicleWithLatestTest.get().getRegistration());
+        assertEquals("Make is incorrect", make, vehicleWithLatestTest.get().getMake());
+        assertEquals("Model is incorrect", model, vehicleWithLatestTest.get().getModel());
+        assertEquals("Manufacturing year is incorrect", manufactureYear,
+                vehicleWithLatestTest.get().getManufactureYear().getValue());
+        assertEquals("Test expiry date is incorrect", expiryDateTime.toLocalDate(),
+                vehicleWithLatestTest.get().getTestExpiryDate());
+        assertEquals("Test number is incorrect", Long.toString(motTestNumber), vehicleWithLatestTest.get().getTestNumber());
+        assertEquals("Primary colour is incorrect", primaryColour, vehicleWithLatestTest.get().getPrimaryColour());
+        assertEquals("Secondary colour is incorrect", secondaryColour, vehicleWithLatestTest.get().getSecondaryColour());
 
     }
 
     @Test
     public void getLatestMotTestByMotTestNumberWithSameRegistrationAndVin_ValidMotNumber_VehicleNull() {
-
         final long motTestNumber = 5672823;
-
         when(vehicleReadServiceMock.findByMotTestNumberWithSameRegistrationAndVin(motTestNumber)).thenReturn(null);
 
-        MotrResponse motrResponse =
+        Optional<VehicleWithLatestTest> vehicleWithLatestTest =
                 motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
 
-        assertNull(motrResponse);
+        assertFalse(vehicleWithLatestTest.isPresent());
     }
 
     @Test
@@ -196,19 +196,19 @@ public class MotrReadServiceTest {
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(null);
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle2)).thenReturn(null);
 
-        MotrResponse motrResponse =
+        Optional<VehicleWithLatestTest> vehicleWithLatestTest =
                 motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
 
-        assertNotNull("Returned vehicle is null", motrResponse);
-        assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
-        assertEquals("Make is incorrect", make, motrResponse.getMake());
-        assertEquals("Model is incorrect", model, motrResponse.getModel());
-        assertEquals("Manufacturing year is incorrect", Integer.toString(manufactureYear),
-                motrResponse.getManufactureYear());
-        assertNull("Test expiry date is incorrect", motrResponse.getMotTestExpiryDate());
-        assertNull("Test number is incorrect", motrResponse.getMotTestNumber());
-        assertEquals("Primary colour is incorrect", primaryColour, motrResponse.getPrimaryColour());
-        assertEquals("Secondary colour is incorrect", secondaryColour, motrResponse.getSecondaryColour());
+        assertTrue("Returned vehicle is null", vehicleWithLatestTest.isPresent());
+        assertEquals("Registration is incorrect", registration, vehicleWithLatestTest.get().getRegistration());
+        assertEquals("Make is incorrect", make, vehicleWithLatestTest.get().getMake());
+        assertEquals("Model is incorrect", model, vehicleWithLatestTest.get().getModel());
+        assertEquals("Manufacturing year is incorrect", manufactureYear,
+                vehicleWithLatestTest.get().getManufactureYear().getValue());
+        assertNull("Test expiry date is incorrect", vehicleWithLatestTest.get().getTestExpiryDate());
+        assertNull("Test number is incorrect", vehicleWithLatestTest.get().getTestNumber());
+        assertEquals("Primary colour is incorrect", primaryColour, vehicleWithLatestTest.get().getPrimaryColour());
+        assertEquals("Secondary colour is incorrect", secondaryColour, vehicleWithLatestTest.get().getSecondaryColour());
     }
 
 
@@ -252,20 +252,20 @@ public class MotrReadServiceTest {
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(null);
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle2)).thenReturn(backendTest);
 
-        MotrResponse motrResponse =
+        Optional<VehicleWithLatestTest> vehicleWithLatestTest =
                 motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
 
-        assertNotNull("Returned vehicle is null", motrResponse);
-        assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
-        assertEquals("Make is incorrect", make, motrResponse.getMake());
-        assertEquals("Model is incorrect", model, motrResponse.getModel());
-        assertEquals("Manufacturing year is incorrect", Integer.toString(manufactureYear),
-                motrResponse.getManufactureYear());
-        assertEquals("Test expiry date is incorrect", expiryDateTime.format(DateTimeFormatter.ISO_DATE),
-                motrResponse.getMotTestExpiryDate());
-        assertEquals("Test number is incorrect", Long.toString(motTestNumber), motrResponse.getMotTestNumber());
-        assertEquals("Primary colour is incorrect", primaryColour, motrResponse.getPrimaryColour());
-        assertEquals("Secondary colour is incorrect", secondaryColour, motrResponse.getSecondaryColour());
+        assertTrue("Returned vehicle is null", vehicleWithLatestTest.isPresent());
+        assertEquals("Registration is incorrect", registration, vehicleWithLatestTest.get().getRegistration());
+        assertEquals("Make is incorrect", make, vehicleWithLatestTest.get().getMake());
+        assertEquals("Model is incorrect", model, vehicleWithLatestTest.get().getModel());
+        assertEquals("Manufacturing year is incorrect", manufactureYear,
+                vehicleWithLatestTest.get().getManufactureYear().getValue());
+        assertEquals("Test expiry date is incorrect", expiryDateTime.toLocalDate(),
+                vehicleWithLatestTest.get().getTestExpiryDate());
+        assertEquals("Test number is incorrect", Long.toString(motTestNumber), vehicleWithLatestTest.get().getTestNumber());
+        assertEquals("Primary colour is incorrect", primaryColour, vehicleWithLatestTest.get().getPrimaryColour());
+        assertEquals("Secondary colour is incorrect", secondaryColour, vehicleWithLatestTest.get().getSecondaryColour());
     }
 
     @Test
@@ -296,23 +296,22 @@ public class MotrReadServiceTest {
         backendTest.setExpiryDate(expiryDate);
         backendTest.setNumber(motTestNumber);
 
-        when(vehicleReadServiceMock.findByDvlaVehicleId(dvlaVehicleId)).thenReturn(Arrays.asList(backendVehicle));
+        when(vehicleReadServiceMock.findByDvlaVehicleId(dvlaVehicleId)).thenReturn(singletonList(backendVehicle));
         when(motTestReadServiceMock.getLatestMotTestPassByVehicle(backendVehicle)).thenReturn(backendTest);
 
-        MotrResponse motrResponse =
-                motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
+        Optional<VehicleWithLatestTest> vehicleWithTest = motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
 
-        assertNotNull("Returned vehicle is null", motrResponse);
-        assertEquals("Registration is incorrect", registration, motrResponse.getRegistration());
-        assertEquals("Make is incorrect", make, motrResponse.getMake());
-        assertEquals("Model is incorrect", model, motrResponse.getModel());
-        assertEquals("Manufacturing year is incorrect", Integer.toString(manufactureYear),
-                motrResponse.getManufactureYear());
-        assertEquals("Test expiry date is incorrect", expiryDateTime.format(DateTimeFormatter.ISO_DATE),
-                motrResponse.getMotTestExpiryDate());
-        assertEquals("Test number is incorrect", Long.toString(motTestNumber), motrResponse.getMotTestNumber());
-        assertEquals("Primary colour is incorrect", primaryColour, motrResponse.getPrimaryColour());
-        assertEquals("Secondary colour is incorrect", secondaryColour, motrResponse.getSecondaryColour());
+        assertTrue("Returned vehicle is not preset", vehicleWithTest.isPresent());
+        assertEquals("Registration is incorrect", registration, vehicleWithTest.get().getRegistration());
+        assertEquals("Make is incorrect", make, vehicleWithTest.get().getMake());
+        assertEquals("Model is incorrect", model, vehicleWithTest.get().getModel());
+        assertEquals("Manufacturing year is incorrect", manufactureYear,
+                vehicleWithTest.get().getManufactureYear().getValue());
+        assertEquals("Test expiry date is incorrect", expiryDateTime.toLocalDate(),
+                vehicleWithTest.get().getTestExpiryDate());
+        assertEquals("Test number is incorrect", Long.toString(motTestNumber), vehicleWithTest.get().getTestNumber());
+        assertEquals("Primary colour is incorrect", primaryColour, vehicleWithTest.get().getPrimaryColour());
+        assertEquals("Secondary colour is incorrect", secondaryColour, vehicleWithTest.get().getSecondaryColour());
     }
 
     @Test
@@ -325,40 +324,35 @@ public class MotrReadServiceTest {
         final int manufactureYear = manufactureDateTime.getYear();
         final String primaryColour = "BLUE";
         final String secondaryColour = "WHITE";
-
         int dvlaVehicleId = dvlaVehicle.getDvlaVehicleId();
+
         when(vehicleReadServiceMock.findByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
+        when(vehicleReadServiceMock.findDvlaVehicleById(dvlaVehicleId)).thenReturn(singletonList(dvlaVehicle));
 
-        when(vehicleReadServiceMock.findDvlaVehicleById(dvlaVehicleId)).thenReturn(Arrays.asList(dvlaVehicle));
+        Optional<VehicleWithLatestTest> vehicleWithTest = motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
 
-        MotrResponse motrResponse =
-                motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
-
-        assertNotNull("Returned vehicle is null", motrResponse);
-        assertEquals("Registration is incorrect", dvlaVehicle.getRegistration(), motrResponse.getRegistration());
-        assertEquals("Make is incorrect", dvlaVehicle.getMakeDetail(), motrResponse.getMake());
-        assertEquals("Model is incorrect", dvlaVehicle.getModelDetail(), motrResponse.getModel());
-        assertEquals("Manufacturing year is incorrect", Integer.toString(manufactureYear),
-                motrResponse.getManufactureYear());
-        assertNotNull("Test expiry date is incorrect", motrResponse.getMotTestExpiryDate());
-        assertNull("Test number is incorrect", motrResponse.getMotTestNumber());
-        assertEquals("Primary colour is incorrect", primaryColour, motrResponse.getPrimaryColour());
-        assertEquals("DvlaId is incorrect", Integer.toString(dvlaVehicleId), motrResponse.getDvlaId());
-        assertEquals("Secondary colour is incorrect", secondaryColour, motrResponse.getSecondaryColour());
+        assertTrue("Returned vehicle is not preset", vehicleWithTest.isPresent());
+        assertEquals("Registration is incorrect", dvlaVehicle.getRegistration(), vehicleWithTest.get().getRegistration());
+        assertEquals("Make is incorrect", dvlaVehicle.getMakeDetail(), vehicleWithTest.get().getMake());
+        assertEquals("Model is incorrect", dvlaVehicle.getModelDetail(), vehicleWithTest.get().getModel());
+        assertEquals("Manufacturing year is incorrect", manufactureYear,
+                vehicleWithTest.get().getManufactureYear().getValue());
+        assertNotNull("Test expiry date is incorrect", vehicleWithTest.get().getTestExpiryDate());
+        assertNull("Test number is incorrect", vehicleWithTest.get().getTestNumber());
+        assertEquals("Primary colour is incorrect", primaryColour, vehicleWithTest.get().getPrimaryColour());
+        assertEquals("Secondary colour is incorrect", secondaryColour, vehicleWithTest.get().getSecondaryColour());
+        assertEquals("DvlaId is incorrect", Integer.toString(dvlaVehicleId), vehicleWithTest.get().getDvlaVehicleId());
     }
 
     @Test
     public void getLatestMotTestByDvlaVehicleId_VehicleDoesNotExist_DvlaVehicleDoesNotExist() {
-
         final Integer dvlaVehicleId = 123;
 
         when(vehicleReadServiceMock.findByDvlaVehicleId(dvlaVehicleId)).thenReturn(null);
-
         when(vehicleReadServiceMock.findDvlaVehicleById(dvlaVehicleId)).thenReturn(null);
 
-        MotrResponse motrResponse =
-                motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
+        Optional<VehicleWithLatestTest> vehicleWithTest = motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
 
-        assertNull("Returned vehicle is not null", motrResponse);
+        assertFalse("Returned vehicle is not empty", vehicleWithTest.isPresent());
     }
 }

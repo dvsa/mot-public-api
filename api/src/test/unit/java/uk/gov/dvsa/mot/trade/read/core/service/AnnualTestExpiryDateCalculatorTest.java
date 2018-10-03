@@ -4,26 +4,23 @@ import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 
-import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.service.AnnualTestExpiryDateCalculator;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 
 import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
-import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasMessageThat;
-import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasNoCause;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -41,21 +38,21 @@ public class AnnualTestExpiryDateCalculatorTest {
     }
 
     @Test
-    public void whenExpiryDateIsUnknown_returnNull() throws Exception {
+    public void whenExpiryDateIsUnknown_returnAbsent() throws Exception {
         Vehicle vehicle = new Vehicle();
         vehicle.setVehicleType(HGV_VEHICLE_TYPE);
         vehicle.setTestCertificateExpiryDate(null);
 
-        assertNull(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle));
+        assertFalse(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle).isPresent());
     }
 
     @Test
-    public void whenExpiryDateIsUnknownForTrailer_returnNull() throws Exception {
+    public void whenExpiryDateIsUnknownForTrailer_returnAbsent() throws Exception {
         Vehicle vehicle = new Vehicle();
         vehicle.setVehicleType(TRAILER_VEHICLE_TYPE);
         vehicle.setTestCertificateExpiryDate(null);
 
-        assertNull(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle));
+        assertFalse(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle).isPresent());
     }
 
     @Test
@@ -63,16 +60,17 @@ public class AnnualTestExpiryDateCalculatorTest {
     public void whenHgvVehicleWithoutTestCertificateExpiryDate(String registrationDate, String expectedAnnualTestDate) throws Exception {
         Vehicle vehicle = defaultHgvVehicleWithRegistrationDate(HGV_VEHICLE_TYPE, registrationDate);
 
-        String annualTestExpiryCate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
+        Optional<LocalDate> annualTestExpiryDate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
 
-        assertTrue(annualTestExpiryCate.equals(expectedAnnualTestDate));
+        assertTrue(annualTestExpiryDate.isPresent());
+        assertEquals(LocalDate.parse(expectedAnnualTestDate), annualTestExpiryDate.get());
     }
 
     @Test
-    public void whenTrailerWithoutTestCertificateExpiryDate_returnNull() throws Exception {
+    public void whenTrailerWithoutTestCertificateExpiryDate_returnAbsent() throws Exception {
         Vehicle vehicle = defaultHgvVehicleWithRegistrationDate(TRAILER_VEHICLE_TYPE, "31/03/2017");
 
-        assertNull(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle));
+        assertFalse(annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle).isPresent());
     }
 
     @Test
@@ -80,9 +78,10 @@ public class AnnualTestExpiryDateCalculatorTest {
     public void whenPsvVehicleWithoutTestCertificateExpiryDate(String registrationDate, String expectedAnnualTestDate) throws Exception {
         Vehicle vehicle = defaultHgvVehicleWithRegistrationDate(PSV_VEHICLE_TYPE, registrationDate);
 
-        String annualTestExpiryCate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
+        Optional<LocalDate> annualTestExpiryDate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
 
-        assertTrue(annualTestExpiryCate.equals(expectedAnnualTestDate));
+        assertTrue(annualTestExpiryDate.isPresent());
+        assertEquals(LocalDate.parse(expectedAnnualTestDate), annualTestExpiryDate.get());
     }
 
     @Test
@@ -90,9 +89,10 @@ public class AnnualTestExpiryDateCalculatorTest {
         Vehicle vehicle = new Vehicle();
         vehicle.setTestCertificateExpiryDate("28/01/2016");
 
-        String annualTestExpiryCate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
+        Optional<LocalDate> annualTestExpiryDate = annualTestExpiryDateCalculator.determineAnnualTestExpiryDate(vehicle);
 
-        assertTrue(annualTestExpiryCate.equals("2016-01-28"));
+        assertTrue(annualTestExpiryDate.isPresent());
+        assertEquals(LocalDate.of(2016, 1, 28), annualTestExpiryDate.get());
     }
 
     @Test(expected = DateTimeParseException.class)

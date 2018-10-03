@@ -10,17 +10,16 @@ import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Optional;
 
 public class AnnualTestExpiryDateCalculator {
     private static final Logger logger = LogManager.getLogger(AnnualTestExpiryDateCalculator.class);
 
     private static final String HGV_VEHICLE_TYPE = "HGV";
     private static final String TRAILER_VEHICLE_TYPE = "Trailer";
-    private DateTimeFormatter oldPattern = DateTimeFormatter.ofPattern("d/M/yyyy");
-    private DateTimeFormatter newPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter HGV_PSV_API_DATE_PATTERN = DateTimeFormatter.ofPattern("d/M/yyyy");
 
-
-    public String determineAnnualTestExpiryDate(Vehicle vehicle) throws Exception {
+    public Optional<LocalDate> determineAnnualTestExpiryDate(Vehicle vehicle) {
         LocalDate datetime;
 
         String date = vehicle.getTestCertificateExpiryDate();
@@ -30,17 +29,17 @@ public class AnnualTestExpiryDateCalculator {
 
             if (vehicle.getVehicleType().equals(TRAILER_VEHICLE_TYPE)) {
                 logger.debug("Trailer without test certificate expiry date");
-                return null;
+                return Optional.empty();
             }
 
             String registrationDate = vehicle.getRegistrationDate();
 
             if (Strings.isNullOrEmpty(registrationDate)) {
                 logger.debug("Vehicle without test registration date");
-                return null;
+                return Optional.empty();
             }
 
-            datetime = LocalDate.parse(registrationDate, oldPattern);
+            datetime = LocalDate.parse(registrationDate, HGV_PSV_API_DATE_PATTERN);
 
             if (vehicle.getVehicleType().equals(HGV_VEHICLE_TYPE)) {
                 logger.debug("Calculating annual test expiry date for HGV Vehicle");
@@ -52,9 +51,9 @@ public class AnnualTestExpiryDateCalculator {
             }
         } else {
             logger.debug("Vehicle with test certificate expiry date found");
-            datetime = LocalDate.parse(date, oldPattern);
+            datetime = LocalDate.parse(date, HGV_PSV_API_DATE_PATTERN);
         }
 
-        return datetime.format(newPattern);
+        return Optional.of(datetime);
     }
 }
