@@ -17,6 +17,7 @@ public class DvlaVehicleReadSql {
             "  `dvla_vehicle`.`first_registration_date`,  " +
             "  `dvla_vehicle`.`eu_classification`,  " +
             "  `dvla_vehicle`.`body_type_code`,  " +
+            "  `dvla_vehicle`.`engine_capacity`,  " +
             "  `dvla_vehicle`.`last_updated_on`  " +
             "FROM `mot2`.`dvla_vehicle`  " +
             "  LEFT JOIN `dvla_model` ON `dvla_vehicle`.`model_code` = `dvla_model`.`code` AND `dvla_vehicle`.`make_code` = `dvla_model`" +
@@ -43,6 +44,7 @@ public class DvlaVehicleReadSql {
             "  `dvla_vehicle`.`first_registration_date`,  " +
             "  `dvla_vehicle`.`eu_classification`,  " +
             "  `dvla_vehicle`.`body_type_code`,  " +
+            "  `dvla_vehicle`.`engine_capacity`,  " +
             "  `fuel_type`.`name` as fuel_type_name,  " +
             "  `dvla_vehicle`.`last_updated_on`  " +
             "FROM `mot2`.`dvla_vehicle`  " +
@@ -74,6 +76,7 @@ public class DvlaVehicleReadSql {
             "  `dvla_vehicle`.`first_registration_date`,  " +
             "  `dvla_vehicle`.`eu_classification`,  " +
             "  `dvla_vehicle`.`body_type_code`,  " +
+            "  `dvla_vehicle`.`engine_capacity`,  " +
             "  `dvla_vehicle`.`last_updated_on`  " +
             "FROM `mot2`.`dvla_vehicle`  " +
             "  LEFT JOIN `dvla_model` ON `dvla_vehicle`.`model_code` = `dvla_model`.`code` AND `dvla_vehicle`.`make_code` = `dvla_model`" +

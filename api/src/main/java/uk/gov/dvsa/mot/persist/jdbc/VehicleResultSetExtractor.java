@@ -35,6 +35,9 @@ public class VehicleResultSetExtractor implements ResultSetExtractor<List<Vehicl
     private static final String MODEL = "model_name";
     private static final String FIRST_USED_DATE = "first_used_date";
     private static final String FUEL_TYPE = "fuel_type";
+    private static final String MANUFACTURE_DATE = "manufacture_date";
+    private static final String REGISTRATION_DATE = "registration_date";
+    private static final String CYLINDER_CAPACITY = "cylinder_capacity";
     private static final String PRIMARY_COLOUR = "primary_colour";
     private static final String SECONDARY_COLOUR = "secondary_colour";
     private static final String MOT_START_DATE = "started_date";
@@ -85,6 +88,15 @@ public class VehicleResultSetExtractor implements ResultSetExtractor<List<Vehicl
                         vehicle.setFirstUsedDate(SDF_DATE.format(rs.getTimestamp(FIRST_USED_DATE)));
                     }
                     vehicle.setFuelType(rs.getString(FUEL_TYPE));
+                    if (rs.getDate(MANUFACTURE_DATE) != null) {
+                        vehicle.setManufactureDate(SDF_DATE.format(rs.getDate(MANUFACTURE_DATE)));
+                    }
+                    if (rs.getDate(REGISTRATION_DATE) != null) {
+                        vehicle.setRegistrationDate(SDF_DATE.format(rs.getDate(REGISTRATION_DATE)));
+                    }
+                    if (rs.getInt(CYLINDER_CAPACITY) != 0) {
+                        vehicle.setCylinderCapacity(rs.getInt(CYLINDER_CAPACITY));
+                    }
                     vehicle.setPrimaryColour(rs.getString(PRIMARY_COLOUR));
                 }
 

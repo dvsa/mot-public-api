@@ -29,6 +29,9 @@ public class VehicleResponseMapperFactory {
                 case "v4":
                     mapper = new VehicleV4ResponseMapper();
                     break;
+                case "v5":
+                    mapper = new VehicleV5ResponseMapper();
+                    break;
                 default:
                     logger.warn("Unknown API version selected. Using v1");
                     mapper = new VehicleV1ResponseMapper();

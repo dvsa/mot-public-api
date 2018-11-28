@@ -241,6 +241,8 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
             jsonVehicle.setLastUpdatedOn(vehicle.getLastUpdatedOn());
             jsonVehicle.setVersion(vehicle.getVersion());
 
+            jsonVehicle.setCylinderCapacity(vehicle.getCylinderCapacity());
+
             return jsonVehicle;
         } else {
             return null;
@@ -296,6 +298,8 @@ public class VehicleReadServiceDatabase implements VehicleReadService {
         if (vehicle.getPropulsion() != null) {
             jsonVehicle.setFuelType(vehicle.getPropulsion().getName());
         }
+
+        jsonVehicle.setEngineCapacity(vehicle.getEngineCapacity());
 
         return jsonVehicle;
     }

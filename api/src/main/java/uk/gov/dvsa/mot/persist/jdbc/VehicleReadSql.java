@@ -172,6 +172,7 @@ class VehicleReadSql {
     static final String whereByFullRegistrationAndVinEqualVehicleWithMotTestNumber = " JOIN (SELECT `v`.`registration`, `v`.`vin`" +
             "      FROM `mot2`.`vehicle` `v`" +
             "      JOIN `mot2`.`mot_test_current` `c` ON `c`.`vehicle_id` = `v`.`id`" +
+            "      JOIN  `mot2`.`model_detail` on `model_detail`.`id` = `vehicle`.`model_detail_id` " +
             "      WHERE `c`.`number` = ? ) " +
             "      candidate_vehicles ON `mot2`.`vehicle`.`registration` = candidate_vehicles.registration AND" +
             "                             `mot2`.`vehicle`.`vin` = candidate_vehicles.vin";

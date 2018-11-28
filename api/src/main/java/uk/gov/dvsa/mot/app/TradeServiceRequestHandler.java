@@ -97,7 +97,8 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             "application/json+v1",
             "application/json+v2",
             "application/json+v3",
-            "application/json+v4"})
+            "application/json+v4",
+            "application/json+v5"})
     public Response getTradeMotTests(
             @QueryParam("vehicleId") Integer vehicleId,
             @QueryParam("number") Long number,

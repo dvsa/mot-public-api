@@ -28,6 +28,7 @@ public class Vehicle implements Serializable {
     private WeightSourceLookup weightSourceLookup;
     private CountryOfRegistrationLookup countryOfRegistrationLookup;
     private String engineNumber;
+    private int cylinderCapacity;
     private String chassisNumber;
     private boolean isNewAtFirstReg;
     private boolean isDamaged;
@@ -321,5 +322,13 @@ public class Vehicle implements Serializable {
     public void setEmptyReasonMap(EmptyReasonMap emtpyReasonMap) {
 
         this.emptyReasonMap = emtpyReasonMap;
+    }
+
+    public int getCylinderCapacity() {
+        return cylinderCapacity;
+    }
+
+    public void setCylinderCapacity(int cylinderCapacity) {
+        this.cylinderCapacity = cylinderCapacity;
     }
 }
