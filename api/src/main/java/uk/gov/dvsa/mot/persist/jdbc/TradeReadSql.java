@@ -122,23 +122,23 @@ public class TradeReadSql {
                     + "  FROM    `mot2`.`mot_test_current` "
                     + "  JOIN    `mot2`.`mot_test_type` on `mot_test_type`.`id` = `mot_test_current`.`mot_test_type_id` "
                     + "  JOIN    `mot2`.`mot_test_status` on `mot_test_status`.`id` = `mot_test_current`.`status_id` "
-                    + "  WHERE   `mot_test_current`.`submitted_date` >= ? "
-                    + "  AND     `mot_test_current`.`submitted_date` < ? "
+                    + "  WHERE   `mot_test_current`.`last_updated_on` >= ? "
+                    + "  AND     `mot_test_current`.`last_updated_on` < ? "
                     + "  AND     `mot_test_type`.`code` IN ('NT','PL', 'PV', 'RT') "
                     + "  AND     `mot_test_status`.`code` IN ('P' , 'F') "
-                    + "  UNION ALL "
+                    + "  UNION  "
                     + "  SELECT  `mot_test_history`.`vehicle_id` "
                     + "  FROM    `mot2`.`mot_test_history` "
                     + "  JOIN    `mot2`.`mot_test_type` on `mot_test_type`.`id` = `mot_test_history`.`mot_test_type_id` "
                     + "  JOIN    `mot2`.`mot_test_status` on `mot_test_status`.`id` = `mot_test_history`.`status_id` "
-                    + "  WHERE   `mot_test_history`.`submitted_date` >= ? "
-                    + "  AND     `mot_test_history`.`submitted_date` < ? "
+                    + "  WHERE   `mot_test_history`.`last_updated_on` >= ? "
+                    + "  AND     `mot_test_history`.`last_updated_on` < ? "
                     + "  AND     `mot_test_type`.`code` IN ('NT','PL', 'PV', 'RT') "
                     + "  AND     `mot_test_status`.`code` IN ('P' , 'F') "
                     + ") as `vehicles` on `vehicles`.`vehicle_id` = `mot_test`.`vehicle_id` ";
 
-    static final String MOT_TEST_SUBMITTED_BEFORE =
-            " `mot_test`.`submitted_date` < ? ";
+    static final String MOT_TEST_UPDATED_BEFORE =
+            " `mot_test`.`last_updated_on` < ? ";
 
     static final String QUERY_GET_VEHICLES_MOT_TESTS_BY_REGISTRATION_AND_MAKE =
             SELECT_VEHICLES_MOT_TESTS
@@ -186,7 +186,7 @@ public class TradeReadSql {
                     + JOIN_VEHICLES_MOT_TESTS_BY_DATE_RANGE
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
-                    + AND + MOT_TEST_SUBMITTED_BEFORE
+                    + AND + MOT_TEST_UPDATED_BEFORE
                     + UNION_ALL
                     + SELECT_VEHICLES_MOT_TESTS
                     + FROM_MOT_TEST_HISTORY
@@ -195,7 +195,7 @@ public class TradeReadSql {
                     + JOIN_VEHICLES_MOT_TESTS_BY_DATE_RANGE
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
-                    + AND + MOT_TEST_SUBMITTED_BEFORE
+                    + AND + MOT_TEST_UPDATED_BEFORE
                     + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
 
     static final String QUERY_GET_VEHICLES_MOT_TESTS_BY_RANGE =
