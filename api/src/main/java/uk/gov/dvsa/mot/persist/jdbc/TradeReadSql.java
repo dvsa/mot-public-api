@@ -104,6 +104,8 @@ public class TradeReadSql {
     static final String MOT_TEST_TYPE_IS_PUBLIC = "`mot_test_type`.`code` IN ('NT','PL', 'PV', 'RT') ";
     static final String MOT_TEST_STATUS_IS_PASS_OR_FAIL = "`mot_test_status`.`code` IN ('P' , 'F') ";
     static final String VEHICLE_REGISTRATION_IS_NOT_INVALID = "`vehicle`.`registration` not like '@%@' ";
+    static final String VEHICLE_REGISTRATION_NOT_EXCLUDED = "`vehicle`.`registration` NOT IN " +
+            "(SELECT `registration` FROM `excluded_registration`)";
 
     /* standard parameterised where clauses */
     static final String VEHICLE_REGISTRATION_EQUALS = "`vehicle`.`registration` = ? ";
@@ -148,6 +150,8 @@ public class TradeReadSql {
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + VEHICLE_REGISTRATION_EQUALS
+                    + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + AND + MAKE_NAME_LIKE
                     + UNION_ALL
                     + SELECT_VEHICLES_MOT_TESTS
@@ -157,6 +161,8 @@ public class TradeReadSql {
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + VEHICLE_REGISTRATION_EQUALS
+                    + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + AND + MAKE_NAME_LIKE
                     + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
 
@@ -168,6 +174,8 @@ public class TradeReadSql {
                     + JOIN_VEHICLE_WITH_LATEST_MOT_TEST_WHEN_THERE_ARE_DUPLICATES_MOT_TEST_CURRENT
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
+                    + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + UNION_ALL
                     + SELECT_VEHICLES_MOT_TESTS
                     + FROM_MOT_TEST_HISTORY
@@ -176,6 +184,8 @@ public class TradeReadSql {
                     + JOIN_VEHICLE_WITH_LATEST_MOT_TEST_WHEN_THERE_ARE_DUPLICATES_MOT_TEST_HISTORY
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
+                    + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
 
     static final String QUERY_GET_VEHICLES_MOT_TESTS_BY_DATE_RANGE =
@@ -187,6 +197,8 @@ public class TradeReadSql {
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + MOT_TEST_UPDATED_BEFORE
+                    + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + UNION_ALL
                     + SELECT_VEHICLES_MOT_TESTS
                     + FROM_MOT_TEST_HISTORY
@@ -195,6 +207,8 @@ public class TradeReadSql {
                     + JOIN_VEHICLES_MOT_TESTS_BY_DATE_RANGE
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
+                    + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + AND + MOT_TEST_UPDATED_BEFORE
                     + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
 
@@ -205,6 +219,7 @@ public class TradeReadSql {
                     + JOIN_MOT_TEST_AND_RFR_MAP_DIMENSIONS
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + MOT_TEST_VEHICLE_ID_BETWEEN
                     + UNION_ALL
@@ -214,6 +229,7 @@ public class TradeReadSql {
                     + JOIN_MOT_TEST_AND_RFR_MAP_DIMENSIONS
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + MOT_TEST_VEHICLE_ID_BETWEEN
                     + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
@@ -226,6 +242,7 @@ public class TradeReadSql {
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + AND + MOT_TEST_NUMBER_EQUALS
                     + UNION_ALL
                     + SELECT_VEHICLES_MOT_TESTS
@@ -235,6 +252,7 @@ public class TradeReadSql {
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + AND + MOT_TEST_NUMBER_EQUALS
                     + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
 
@@ -246,6 +264,7 @@ public class TradeReadSql {
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + AND + MOT_TEST_VEHICLE_ID_EQUALS
                     + UNION_ALL
                     + SELECT_VEHICLES_MOT_TESTS
@@ -255,6 +274,7 @@ public class TradeReadSql {
                     + WHERE + MOT_TEST_TYPE_IS_PUBLIC
                     + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
                     + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
+                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
                     + AND + MOT_TEST_VEHICLE_ID_EQUALS
                     + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
 

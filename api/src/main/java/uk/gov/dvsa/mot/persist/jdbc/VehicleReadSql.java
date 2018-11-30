@@ -152,7 +152,9 @@ class VehicleReadSql {
             + ", `vehicle`.`created_on` " + ", `vehicle`.`last_updated_by` " + ", `vehicle`.`last_updated_on` "
             + ", `vehicle`.`version` " + "FROM  `mot2`.`vehicle` ";
 
-    static final String whereByFullRegistration = "WHERE registration = ? ";
+    static final String whereByFullRegistration = "WHERE registration = ? "
+            + "AND `vehicle`.`registration` NOT IN (SELECT `registration` FROM `excluded_registration`) "
+            + "AND `vehicle`.`registration` NOT LIKE '@%@'";
 
     static final String whereByDvlaVehicleId =
             "JOIN  `mot2`.`model_detail` on `model_detail`.`id` = `vehicle`.`model_detail_id` "
