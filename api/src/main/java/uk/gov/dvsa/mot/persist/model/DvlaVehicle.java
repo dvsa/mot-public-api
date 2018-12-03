@@ -17,7 +17,7 @@ public class DvlaVehicle implements Serializable {
     private String ctRelatedMark;
     private int designedGrossWeight;
     private int dvlaVehicleId;
-    private int engineCapacity;
+    private Integer engineCapacity;
     private String engineNumber;
     private String euClassification;
     private Date firstRegistrationDate;
@@ -144,12 +144,12 @@ public class DvlaVehicle implements Serializable {
         this.dvlaVehicleId = dvlaVehicleId;
     }
 
-    public int getEngineCapacity() {
+    public Integer getEngineCapacity() {
 
         return this.engineCapacity;
     }
 
-    public void setEngineCapacity(int engineCapacity) {
+    public void setEngineCapacity(Integer engineCapacity) {
 
         this.engineCapacity = engineCapacity;
     }

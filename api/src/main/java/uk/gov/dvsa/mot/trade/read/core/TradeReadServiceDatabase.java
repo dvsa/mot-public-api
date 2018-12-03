@@ -289,8 +289,15 @@ public class TradeReadServiceDatabase implements TradeReadService {
             tradeVehicle.setSecondaryColour(dvlaVehicle.getColour2());
         }
 
+        tradeVehicle.setCylinderCapacity(dvlaVehicle.getEngineCapacity());
+
+        if (dvlaVehicle.getFirstRegistrationDate() != null) {
+            tradeVehicle.setRegistrationDate(SDF_DATE.format(dvlaVehicle.getFirstRegistrationDate()));
+        }
+
         if (dvlaVehicle.getManufactureDate() != null) {
             tradeVehicle.setManufactureYear(SDF_YEAR.format(dvlaVehicle.getManufactureDate()));
+            tradeVehicle.setManufactureDate(SDF_DATE.format(dvlaVehicle.getManufactureDate()));
         }
 
         Date firstMotDueDate = DvlaVehicleFirstMotDueDateCalculator.calculateFirstMotDueDate(dvlaVehicle);

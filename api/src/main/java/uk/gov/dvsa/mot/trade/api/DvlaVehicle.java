@@ -15,6 +15,7 @@ public class DvlaVehicle {
     private String euClassification;
     private Date firstRegistrationDate;
     private Date manufactureDate;
+    private Integer engineCapacity;
     private String modelDetail;
     private String makeDetail;
     private String makeInFull;
@@ -202,5 +203,13 @@ public class DvlaVehicle {
     public void setFuelType(String fuelType) {
 
         this.fuelType = fuelType;
+    }
+
+    public Integer getEngineCapacity() {
+        return engineCapacity;
+    }
+
+    public void setEngineCapacity(Integer engineCapacity) {
+        this.engineCapacity = engineCapacity;
     }
 }

@@ -9,6 +9,8 @@ public class Vehicle {
     protected String model;
     protected String makeInFull;
     protected String firstUsedDate;
+    protected String registrationDate;
+    protected Integer cylinderCapacity;
     protected String manufactureDate;
     protected String manufactureYear;
     protected String fuelType;
@@ -167,5 +169,21 @@ public class Vehicle {
     public void setDvlaId(String dvlaId) {
 
         this.dvlaId = dvlaId;
+    }
+
+    public String getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(String registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public Integer getCylinderCapacity() {
+        return cylinderCapacity;
+    }
+
+    public void setCylinderCapacity(Integer cylinderCapacity) {
+        this.cylinderCapacity = cylinderCapacity;
     }
 }

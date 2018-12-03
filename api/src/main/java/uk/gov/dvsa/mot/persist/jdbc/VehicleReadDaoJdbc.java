@@ -591,6 +591,7 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
         private static final String FIRST_REGISTRATION_DATE = "first_registration_date";
         private static final String EU_CLASSIFICATION = "eu_classification";
         private static final String BODY_TYPE_CODE = "body_type_code";
+        private static final String ENGINE_CAPACITY = "engine_capacity";
         private static final String LAST_UPDATED_ON = "last_updated_on";
 
 
@@ -633,6 +634,11 @@ public class VehicleReadDaoJdbc implements VehicleReadDao {
             if (rs.getDate(FIRST_REGISTRATION_DATE) != null) {
                 dvlaVehicle.setFirstRegistrationDate(rs.getDate(FIRST_REGISTRATION_DATE));
             }
+
+            if (rs.getInt(ENGINE_CAPACITY) != 0) {
+                dvlaVehicle.setEngineCapacity(rs.getInt(ENGINE_CAPACITY));
+            }
+
             if (rs.getString(EU_CLASSIFICATION) != null) {
                 dvlaVehicle.setEuClassification(rs.getString(EU_CLASSIFICATION));
             }
