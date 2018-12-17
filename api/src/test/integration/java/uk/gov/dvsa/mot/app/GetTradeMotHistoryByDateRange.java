@@ -3,6 +3,7 @@ package uk.gov.dvsa.mot.app;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.gov.dvsa.mot.security.ParamObfuscator;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 
@@ -45,13 +46,16 @@ public class GetTradeMotHistoryByDateRange {
             TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
             ContainerRequestContext ctx = createContext();
 
-            List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTests(input.getVehicleId(),
+            System.setProperty(ConfigKeys.ObfuscationSecret, "BbV[`8d7zQnc:?}\"CSz$L0t+(3r:_uT$");
+            String obfuscatedVehicleId = ParamObfuscator.obfuscate(input.getVehicleId().toString());
+
+            List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTests(obfuscatedVehicleId,
                     input.getNumber(), input.getRegistration(), input.getDate(), input.getPage(), ctx).getEntity();
 
             if (output != null) {
                 System.out.println(output.toString());
             }
-        } catch (TradeException e) {
+        } catch (TradeException | ParamObfuscator.ObfuscationException e) {
             e.printStackTrace();
         }
     }

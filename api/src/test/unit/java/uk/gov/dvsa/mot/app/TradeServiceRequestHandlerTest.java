@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import uk.gov.dvsa.mot.security.ParamObfuscator;
 import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
@@ -66,13 +67,20 @@ public class TradeServiceRequestHandlerTest {
      * @return The result of the call to getTradeMotTests
      * @throws TradeException if getTradeMotTests throws
      */
-    private Response createHandlerAndGetTradeMotTests(TradeServiceRequest request) throws TradeException {
+    private Response createHandlerAndGetTradeMotTests(TradeServiceRequest request)
+            throws TradeException, ParamObfuscator.ObfuscationException {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
         sut.setVehicleResponseMapperFactory(vehicleResponseMapperFactory);
 
-        return sut.getTradeMotTests(request.getVehicleId(), request.getNumber(),
+        String obfuscatedVehicleId = null;
+        if (request.getVehicleId() != null) {
+            System.setProperty(ConfigKeys.ObfuscationSecret, "BbV[`8d7zQnc:?}\"CSz$L0t+(3r:_uT$");
+            obfuscatedVehicleId = ParamObfuscator.obfuscate(request.getVehicleId().toString());
+        }
+
+        return sut.getTradeMotTests(obfuscatedVehicleId, request.getNumber(),
                 request.getRegistration(), request.getDate(), request.getPage(), requestContext);
     }
 
@@ -139,7 +147,7 @@ public class TradeServiceRequestHandlerTest {
      * Here we pass in a null request, which will result in a NullPointerException which gets caught and converted.
      */
     @Test(expected = BadRequestException.class)
-    public void getTradeMotTests_NullRequest_Throws() throws TradeException {
+    public void getTradeMotTests_NullRequest_Throws() throws TradeException, ParamObfuscator.ObfuscationException {
 
         createHandlerAndGetTradeMotTests(new TradeServiceRequest());
     }
@@ -148,7 +156,7 @@ public class TradeServiceRequestHandlerTest {
      * If we ask for a vehicle ID which doesn't exist we should get an InvalidResourceException.
      */
     @Test(expected = InvalidResourceException.class)
-    public void getTradeMotTests_VehicleId_VehicleDoesNotExist() throws TradeException {
+    public void getTradeMotTests_VehicleId_VehicleDoesNotExist() throws TradeException, ParamObfuscator.ObfuscationException {
 
         List<Vehicle> vehicles = new ArrayList<>();
         final int vehicleId = 4;
@@ -163,7 +171,7 @@ public class TradeServiceRequestHandlerTest {
      * If search by vehicle ID and service returns a matching vehicle, we have it returned
      */
     @Test
-    public void getTradeMotTests_VehicleId_VehicleExists() throws TradeException {
+    public void getTradeMotTests_VehicleId_VehicleExists() throws TradeException, ParamObfuscator.ObfuscationException {
 
         Vehicle vehicle = new Vehicle();
         List<Vehicle> vehicles = new ArrayList<>();
@@ -184,7 +192,7 @@ public class TradeServiceRequestHandlerTest {
      * If we ask for a vehicle ID which has multiple vehicles we should get back all of them
      */
     @Test
-    public void getTradeMotTests_VehicleId_VehiclesExist() throws TradeException {
+    public void getTradeMotTests_VehicleId_VehiclesExist() throws TradeException, ParamObfuscator.ObfuscationException {
 
         Vehicle vehicle1 = new Vehicle();
         Vehicle vehicle2 = new Vehicle();
@@ -207,7 +215,7 @@ public class TradeServiceRequestHandlerTest {
      * If the database read for a Vehicle ID query throws, we should get an internal server error
      */
     @Test(expected = InternalServerErrorException.class)
-    public void getTradeMotTests_VehicleId_DatabaseThrows() throws TradeException {
+    public void getTradeMotTests_VehicleId_DatabaseThrows() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final int vehicleId = 4;
         when(tradeReadService.getVehiclesByVehicleId(vehicleId)).thenThrow(new IndexOutOfBoundsException());
@@ -220,7 +228,7 @@ public class TradeServiceRequestHandlerTest {
      * If we ask for an MOT number which doesn't exist we should get an InvalidResourceException.
      */
     @Test(expected = InvalidResourceException.class)
-    public void getTradeMotTests_Number_TestDoesNotExist() throws TradeException {
+    public void getTradeMotTests_Number_TestDoesNotExist() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final long motNumber = 42;
         when(tradeReadService.getVehiclesMotTestsByMotTestNumber(motNumber)).thenReturn(new ArrayList<>());
@@ -235,7 +243,7 @@ public class TradeServiceRequestHandlerTest {
      * If we ask for an MOT number which does exist we should get back an appropriate vehicle
      */
     @Test
-    public void getTradeMotTests_Number_TestExists() throws TradeException {
+    public void getTradeMotTests_Number_TestExists() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final long motNumber = 233432;
         Vehicle vehicle = new Vehicle();
@@ -257,7 +265,7 @@ public class TradeServiceRequestHandlerTest {
      * If the database read for an MOT number query throws, we should get an internal server error
      */
     @Test(expected = InternalServerErrorException.class)
-    public void getTradeMotTests_Number_DatabaseThrows() throws TradeException {
+    public void getTradeMotTests_Number_DatabaseThrows() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final long motNumber = 9871234;
         when(tradeReadService.getVehiclesMotTestsByMotTestNumber(motNumber)).thenThrow(new IndexOutOfBoundsException());
@@ -270,7 +278,7 @@ public class TradeServiceRequestHandlerTest {
      * If we provide only the make, this should result in a BadRequestException as Registration has to come with Make
      */
     @Test(expected = BadRequestException.class)
-    public void getTradeMotTests_Make_BadRequest() throws TradeException {
+    public void getTradeMotTests_Make_BadRequest() throws TradeException, ParamObfuscator.ObfuscationException {
 
         String make = "TESLA";
 
@@ -283,7 +291,7 @@ public class TradeServiceRequestHandlerTest {
      * If we ask for a registration which exist, we expect to find the vehicle
      */
     @Test
-    public void getTradeMotTests_Registration_VehicleExists() throws TradeException {
+    public void getTradeMotTests_Registration_VehicleExists() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final String registration = "AA44VBG";
         final Vehicle vehicle = new Vehicle();
@@ -306,7 +314,7 @@ public class TradeServiceRequestHandlerTest {
      * If we ask for a registration and make which do not exist, we expect an InvalidResourceException
      */
     @Test(expected = InvalidResourceException.class)
-    public void getTradeMotTests_RegistrationMake_VehicleDoesNotExist() throws TradeException {
+    public void getTradeMotTests_RegistrationMake_VehicleDoesNotExist() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final String registration = "AA44VBG";
         final String make = "ACME";
@@ -323,7 +331,7 @@ public class TradeServiceRequestHandlerTest {
      * If there's an exception from the database call we expect to get an InternalServerErrorException
      */
     @Test(expected = InternalServerErrorException.class)
-    public void getTradeMotTests_RegistrationMake_DatabaseError() throws TradeException {
+    public void getTradeMotTests_RegistrationMake_DatabaseError() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final String registration = "AA44VBG";
 
@@ -338,7 +346,7 @@ public class TradeServiceRequestHandlerTest {
      * Unparseable dates cause internal server errors. This may change to a BadRequest in future.
      */
     @Test(expected = InternalServerErrorException.class)
-    public void getTradeMotTests_Date_InvalidDate() throws TradeException {
+    public void getTradeMotTests_Date_InvalidDate() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final String badDateString = "ObviouslyNotAValidDate";
 
@@ -353,7 +361,7 @@ public class TradeServiceRequestHandlerTest {
      * This variant of the test does not explicitly set the page
      */
     @Test(expected = InternalServerErrorException.class)
-    public void getTradeMotTests_Date_NothingForDate() throws TradeException {
+    public void getTradeMotTests_Date_NothingForDate() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final String dateString = "2014-01-01";
         request.setDate(dateString);
@@ -369,7 +377,7 @@ public class TradeServiceRequestHandlerTest {
      * This variant of the test explicitly requests a non-default page
      */
     @Test(expected = InvalidResourceException.class)
-    public void getTradeMotTests_Date_NothingForDateAndPage() throws TradeException {
+    public void getTradeMotTests_Date_NothingForDateAndPage() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final String dateString = "2014-01-01";
         final int page = 45;
@@ -385,7 +393,7 @@ public class TradeServiceRequestHandlerTest {
      * When asked for a date and page which has vehicles on board, those vehicles should be returned.
      */
     @Test
-    public void getTradeMotTests_Date_ReturnsVehicles() throws TradeException {
+    public void getTradeMotTests_Date_ReturnsVehicles() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final String dateString = "2014-01-01";
         final int page = 3;
@@ -412,7 +420,7 @@ public class TradeServiceRequestHandlerTest {
      * When the database call throws, expect an InternalServerErrorException
      */
     @Test(expected = InternalServerErrorException.class)
-    public void getTradeMotTests_Date_DatabaseError() throws TradeException {
+    public void getTradeMotTests_Date_DatabaseError() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final String dateString = "2014-01-01";
         final int page = 3;
@@ -429,7 +437,7 @@ public class TradeServiceRequestHandlerTest {
      * When asked for a page which has vehicles, the vehicles should be returned
      */
     @Test
-    public void getTradeMotTests_Page_ReturnsVehicles() throws TradeException {
+    public void getTradeMotTests_Page_ReturnsVehicles() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final int page = 3;
         final Vehicle vehicle1 = new Vehicle();
@@ -454,7 +462,7 @@ public class TradeServiceRequestHandlerTest {
      * When called with appropriate header, API version is parsed correctly
      */
     @Test
-    public void getTradeMotTests_ParsesApiVersionCorrectly() throws TradeException {
+    public void getTradeMotTests_ParsesApiVersionCorrectly() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final int page = 3;
         request.setPage(page);
@@ -476,7 +484,7 @@ public class TradeServiceRequestHandlerTest {
      * When called with appropriate header but no version specified, endpoint works properly
      */
     @Test
-    public void getTradeMotTests_WorksAsV1WhenNoApiVersionSpecified() throws TradeException {
+    public void getTradeMotTests_WorksAsV1WhenNoApiVersionSpecified() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final int page = 3;
         request.setPage(page);
@@ -498,7 +506,7 @@ public class TradeServiceRequestHandlerTest {
      * When called with appropriate header but no version specified, endpoint works properly
      */
     @Test
-    public void getTradeMotTests_WorksAsV1WhenHeadersAreNotSet() throws TradeException {
+    public void getTradeMotTests_WorksAsV1WhenHeadersAreNotSet() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final int page = 3;
         request.setPage(page);
@@ -518,7 +526,7 @@ public class TradeServiceRequestHandlerTest {
      * When asked for a page which contains no vehicles, an InvalidResourceException should be thrown
      */
     @Test(expected = InvalidResourceException.class)
-    public void getTradeMotTests_Page_EmptyPage() throws TradeException {
+    public void getTradeMotTests_Page_EmptyPage() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final int page = 3;
 
@@ -533,7 +541,7 @@ public class TradeServiceRequestHandlerTest {
      * When the database call throws, we should get an InternalServerErrorException
      */
     @Test(expected = InternalServerErrorException.class)
-    public void getTradeMotTests_Page_DatabaseThrows() throws TradeException {
+    public void getTradeMotTests_Page_DatabaseThrows() throws TradeException, ParamObfuscator.ObfuscationException {
 
         final int page = 3;
 
