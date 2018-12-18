@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.gov.dvsa.mot.security.ParamObfuscator;
 import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
@@ -24,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -98,9 +101,10 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             "application/json+v2",
             "application/json+v3",
             "application/json+v4",
-            "application/json+v5"})
+            "application/json+v5",
+            "application/json+v6"})
     public Response getTradeMotTests(
-            @QueryParam("vehicleId") Integer vehicleId,
+            @QueryParam("vehicleId") String vehicleId,
             @QueryParam("number") Long number,
             @QueryParam("registration") String registration,
             @QueryParam("date") String motTestDate,
@@ -120,17 +124,38 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             VehicleResponseMapper mapper = vehicleResponseMapperFactory.getMapper(this.parseVersionNumber(requestContext));
             List<Vehicle> vehicles;
 
-            if (vehicleId != null) {
+            if (vehicleId != null && !vehicleId.isEmpty()) {
                 logger.info("Trade API request for vehicle_id = {}", vehicleId);
-                vehicles = tradeReadService.getVehiclesByVehicleId(vehicleId);
+
+                String deobfuscatedVehicleId;
+                try {
+                    deobfuscatedVehicleId = ParamObfuscator.deobfuscate(vehicleId);
+
+                } catch (ParamObfuscator.ObfuscationException e) {
+
+                    // Check to see if exception was caused by potentially bad user input/ciphertext.
+                    // Then throw a 404 instead.. Else throw the 500..
+                    if (e.getCause() instanceof IllegalArgumentException
+                            || e.getCause() instanceof IllegalBlockSizeException
+                            || e.getCause() instanceof BadPaddingException) {
+                        throw new InvalidResourceException(
+                                "No MOT Tests found with vehicle id : " + vehicleId,
+                                awsRequestId);
+                    }
+                    throw e;
+                }
+
+                Integer decodedVehicleId = Integer.parseInt(deobfuscatedVehicleId);
+                logger.info("Decoded vehicle_id to {}", decodedVehicleId);
+                vehicles = tradeReadService.getVehiclesByVehicleId(decodedVehicleId);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException(
-                            "No MOT Tests found with vehicle id : " + vehicleId.toString(),
+                            "No MOT Tests found with vehicle id : " + vehicleId,
                             awsRequestId);
                 }
 
-                logger.debug("Trade API request for vehicle_id = {} returned {} records", vehicleId, vehicles.size());
+                logger.debug("Trade API request for vehicle_id = {} returned {} records", decodedVehicleId.toString(), vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
             } else if (number != null) {
@@ -145,7 +170,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.debug("Trade API request for mot test number = {}  returned {} records", number, vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
-            } else if ((registration != null)) {
+            } else if (registration != null) {
                 logger.info("Trade API request for registration {}", registration);
                 vehicles = tradeReadService.getVehiclesByRegistration(registration);
 

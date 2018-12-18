@@ -3,6 +3,7 @@ package uk.gov.dvsa.mot.app;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import uk.gov.dvsa.mot.security.ParamObfuscator;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 
@@ -45,13 +46,17 @@ public class GetTradeMotTestsByRegistrationAndMake {
     //integration tests fail on INT environment, but are still useful locally, so I will leave them ignored
     @Test
     @Ignore
-    public void testGetTradeMotTestsReturnsResultsWhenRegistrationAndMakeProvided() throws TradeException, IOException {
+    public void testGetTradeMotTestsReturnsResultsWhenRegistrationAndMakeProvided()
+            throws TradeException, IOException, ParamObfuscator.ObfuscationException {
         TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
         ContainerRequestContext ctx = createContext();
 
         TradeServiceRequest input = createInput("FNZ6110", "RENAULT");
 
-        List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTests(input.getVehicleId(), input.getNumber(),
+        System.setProperty(ConfigKeys.ObfuscationSecret, "BbV[`8d7zQnc:?}\"CSz$L0t+(3r:_uT$");
+        String obfuscatedVehicleId = ParamObfuscator.obfuscate(input.getVehicleId().toString());
+
+        List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTests(obfuscatedVehicleId, input.getNumber(),
                 input.getRegistration(), input.getDate(), input.getPage(), ctx).getEntity();
 
         if (output != null) {
@@ -62,13 +67,17 @@ public class GetTradeMotTestsByRegistrationAndMake {
     //integration tests fail on INT environment, but are still useful locally, so I will leave them ignored
     @Test
     @Ignore
-    public void testGetTradeMotTestsReturnsResultsWhenOnlyRegistrationIsProvided() throws TradeException, IOException {
+    public void testGetTradeMotTestsReturnsResultsWhenOnlyRegistrationIsProvided()
+            throws TradeException, IOException, ParamObfuscator.ObfuscationException {
         TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
         ContainerRequestContext ctx = createContext();
 
         TradeServiceRequest input = createInput("FNZ6110", null);
 
-        List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTests(input.getVehicleId(), input.getNumber(),
+        System.setProperty(ConfigKeys.ObfuscationSecret, "BbV[`8d7zQnc:?}\"CSz$L0t+(3r:_uT$");
+        String obfuscatedVehicleId = ParamObfuscator.obfuscate(input.getVehicleId().toString());
+
+        List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTests(obfuscatedVehicleId, input.getNumber(),
                 input.getRegistration(), input.getDate(), input.getPage(), ctx).getEntity();
 
         if (output != null) {
@@ -79,13 +88,17 @@ public class GetTradeMotTestsByRegistrationAndMake {
     //integration tests fail on INT environment, but are still useful locally, so I will leave them ignored
     @Test
     @Ignore
-    public void testGetTradeMotTestsReturnsDvlaVehicleWhenThereIsNoDvlaVehicle() throws TradeException, IOException {
+    public void testGetTradeMotTestsReturnsDvlaVehicleWhenThereIsNoDvlaVehicle()
+            throws TradeException, IOException, ParamObfuscator.ObfuscationException {
         TradeServiceRequestHandler tradeServiceRequestHandler = new TradeServiceRequestHandler();
         ContainerRequestContext ctx = createContext();
 
         TradeServiceRequest input = createInput("REG12X7", null);
 
-        List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTests(input.getVehicleId(), input.getNumber(),
+        System.setProperty(ConfigKeys.ObfuscationSecret, "BbV[`8d7zQnc:?}\"CSz$L0t+(3r:_uT$");
+        String obfuscatedVehicleId = ParamObfuscator.obfuscate(input.getVehicleId().toString());
+
+        List<?> output = (List<?>) tradeServiceRequestHandler.getTradeMotTests(obfuscatedVehicleId, input.getNumber(),
                 input.getRegistration(), input.getDate(), input.getPage(), ctx).getEntity();
 
         if (output != null) {

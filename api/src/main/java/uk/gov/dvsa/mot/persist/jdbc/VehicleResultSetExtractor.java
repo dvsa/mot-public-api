@@ -81,6 +81,7 @@ public class VehicleResultSetExtractor implements ResultSetExtractor<List<Vehicl
 
                     vehicles.add(vehicle);
 
+                    vehicle.setId(currVehicleId);
                     vehicle.setRegistration(rs.getString(REGISTRATION));
                     vehicle.setMake(rs.getString(MAKE));
                     vehicle.setModel(rs.getString(MODEL));

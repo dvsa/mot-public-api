@@ -1,5 +1,6 @@
 package uk.gov.dvsa.mot.trade.api.response.mapper;
 
+import uk.gov.dvsa.mot.security.ParamObfuscator;
 import uk.gov.dvsa.mot.trade.api.MotTest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
 import uk.gov.dvsa.mot.trade.api.response.MotTestResponse;
@@ -8,7 +9,7 @@ import uk.gov.dvsa.mot.trade.api.response.VehicleResponse;
 import java.util.List;
 
 public abstract class VehicleResponseMapper {
-    public abstract List<VehicleResponse> map(List<Vehicle> vehicles);
+    public abstract List<VehicleResponse> map(List<Vehicle> vehicles) throws ParamObfuscator.ObfuscationException;
 
     protected void fillBaseVehicleResponseProperties(VehicleResponse vehicleResponse, Vehicle vehicle) {
         vehicleResponse.setRegistration(vehicle.getRegistration());

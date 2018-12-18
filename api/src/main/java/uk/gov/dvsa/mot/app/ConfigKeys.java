@@ -16,6 +16,9 @@ public final class ConfigKeys {
     public static final String HgvPsvApiKeyEncrypted = "HGV_PSV_KEY_ENCRYPTED";
     public static final String HgvPsvApiConnectionTimeout = "HGV_PSV_CONNECTION_TIMEOUT";
 
+    public static final String ObfuscationSecret = "OBFUSCATION_SECRET";
+    public static final String ObfuscationEncryptedSecret = "OBFUSCATION_ENCRYPTED_SECRET";
+
     private ConfigKeys() {
 
     }
