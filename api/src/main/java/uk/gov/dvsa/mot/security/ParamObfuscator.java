@@ -42,7 +42,7 @@ public class ParamObfuscator {
             // Return the payload, encoded as a Base64 string.
             return Base64.getUrlEncoder().encodeToString(ciphertext);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | BadPaddingException
-                | IllegalBlockSizeException e) {
+                | IllegalBlockSizeException | IllegalArgumentException e) {
             throw new ObfuscationException("An error occurred during obfuscation", e);
         }
     }
@@ -71,7 +71,7 @@ public class ParamObfuscator {
             // Return plaintext as String
             return new String(original);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | BadPaddingException
-                | IllegalBlockSizeException e) {
+                | IllegalBlockSizeException | IllegalArgumentException e) {
             throw new ObfuscationException("Something went wrong with the deobfuscation", e);
         }
 
