@@ -146,7 +146,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 }
 
                 Integer decodedVehicleId = Integer.parseInt(deobfuscatedVehicleId);
-                logger.info("Decoded vehicle_id to {}", decodedVehicleId);
+                logger.trace("Decoded vehicle_id to {}", decodedVehicleId);
                 vehicles = tradeReadService.getVehiclesByVehicleId(decodedVehicleId);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
