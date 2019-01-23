@@ -9,6 +9,7 @@ public class TradeServiceRequest {
     private Header[] header;
     private MotTestQueryParams queryParams = new MotTestQueryParams();
     private MotTestPathParams pathParams = new MotTestPathParams();
+    private AnnualTestQueryParams annualTestQueryParams = new AnnualTestQueryParams();
 
     private String requestId;
 
@@ -20,6 +21,7 @@ public class TradeServiceRequest {
                 ", header=" + Arrays.toString(header) +
                 ", queryParams=" + queryParams +
                 ", pathParams=" + pathParams +
+                ", annualTestQueryParams=" + annualTestQueryParams +
                 '}';
     }
 
@@ -71,6 +73,16 @@ public class TradeServiceRequest {
     public void setHeader(Header[] header) {
 
         this.header = header;
+    }
+
+    public AnnualTestQueryParams getAnnualTestQueryParams() {
+
+        return annualTestQueryParams;
+    }
+
+    public void setAnnualTestQueryParams(AnnualTestQueryParams annualTestQueryParams) {
+
+        this.annualTestQueryParams = annualTestQueryParams;
     }
 
     public MotTestQueryParams getQueryParams() {
@@ -138,6 +150,16 @@ public class TradeServiceRequest {
     public void setRegistration(String registration) {
 
         queryParams.registration = registration;
+    }
+
+    public String getRegistrations() {
+
+        return annualTestQueryParams.registrations;
+    }
+
+    public void setRegistrations(String registrations) {
+
+        annualTestQueryParams.registrations = registrations;
     }
 
     public String getMake() {
@@ -378,6 +400,27 @@ public class TradeServiceRequest {
                     ", number=" + number +
                     ", registration='" + registration + '\'' +
                     ", make='" + make + '\'' +
+                    '}';
+        }
+    }
+
+    public class AnnualTestQueryParams {
+
+        private String registrations;
+
+        public String getRegistrations() {
+            return registrations;
+        }
+
+        public void setRegistrations(String registrations) {
+            this.registrations = registrations;
+        }
+
+        @Override
+        public String toString() {
+
+            return "AnnualTestQueryParams{" +
+                    "registrations='" + registrations + '\'' +
                     '}';
         }
     }

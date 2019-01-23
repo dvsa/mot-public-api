@@ -16,9 +16,11 @@ import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Optional;
 
 import static com.googlecode.catchexception.CatchException.catchException;
@@ -137,7 +139,10 @@ public class MotrVehicleHistoryProviderTest {
         hgvPsvVehicle.setTestCertificateExpiryDate("01/03/2018");
         TestHistory historyItem = new TestHistory();
         historyItem.setTestDate("02/02/2017");
-        hgvPsvVehicle.setTestHistory(new TestHistory[] { historyItem });
+
+        List<TestHistory> testHistory = new ArrayList<>();
+        testHistory.add(historyItem);
+        hgvPsvVehicle.setTestHistory(testHistory);
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(motVehicle);
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(Optional.empty());

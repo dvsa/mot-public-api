@@ -16,6 +16,7 @@ import uk.gov.dvsa.mot.vehicle.hgv.response.ResponseTestHistory;
 import uk.gov.dvsa.mot.vehicle.hgv.response.ResponseVehicle;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.client.Client;
@@ -34,12 +35,12 @@ public class HgvVehicleProvider {
     public Vehicle getVehicle(String registration) throws Exception {
 
         Vehicle vehicle;
-        TestHistory[] vehicleTestHistory;
+        List<TestHistory> vehicleTestHistory;
 
         try {
             CompletableFuture<Vehicle> vehicleFuture = CompletableFutureWrapper.supplyAsync(() -> getHgvVehicle(registration));
 
-            CompletableFuture<TestHistory[]> vehicleTestHistoryFuture = CompletableFutureWrapper.supplyAsync(
+            CompletableFuture<List<TestHistory>> vehicleTestHistoryFuture = CompletableFutureWrapper.supplyAsync(
                     () -> getHgvVehicleTestHistory(registration));
 
             vehicle = vehicleFuture.get();
@@ -61,7 +62,7 @@ public class HgvVehicleProvider {
         return response != null ? response.getVehicle() : null;
     }
 
-    private TestHistory[] getHgvVehicleTestHistory(String registration) {
+    private List<TestHistory> getHgvVehicleTestHistory(String registration) {
         ResponseTestHistory response = getHgvResponse(registration, "/testhistory/moth", ResponseTestHistory.class);
 
         return response != null ? response.getTestHistory() : null;
