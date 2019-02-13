@@ -13,6 +13,7 @@ public final class ConfigKeys {
     public static final String LogLevel = "LOG_LEVEL";
 
     public static final String HgvPsvApiUrl = "HGV_PSV_URL";
+    public static final String HgvPsvApiKey = "HGV_PSV_KEY";
     public static final String HgvPsvApiKeyEncrypted = "HGV_PSV_KEY_ENCRYPTED";
     public static final String HgvPsvApiConnectionTimeout = "HGV_PSV_CONNECTION_TIMEOUT";
 

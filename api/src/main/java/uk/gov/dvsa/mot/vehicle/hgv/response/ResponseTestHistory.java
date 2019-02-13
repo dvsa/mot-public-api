@@ -3,14 +3,17 @@ package uk.gov.dvsa.mot.vehicle.hgv.response;
 
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
 
-public class ResponseTestHistory {
-    TestHistory[] testHistory;
+import java.util.List;
 
-    public TestHistory[] getTestHistory() {
+public class ResponseTestHistory {
+
+    List<TestHistory> testHistory;
+
+    public List<TestHistory> getTestHistory() {
         return testHistory;
     }
 
-    public void setTestHistory(TestHistory[] testHistory) {
+    public void setTestHistory(List<TestHistory> testHistory) {
         this.testHistory = testHistory;
     }
 }
