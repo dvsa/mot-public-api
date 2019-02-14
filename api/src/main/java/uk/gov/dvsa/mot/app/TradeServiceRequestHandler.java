@@ -14,6 +14,7 @@ import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
+import uk.gov.dvsa.mot.trade.api.ServiceTemporarilyUnavailableException;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
@@ -25,7 +26,6 @@ import uk.gov.dvsa.mot.trade.read.core.TradeAnnualTestsReadService;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -43,6 +43,8 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static uk.gov.dvsa.mot.app.ConfigManager.getEnvironmentVariable;
+
 /**
  * Entry point class for Lambdas.
  *
@@ -53,7 +55,6 @@ import javax.ws.rs.core.Response;
 public class TradeServiceRequestHandler extends AbstractRequestHandler {
     private static final Logger logger = LogManager.getLogger(TradeServiceRequestHandler.class);
     private static final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
-    public static final int HGV_MAX_QUERY_REGISTRATIONS = 50;
 
     private TradeReadService tradeReadService;
     private TradeAnnualTestsReadService tradeAnnualTestsReadService;
@@ -258,13 +259,14 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             MediaType.WILDCARD,
             MediaType.APPLICATION_JSON + "+v6"})
     public Response getTradeAnnualTests(
+            @QueryParam("registration") String registration,
             @QueryParam("registrations") String registrations,
             @javax.ws.rs.core.Context ContainerRequestContext requestContext
     ) throws TradeException {
 
         String awsRequestId = null;
         CvsVehicleResponseMapper mapper = hgvResponseMapperFactory.getMapper(this.parseVersionNumber(requestContext));
-        List<uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle> vehicles = new ArrayList<>();
+        List<uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle> vehicles;
 
         try {
             logger.trace("Entering getAnnualTests");
@@ -274,28 +276,65 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 awsRequestId = context.getRequestId();
             }
 
-            if (registrations == null || registrations.isEmpty()) {
-                throw new BadRequestException("Expected query parameter: registrations", awsRequestId);
-            }
+            if (registration != null) {
 
-            HashSet<String> requestedRegistrations = parseRegistrations(registrations);
-            if (requestedRegistrations.size() > HGV_MAX_QUERY_REGISTRATIONS) {
-                throw new BadRequestException(
-                        String.format("You have defined %d registrations; the limit is %d per request",
-                                requestedRegistrations.size(),
-                                HGV_MAX_QUERY_REGISTRATIONS
-                        ),
-                        awsRequestId
-                );
-            }
+                if (registration.isEmpty()) {
+                    throw new BadRequestException(
+                            "Query parameter 'registration' expects one registration",
+                            awsRequestId
+                    );
+                }
 
-            vehicles = tradeAnnualTestsReadService.getAnnualTests(requestedRegistrations);
+                String requestedRegistration = parseRegistration(registration);
 
-            if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                throw new InvalidResourceException(
-                        String.format("No annual tests found for registrations:  %s", registrations),
-                        awsRequestId
-                );
+                vehicles = tradeAnnualTestsReadService.getAnnualTests(Arrays.asList(requestedRegistration));
+
+                if (CollectionUtils.isNullOrEmpty(vehicles)) {
+                    throw new InvalidResourceException(
+                            String.format("No annual tests found for registration: %s", registration),
+                            awsRequestId
+                    );
+                }
+
+            } else if (registrations != null) {
+
+                Integer csvMaxQueryableRegistrations =
+                        Integer.parseInt(getEnvironmentVariable(ConfigKeys.AnnualTestsMaxBulkRegistrations, false));
+
+                if (csvMaxQueryableRegistrations == 0) {
+                    throw new ServiceTemporarilyUnavailableException("Cannot query registrations by bulk at this time", awsRequestId);
+                }
+
+                if (registrations.isEmpty()) {
+                    throw new BadRequestException(
+                            "Query parameter 'registrations' expects one or more registrations separated by commas",
+                            awsRequestId
+                    );
+                }
+
+                HashSet<String> requestedRegistrations = parseRegistrations(registrations);
+                if (requestedRegistrations.size() > csvMaxQueryableRegistrations) {
+                    throw new BadRequestException(
+                            String.format("You have defined %d registrations; the limit is %d per request",
+                                    requestedRegistrations.size(),
+                                    csvMaxQueryableRegistrations
+                            ),
+                            awsRequestId
+                    );
+                }
+
+                vehicles = tradeAnnualTestsReadService.getAnnualTests(requestedRegistrations);
+
+                if (CollectionUtils.isNullOrEmpty(vehicles)) {
+                    throw new InvalidResourceException(
+                            String.format("No annual tests found for registrations: %s", registrations),
+                            awsRequestId
+                    );
+                }
+
+            } else {
+                logger.warn("Unrecognised parameter set");
+                throw new BadRequestException("Unrecognised parameter set", awsRequestId);
             }
         } catch (TradeException e) {
             logger.info(e.getMessage(), e);
@@ -409,8 +448,12 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
         HashSet<String> processedRegistrations = new HashSet<>();
         StringTokenizer st = new StringTokenizer(registrations, ",");
         while (st.hasMoreTokens()) {
-            processedRegistrations.add(st.nextToken().trim());
+            processedRegistrations.add(parseRegistration(st.nextToken()));
         }
         return processedRegistrations;
+    }
+
+    private String parseRegistration(String registration) {
+        return registration.trim();
     }
 }

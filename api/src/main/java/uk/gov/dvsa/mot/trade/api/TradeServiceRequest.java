@@ -152,14 +152,24 @@ public class TradeServiceRequest {
         queryParams.registration = registration;
     }
 
-    public String getRegistrations() {
+    public String getAnnualTestsRegistrations() {
 
         return annualTestQueryParams.registrations;
     }
 
-    public void setRegistrations(String registrations) {
+    public void setAnnualTestsRegistrations(String registrations) {
 
         annualTestQueryParams.registrations = registrations;
+    }
+
+    public String getAnnualTestsRegistration() {
+
+        return annualTestQueryParams.registration;
+    }
+
+    public void setAnnualTestsRegistration(String registration) {
+
+        annualTestQueryParams.registration = registration;
     }
 
     public String getMake() {
@@ -406,7 +416,16 @@ public class TradeServiceRequest {
 
     public class AnnualTestQueryParams {
 
+        private String registration;
         private String registrations;
+
+        public String getRegistration() {
+            return registration;
+        }
+
+        public void setRegistration(String registration) {
+            this.registration = registration;
+        }
 
         public String getRegistrations() {
             return registrations;
@@ -420,7 +439,8 @@ public class TradeServiceRequest {
         public String toString() {
 
             return "AnnualTestQueryParams{" +
-                    "registrations='" + registrations + '\'' +
+                    "registration='" + registration + '\'' +
+                    ", registrations='" + registrations + '\'' +
                     '}';
         }
     }

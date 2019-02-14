@@ -20,6 +20,8 @@ public final class ConfigKeys {
     public static final String ObfuscationSecret = "OBFUSCATION_SECRET";
     public static final String ObfuscationEncryptedSecret = "OBFUSCATION_ENCRYPTED_SECRET";
 
+    public static final String AnnualTestsMaxBulkRegistrations = "ANNUAL_TESTS_BULK_MAX_QUERYABLE_REGISTRATIONS";
+
     private ConfigKeys() {
 
     }

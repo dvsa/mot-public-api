@@ -13,6 +13,7 @@ import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
+import uk.gov.dvsa.mot.trade.api.ServiceTemporarilyUnavailableException;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
@@ -110,7 +111,7 @@ public class TradeServiceRequestHandlerTest {
         sut.setTradeReadService(tradeReadService, tradeAnnualTestsReadService);
         sut.setHgvResponseMapperFactory(cvsVehicleResponseMapperFactory);
 
-        return sut.getTradeAnnualTests(request.getRegistrations(), requestContext);
+        return sut.getTradeAnnualTests(request.getAnnualTestsRegistration(), request.getAnnualTestsRegistrations(), requestContext);
     }
 
     /**
@@ -132,6 +133,7 @@ public class TradeServiceRequestHandlerTest {
 
     @Before
     public void setup() {
+        System.setProperty(ConfigKeys.AnnualTestsMaxBulkRegistrations, "10");
         when(vehicleResponseMapperFactory.getMapper(any())).thenReturn(vehicleMapper);
         when(cvsVehicleResponseMapperFactory.getMapper(any())).thenReturn(cvsVehicleMapper);
         request = new TradeServiceRequest();
@@ -593,7 +595,7 @@ public class TradeServiceRequestHandlerTest {
 
         final String registrations = "";
 
-        request.setRegistrations(registrations);
+        request.setAnnualTestsRegistrations(registrations);
 
         createHandlerAndGetTradeAnnualTests(request);
     }
@@ -609,7 +611,7 @@ public class TradeServiceRequestHandlerTest {
                 "REG041, REG042, REG043, REG044, REG045, REG046, REG047, REG048, REG049, REG050, " +
                 "REG051";
 
-        request.setRegistrations(registrations);
+        request.setAnnualTestsRegistrations(registrations);
 
         createHandlerAndGetTradeAnnualTests(request);
     }
@@ -619,7 +621,7 @@ public class TradeServiceRequestHandlerTest {
 
         final String registrations = "REG001, REG002";
 
-        request.setRegistrations(registrations);
+        request.setAnnualTestsRegistrations(registrations);
 
         uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
         vehicle.setVehicleIdentifier("REG001");
@@ -628,6 +630,18 @@ public class TradeServiceRequestHandlerTest {
         vehicle.setVehicleIdentifier("REG002");
 
         when(tradeAnnualTestsReadService.getAnnualTests(any())).thenReturn(Arrays.asList(vehicle, vehicle1));
+
+        createHandlerAndGetTradeAnnualTests(request);
+    }
+
+    @Test(expected = ServiceTemporarilyUnavailableException.class)
+    public void getTradeAnnualTests_Registrations_ReturnsServiceTemporarilyUnavailableWhenEndpointIsDisabled() throws TradeException {
+
+        System.setProperty(ConfigKeys.AnnualTestsMaxBulkRegistrations, "0");
+
+        final String registrations = "REG001, REG002";
+
+        request.setAnnualTestsRegistrations(registrations);
 
         createHandlerAndGetTradeAnnualTests(request);
     }

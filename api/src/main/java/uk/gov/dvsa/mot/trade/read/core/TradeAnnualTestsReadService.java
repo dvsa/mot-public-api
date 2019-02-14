@@ -25,7 +25,7 @@ public class TradeAnnualTestsReadService {
     }
 
     public List<Vehicle> getAnnualTests(Collection<String> requestedRegistrations) throws Exception {
-
+        logger.trace("Entering getAnnualTests");
         List<Vehicle> vehicleList = new ArrayList<>();
 
         for (String registration: requestedRegistrations) {
@@ -34,15 +34,14 @@ public class TradeAnnualTestsReadService {
                 continue;
             }
             logger.debug("Querying search api for registration {}", registration);
-            uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = hgvVehicleProvider.getVehicle(registration);
+            Vehicle vehicle = hgvVehicleProvider.getVehicle(registration);
 
             if (vehicle != null) {
                 logger.trace("Vehicle with registration {} found. Appending to result...", registration);
                 vehicleList.add(vehicle);
             }
         }
-
+        logger.trace("Exiting getAnnualTests");
         return vehicleList;
     }
-
 }
