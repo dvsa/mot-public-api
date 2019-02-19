@@ -6,6 +6,7 @@ import uk.gov.dvsa.mot.security.Decrypt;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Properties;
 
 /**
@@ -16,8 +17,11 @@ import java.util.Properties;
  * variables by using KMS.
  */
 public class ConfigManager {
-    private ConfigManager() {
 
+    // Stores secrets in memory for the lifetime of the Lambda. Prevents repeated calls to KMS:Decrypt.
+    private static HashMap<String, String> cachedSecrets = new HashMap<>();
+
+    private ConfigManager() {
     }
 
     /**
@@ -50,6 +54,10 @@ public class ConfigManager {
      */
     public static String getEnvironmentVariable(String name, boolean decrypt) throws IOException {
 
+        if (cachedSecrets.containsKey(name)) {
+            return cachedSecrets.get(name);
+        }
+
         if (isRunningInLambda()) {
             String value = System.getenv(name);
 
@@ -58,7 +66,9 @@ public class ConfigManager {
             }
 
             if (isValueDecryptionRequired(name, decrypt)) {
-                return new Decrypt().decrypt(value);
+                String decryptedValue = new Decrypt().decrypt(value);
+                cachedSecrets.put(name, decryptedValue);
+                return decryptedValue;
             } else {
                 return value;
             }
