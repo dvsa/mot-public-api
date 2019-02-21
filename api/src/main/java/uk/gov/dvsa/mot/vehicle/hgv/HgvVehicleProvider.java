@@ -90,6 +90,8 @@ public class HgvVehicleProvider {
                     return type.newInstance();
                 default:
                     response.close();
+                    String responseBody = response.readEntity(String.class);
+                    logger.error("Got invalid response code -- response body" + responseBody);
                     throw new IOException("Invalid http response code");
             }
         } catch (IOException | InstantiationException | IllegalAccessException e) {
