@@ -99,11 +99,11 @@ public class TradeReadServiceDatabase implements TradeReadService {
     }
 
     /*
- * (non-Javadoc)
- *
- * @see uk.gov.dvsa.mot.trade.read.core.TradeReadServiceInterface#
- * getVehiclesByRegistration(String)
- */
+     * (non-Javadoc)
+     *
+     * @see uk.gov.dvsa.mot.trade.read.core.TradeReadServiceInterface#
+     * getVehiclesByRegistration(String)
+     */
     @Override
     @ProvideDbConnection
     public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesByRegistration(String registration) {
