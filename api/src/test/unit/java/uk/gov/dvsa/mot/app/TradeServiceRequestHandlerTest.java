@@ -255,56 +255,6 @@ public class TradeServiceRequestHandlerTest {
     }
 
     /**
-     * If we ask for an MOT number which doesn't exist we should get an InvalidResourceException.
-     */
-    @Test(expected = InvalidResourceException.class)
-    public void getTradeMotTests_Number_TestDoesNotExist() throws TradeException, ParamObfuscator.ObfuscationException {
-
-        final long motNumber = 42;
-        when(tradeReadService.getVehiclesMotTestsByMotTestNumber(motNumber)).thenReturn(new ArrayList<>());
-
-        request.setNumber(motNumber);
-
-        createHandlerAndGetTradeMotTests(request);
-    }
-
-
-    /**
-     * If we ask for an MOT number which does exist we should get back an appropriate vehicle
-     */
-    @Test
-    public void getTradeMotTests_Number_TestExists() throws TradeException, ParamObfuscator.ObfuscationException {
-
-        final long motNumber = 233432;
-        Vehicle vehicle = new Vehicle();
-        List<Vehicle> vehicles = new ArrayList<>();
-        vehicles.add(vehicle);
-        vehicle.setMotTestNumber(String.valueOf(motNumber));
-        List<VehicleResponse> mappedVehicles = Arrays.asList(new VehicleResponse());
-        when(tradeReadService.getVehiclesMotTestsByMotTestNumber(motNumber)).thenReturn(vehicles);
-        when(vehicleMapper.map(eq(vehicles))).thenReturn(mappedVehicles);
-
-        request.setNumber(motNumber);
-
-        List<?> receivedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
-
-        assertEquals(mappedVehicles, receivedVehicles);
-    }
-
-    /**
-     * If the database read for an MOT number query throws, we should get an internal server error
-     */
-    @Test(expected = InternalServerErrorException.class)
-    public void getTradeMotTests_Number_DatabaseThrows() throws TradeException, ParamObfuscator.ObfuscationException {
-
-        final long motNumber = 9871234;
-        when(tradeReadService.getVehiclesMotTestsByMotTestNumber(motNumber)).thenThrow(new IndexOutOfBoundsException());
-        request.setNumber(motNumber);
-
-        createHandlerAndGetTradeMotTests(request);
-    }
-
-    /**
      * If we provide only the make, this should result in a BadRequestException as Registration has to come with Make
      */
     @Test(expected = BadRequestException.class)

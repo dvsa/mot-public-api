@@ -9,8 +9,6 @@ public interface TradeReadDao {
 
     List<Vehicle> getVehiclesMotTestsByVehicleId(int vehicleId);
 
-    List<Vehicle> getVehiclesMotTestsByMotTestNumber(long number);
-
     @Deprecated
     List<Vehicle> getVehiclesMotTestsByRegistrationAndMake(String registration, String make);
 

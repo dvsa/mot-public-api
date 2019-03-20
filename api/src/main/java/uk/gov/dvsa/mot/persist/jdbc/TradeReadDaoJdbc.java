@@ -45,22 +45,6 @@ public class TradeReadDaoJdbc implements TradeReadDao {
     }
 
     @Override
-    public List<Vehicle> getVehiclesMotTestsByMotTestNumber(long number) {
-
-        DbQueryRunner runner = new DbQueryRunnerImpl(connectionManager.getConnection());
-        ResultSetExtractor<List<Vehicle>> mapper = new VehicleResultSetExtractor();
-
-        List<Vehicle> results =
-                runner.executeQuery(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_MOT_TEST_NUMBER, mapper, number, number);
-
-        if (results == null) {
-            return Collections.emptyList();
-        }
-
-        return results;
-    }
-
-    @Override
     @Deprecated
     public List<Vehicle> getVehiclesMotTestsByRegistrationAndMake(String registration, String make) {
 

@@ -75,19 +75,6 @@ public class TradeReadServiceDatabase implements TradeReadService {
      * (non-Javadoc)
      *
      * @see uk.gov.dvsa.mot.trade.read.core.TradeReadServiceInterface#
-     * getMotTestsByVehicleId1(int)
-     */
-    @Override
-    @ProvideDbConnection
-    public List<uk.gov.dvsa.mot.trade.api.Vehicle> getVehiclesMotTestsByMotTestNumber(long number) {
-
-        return tradeReadDao.getVehiclesMotTestsByMotTestNumber(number);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see uk.gov.dvsa.mot.trade.read.core.TradeReadServiceInterface#
      * getVehiclesByRegistrationAndMake(String,String)
      */
     @Deprecated
