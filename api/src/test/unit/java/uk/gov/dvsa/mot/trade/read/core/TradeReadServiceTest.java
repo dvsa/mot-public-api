@@ -187,16 +187,6 @@ public class TradeReadServiceTest {
     }
 
     @Test
-    public void getVehiclesMotTestsByMotTestNumber_GetsByGivenNumber() {
-
-        final int testNumber = 7891347;
-
-        tradeReadService.getVehiclesMotTestsByMotTestNumber(testNumber);
-
-        verify(tradeReadDaoMock).getVehiclesMotTestsByMotTestNumber(testNumber);
-    }
-
-    @Test
     public void getVehiclesByRegistrationAndMake_GetsByGivenNumber() {
 
         final String registration = "XX99XXX";

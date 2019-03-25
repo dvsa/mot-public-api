@@ -157,27 +157,4 @@ public class TradeReadDaoTest {
 
         tradeReadDao.getVehiclesMotTestsByVehicleId(4);
     }
-
-    //@Test
-    public void getVehiclesMotTestsByMotTestNumber_SetsParameters() throws SQLException {
-
-        final long testNumber = 78923;
-
-        when(connectionMock.prepareStatement(TradeReadSql.QUERY_GET_VEHICLES_MOT_TESTS_BY_MOT_TEST_NUMBER))
-                .thenReturn(preparedStatementMock);
-        when(preparedStatementMock.executeQuery()).thenReturn(resultSetMock);
-
-        tradeReadDao.getVehiclesMotTestsByMotTestNumber(testNumber);
-
-        verify(preparedStatementMock).setObject(1, testNumber);
-        verify(preparedStatementMock).setObject(2, testNumber);
-    }
-
-    //@Test(expected = InternalException.class)
-    public void getVehiclesMotTestsByMotTestNumber_ConvertsSqlException() throws SQLException {
-
-        when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException(""));
-
-        tradeReadDao.getVehiclesMotTestsByMotTestNumber(4);
-    }
 }

@@ -175,18 +175,6 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.debug("Trade API request for vehicle_id = {} returned {} records", decodedVehicleId.toString(), vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
-            } else if (number != null) {
-                logger.info("Trade API request for mot test number = {}", number);
-                vehicles = tradeReadService.getVehiclesMotTestsByMotTestNumber(number);
-
-                if (CollectionUtils.isNullOrEmpty(vehicles)) {
-                    throw new InvalidResourceException("No MOT Tests found with number : " + number.toString(),
-                            awsRequestId);
-                }
-
-                logger.debug("Trade API request for mot test number = {}  returned {} records", number, vehicles.size());
-                logger.trace("Exiting getTradeMotTests");
-
             } else if (registration != null) {
                 logger.info("Trade API request for registration {}", registration);
                 vehicles = tradeReadService.getVehiclesByRegistration(registration);

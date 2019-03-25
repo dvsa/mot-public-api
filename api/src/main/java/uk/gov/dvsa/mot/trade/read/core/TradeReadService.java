@@ -14,8 +14,6 @@ public interface TradeReadService {
 
     List<Vehicle> getVehiclesByVehicleId(int id);
 
-    List<Vehicle> getVehiclesMotTestsByMotTestNumber(long number);
-
     List<Vehicle> getVehiclesByRegistrationAndMake(String registration, String make);
 
     List<Vehicle> getVehiclesByRegistration(String registration);

@@ -237,28 +237,6 @@ public class TradeReadSql {
                     + AND + MOT_TEST_VEHICLE_ID_BETWEEN
                     + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
 
-    static final String QUERY_GET_VEHICLES_MOT_TESTS_BY_MOT_TEST_NUMBER =
-            SELECT_VEHICLES_MOT_TESTS
-                    + FROM_MOT_TEST_CURRENT
-                    + JOIN_MOT_TEST_CURRENT_RFR_MAP
-                    + JOIN_MOT_TEST_AND_RFR_MAP_DIMENSIONS
-                    + WHERE + MOT_TEST_TYPE_IS_PUBLIC
-                    + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
-                    + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
-                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
-                    + AND + MOT_TEST_NUMBER_EQUALS
-                    + UNION_ALL
-                    + SELECT_VEHICLES_MOT_TESTS
-                    + FROM_MOT_TEST_HISTORY
-                    + JOIN_MOT_TEST_HISTORY_RFR_MAP
-                    + JOIN_MOT_TEST_AND_RFR_MAP_DIMENSIONS
-                    + WHERE + MOT_TEST_TYPE_IS_PUBLIC
-                    + AND + MOT_TEST_STATUS_IS_PASS_OR_FAIL
-                    + AND + VEHICLE_REGISTRATION_IS_NOT_INVALID
-                    + AND + VEHICLE_REGISTRATION_NOT_EXCLUDED
-                    + AND + MOT_TEST_NUMBER_EQUALS
-                    + ORDER_BY_VEHICLE_COMPLETED_MOT_TEST;
-
     static final String QUERY_GET_VEHICLES_MOT_TESTS_BY_VEHICLE_ID =
             SELECT_VEHICLES_MOT_TESTS
                     + FROM_MOT_TEST_CURRENT
