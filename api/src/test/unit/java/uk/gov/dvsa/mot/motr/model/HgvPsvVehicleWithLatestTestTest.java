@@ -7,8 +7,6 @@ import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -70,11 +68,11 @@ public class HgvPsvVehicleWithLatestTestTest {
     }
 
     private Vehicle createVehicleWithTestHistory(String vehicleType) {
-        List<TestHistory> testHistory = new ArrayList<>();
+        TestHistory[] testHistory = new TestHistory[1];
         TestHistory historyItem =  new TestHistory();
         historyItem.setTestCertificateSerialNo(TEST_NUMBER);
         historyItem.setTestDate("03/01/2013");
-        testHistory.add(historyItem);
+        testHistory[0] = historyItem;
 
         Vehicle vehicle = createVehicle(vehicleType);
         vehicle.setTestHistory(testHistory);
