@@ -57,7 +57,6 @@ public class DvlaVehicleReadSql {
             "  LEFT JOIN `make` on `map`.`make_id` = `make`.`id` and `model`.`make_id` = `make`.`id` " +
             "  JOIN `fuel_type` ON `dvla_vehicle`.`propulsion_code` = `fuel_type`.`dvla_propulsion_code` " +
             "WHERE `dvla_vehicle`.`registration` = ? " +
-            "  AND `dvla_vehicle`.`vehicle_id` IS NULL " +
             "ORDER BY `dvla_vehicle`.`last_updated_on` DESC " +
             "LIMIT 1";
 
