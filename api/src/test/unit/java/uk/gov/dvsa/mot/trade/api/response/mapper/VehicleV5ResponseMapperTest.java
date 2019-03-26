@@ -11,6 +11,7 @@ import uk.gov.dvsa.mot.trade.api.response.RfrAndAdvisoryV2Response;
 import uk.gov.dvsa.mot.trade.api.response.VehicleResponse;
 import uk.gov.dvsa.mot.trade.api.response.VehicleV4Response;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 

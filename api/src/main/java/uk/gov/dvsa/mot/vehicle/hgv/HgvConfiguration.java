@@ -18,10 +18,7 @@ public class HgvConfiguration {
 
     public HgvConfiguration() throws IOException {
 
-        if (StringUtils.isNullOrEmpty(apiKey)) {
-            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKey);
-        }
-
+        // if api key is not already set
         if (StringUtils.isNullOrEmpty(apiKey)) {
             apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKeyEncrypted);
         }

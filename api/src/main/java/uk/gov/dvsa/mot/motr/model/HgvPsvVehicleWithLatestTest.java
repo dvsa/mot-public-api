@@ -7,7 +7,6 @@ import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -124,8 +123,9 @@ public class HgvPsvVehicleWithLatestTest implements VehicleWithLatestTest {
     }
 
     private static TestHistory findLatestTest(Vehicle vehicle) {
-        if (vehicle.getTestHistory() != null && !vehicle.getTestHistory().isEmpty()) {
-            return vehicle.getTestHistory().get(vehicle.getTestHistory().size() - 1);
+        if (vehicle.getTestHistory() != null && vehicle.getTestHistory().length > 0) {
+            TestHistory[] testHistory = vehicle.getTestHistory();
+            return testHistory[testHistory.length - 1];
         } else {
             return null;
         }

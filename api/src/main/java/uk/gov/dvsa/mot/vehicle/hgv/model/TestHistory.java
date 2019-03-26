@@ -2,10 +2,6 @@ package uk.gov.dvsa.mot.vehicle.hgv.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.annotation.JSONP;
-
-import java.util.List;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TestHistory {
     private String testType;
@@ -17,7 +13,6 @@ public class TestHistory {
     private Integer numberOfAdvisoryDefectsAtTest;
     private String vehicleIdentifierAtTest;
     private String testCertificateSerialNo;
-    private List<Defect> testHistoryDefects;
 
     public String getTestType() {
         return testType;
@@ -89,13 +84,5 @@ public class TestHistory {
 
     public void setVehicleIdentifierAtTest(String vehicleIdentifierAtTest) {
         this.vehicleIdentifierAtTest = vehicleIdentifierAtTest;
-    }
-
-    public List<Defect> getTestHistoryDefects() {
-        return testHistoryDefects;
-    }
-
-    public void setTestHistoryDefects(List<Defect> defects) {
-        this.testHistoryDefects = defects;
     }
 }
