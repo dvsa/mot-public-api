@@ -12,13 +12,15 @@ import uk.gov.dvsa.mot.motr.model.VehicleType;
 import uk.gov.dvsa.mot.motr.model.VehicleWithLatestTest;
 import uk.gov.dvsa.mot.mottest.api.MotTest;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
-import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
+import uk.gov.dvsa.mot.vehicle.hgv.SearchVehicleProvider;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Optional;
 
 import static com.googlecode.catchexception.CatchException.catchException;
@@ -45,7 +47,7 @@ public class MotrVehicleHistoryProviderTest {
     private MotrReadService motrReadService;
 
     @Mock
-    private HgvVehicleProvider hgvVehicleProvider;
+    private SearchVehicleProvider searchVehicleProvider;
 
     private MotrVehicleHistoryProvider motrVehicleHistoryProvider;
 
@@ -53,7 +55,7 @@ public class MotrVehicleHistoryProviderTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        motrVehicleHistoryProvider = new MotrVehicleHistoryProvider(motrReadService, hgvVehicleProvider);
+        motrVehicleHistoryProvider = new MotrVehicleHistoryProvider(motrReadService, searchVehicleProvider);
     }
 
     @Test
@@ -77,7 +79,7 @@ public class MotrVehicleHistoryProviderTest {
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(Optional.empty());
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
-        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(null);
+        when(searchVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(null);
 
         catchException(motrVehicleHistoryProvider).searchVehicleByRegistration(REGISTRATION);
 
@@ -117,7 +119,7 @@ public class MotrVehicleHistoryProviderTest {
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(Optional.empty());
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
-        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
+        when(searchVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
 
         VehicleWithLatestTest result = motrVehicleHistoryProvider.searchVehicleByRegistration(REGISTRATION);
 
@@ -137,11 +139,14 @@ public class MotrVehicleHistoryProviderTest {
         hgvPsvVehicle.setTestCertificateExpiryDate("01/03/2018");
         TestHistory historyItem = new TestHistory();
         historyItem.setTestDate("02/02/2017");
-        hgvPsvVehicle.setTestHistory(new TestHistory[] { historyItem });
+
+        List<TestHistory> testHistory = new ArrayList<>();
+        testHistory.add(historyItem);
+        hgvPsvVehicle.setTestHistory(testHistory);
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(motVehicle);
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(Optional.empty());
-        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
+        when(searchVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
 
         VehicleWithLatestTest result = motrVehicleHistoryProvider.searchVehicleByRegistration(REGISTRATION);
 
@@ -161,7 +166,7 @@ public class MotrVehicleHistoryProviderTest {
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(motVehicle);
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(Optional.empty());
-        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
+        when(searchVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
 
         VehicleWithLatestTest result = motrVehicleHistoryProvider.searchVehicleByRegistration(REGISTRATION);
 
@@ -181,7 +186,7 @@ public class MotrVehicleHistoryProviderTest {
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(motVehicle);
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(Optional.empty());
-        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
+        when(searchVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
 
         VehicleWithLatestTest result = motrVehicleHistoryProvider.searchVehicleByRegistration(REGISTRATION);
 
@@ -208,7 +213,7 @@ public class MotrVehicleHistoryProviderTest {
         uk.gov.dvsa.mot.trade.api.DvlaVehicle dvlaVehicleEntity = new uk.gov.dvsa.mot.trade.api.DvlaVehicle();
         Optional<VehicleWithLatestTest> dvlaVehicle = Optional.of(new DvlaVehicle(dvlaVehicleEntity, null));
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
-        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(null);
+        when(searchVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(null);
 
         catchException(motrVehicleHistoryProvider).searchForCommercialVehicleByRegistration(REGISTRATION);
 
@@ -227,7 +232,7 @@ public class MotrVehicleHistoryProviderTest {
 
         when(motrReadService.getLatestMotTestByRegistration(REGISTRATION)).thenReturn(Optional.empty());
         when(motrReadService.getLatestMotTestForDvlaVehicleByRegistration(REGISTRATION)).thenReturn(dvlaVehicle);
-        when(hgvVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
+        when(searchVehicleProvider.getVehicle(eq(REGISTRATION))).thenReturn(hgvPsvVehicle);
 
         VehicleWithLatestTest result = motrVehicleHistoryProvider.searchForCommercialVehicleByRegistration(REGISTRATION);
 

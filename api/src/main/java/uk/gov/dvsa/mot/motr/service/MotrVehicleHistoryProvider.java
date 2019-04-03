@@ -7,11 +7,10 @@ import uk.gov.dvsa.mot.motr.model.HgvPsvVehicleWithLatestTest;
 import uk.gov.dvsa.mot.motr.model.VehicleWithLatestTest;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
 import uk.gov.dvsa.mot.trade.api.TradeException;
-import uk.gov.dvsa.mot.vehicle.hgv.HgvVehicleProvider;
+import uk.gov.dvsa.mot.vehicle.hgv.SearchVehicleProvider;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.validation.TrailerIdFormat;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -22,12 +21,12 @@ public class MotrVehicleHistoryProvider {
     private static final Logger logger = LogManager.getLogger(MotrVehicleHistoryProvider.class);
 
     private MotrReadService motrReadService;
-    private HgvVehicleProvider hgvVehicleProvider;
+    private SearchVehicleProvider searchVehicleProvider;
 
     @Inject
-    public MotrVehicleHistoryProvider(MotrReadService motrReadService, HgvVehicleProvider hgvVehicleProvider) {
+    public MotrVehicleHistoryProvider(MotrReadService motrReadService, SearchVehicleProvider searchVehicleProvider) {
         this.motrReadService = motrReadService;
-        this.hgvVehicleProvider = hgvVehicleProvider;
+        this.searchVehicleProvider = searchVehicleProvider;
     }
 
     @NotNull public VehicleWithLatestTest searchVehicleByRegistration(@NotNull String registration) throws Exception {
@@ -42,7 +41,7 @@ public class MotrVehicleHistoryProvider {
         if (shouldGetHgvPsvHistory(optionalDvlaVehicle.isPresent(), registration)) {
             logger.trace("Fetching HGV/PSV test history for registration: {}", registration);
 
-            Optional<Vehicle> optionalHgvPsvVehicle = Optional.ofNullable(hgvVehicleProvider.getVehicle(registration));
+            Optional<Vehicle> optionalHgvPsvVehicle = Optional.ofNullable(searchVehicleProvider.getVehicle(registration));
 
             if (optionalHgvPsvVehicle.isPresent()) {
                 logger.debug("HGV/PSV history found for registration: {}", registration);
@@ -67,7 +66,7 @@ public class MotrVehicleHistoryProvider {
 
         if (shouldGetHgvPsvHistory(dvlaVehicleOptional.isPresent(), registration)) {
 
-            Vehicle hgvPsvVehicle = hgvVehicleProvider.getVehicle(registration);
+            Vehicle hgvPsvVehicle = searchVehicleProvider.getVehicle(registration);
 
             if (hgvPsvVehicle != null) {
                 return new HgvPsvVehicleWithLatestTest(hgvPsvVehicle,
@@ -107,7 +106,7 @@ public class MotrVehicleHistoryProvider {
             return motVehicle;
         }
 
-        Vehicle hgvVehicle = hgvVehicleProvider.getVehicle(motVehicle.getRegistration());
+        Vehicle hgvVehicle = searchVehicleProvider.getVehicle(motVehicle.getRegistration());
         if (hgvVehicle == null) {
             logger.debug("No HGV/PSV history found for registration{}", motVehicle.getRegistration());
             return motVehicle;

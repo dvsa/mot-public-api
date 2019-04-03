@@ -12,14 +12,13 @@ public final class ConfigKeys {
     public static final String ProxyPort = "PROXY_PORT";
     public static final String LogLevel = "LOG_LEVEL";
 
-    public static final String HgvPsvApiUrl = "HGV_PSV_URL";
-    public static final String HgvPsvApiKeyEncrypted = "HGV_PSV_KEY_ENCRYPTED";
-    public static final String HgvPsvApiConnectionTimeout = "HGV_PSV_CONNECTION_TIMEOUT";
+    public static final String SearchApiUrl = "SEARCH_API_URL";
+    public static final String SearchApiKey = "SEARCH_API_KEY";
+    public static final String SearchApiKeyEncrypted = "SEARCH_API_KEY_ENCRYPTED";
+    public static final String SearchApiConnectionTimeout = "SEARCH_API_CONNECTION_TIMEOUT";
 
     public static final String ObfuscationSecret = "OBFUSCATION_SECRET";
     public static final String ObfuscationEncryptedSecret = "OBFUSCATION_ENCRYPTED_SECRET";
 
-    private ConfigKeys() {
-
-    }
+    public static final String AnnualTestsMaxQueryableRegistrations = "ANNUAL_TESTS_MAX_QUERYABLE_REGISTRATIONS";
 }

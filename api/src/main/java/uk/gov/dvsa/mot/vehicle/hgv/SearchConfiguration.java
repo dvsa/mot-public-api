@@ -7,7 +7,7 @@ import uk.gov.dvsa.mot.app.ConfigManager;
 
 import java.io.IOException;
 
-public class HgvConfiguration {
+public class SearchConfiguration {
 
     private static String apiKey;
 
@@ -16,15 +16,18 @@ public class HgvConfiguration {
     private String proxyHost;
     private String proxyPort;
 
-    public HgvConfiguration() throws IOException {
+    public SearchConfiguration() throws IOException {
 
-        // if api key is not already set
         if (StringUtils.isNullOrEmpty(apiKey)) {
-            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiKeyEncrypted);
+            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.SearchApiKey);
         }
 
-        this.apiUrl = ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiUrl);
-        this.timeoutInSeconds = Integer.parseInt(ConfigManager.getEnvironmentVariable(ConfigKeys.HgvPsvApiConnectionTimeout));
+        if (StringUtils.isNullOrEmpty(apiKey)) {
+            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.SearchApiKeyEncrypted);
+        }
+
+        this.apiUrl = ConfigManager.getEnvironmentVariable(ConfigKeys.SearchApiUrl);
+        this.timeoutInSeconds = Integer.parseInt(ConfigManager.getEnvironmentVariable(ConfigKeys.SearchApiConnectionTimeout));
         this.proxyHost = ConfigManager.getEnvironmentVariable(ConfigKeys.ProxyHost);
         this.proxyPort = ConfigManager.getEnvironmentVariable(ConfigKeys.ProxyPort);
     }
