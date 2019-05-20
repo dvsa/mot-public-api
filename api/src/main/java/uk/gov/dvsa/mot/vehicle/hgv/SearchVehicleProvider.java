@@ -16,37 +16,57 @@ import uk.gov.dvsa.mot.vehicle.hgv.response.ResponseTestHistory;
 import uk.gov.dvsa.mot.vehicle.hgv.response.ResponseVehicle;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
-public class HgvVehicleProvider {
-    private static final Logger logger = LogManager.getLogger(HgvVehicleProvider.class);
+public class SearchVehicleProvider {
+    private static final Logger logger = LogManager.getLogger(SearchVehicleProvider.class);
+    private static final String VEHICLE_PROPERTIES_ENDPOINT = "/vehicle/moth";
+    private static final String VEHICLE_TEST_HISTORY_ENDPOINT = "/testhistory/moth";
 
-    private HgvConfiguration configuration;
+    private SearchConfiguration configuration;
 
+    /**
+     * Sets the search api configuration.
+     *
+     * @param configuration an instance of something which implements {@link SearchConfiguration}
+     */
     @Inject
-    public void setHgvConfiguration(HgvConfiguration configuration) {
+    public void setSearchConfiguration(SearchConfiguration configuration) {
         this.configuration = configuration;
     }
 
+    /**
+     * This method calls SearchAPI asynchronously and returns an instance of {@link Vehicle} if the
+     * VRM is found; else returns null.
+     *
+     * Two calls are made to SearchAPI (asynchronously):
+     *  First gets the vehicle properties.
+     *  Second gets the vehicle's test history.
+     *
+     * @param registration VRM to query SearchAPI
+     * @return
+     * @throws Exception
+     */
     public Vehicle getVehicle(String registration) throws Exception {
 
         Vehicle vehicle;
-        TestHistory[] vehicleTestHistory;
+        List<TestHistory> vehicleTestHistory;
 
         try {
-            CompletableFuture<Vehicle> vehicleFuture = CompletableFutureWrapper.supplyAsync(() -> getHgvVehicle(registration));
+            CompletableFuture<Vehicle> vehicleFuture = CompletableFutureWrapper.supplyAsync(() -> getSearchVehicle(registration));
 
-            CompletableFuture<TestHistory[]> vehicleTestHistoryFuture = CompletableFutureWrapper.supplyAsync(
-                    () -> getHgvVehicleTestHistory(registration));
+            CompletableFuture<List<TestHistory>> vehicleTestHistoryFuture = CompletableFutureWrapper.supplyAsync(
+                    () -> getSearchVehicleTestHistory(registration));
 
             vehicle = vehicleFuture.get();
             vehicleTestHistory = vehicleTestHistoryFuture.get();
         } catch (Exception e) {
-            logger.error("HGV calls execution error", e);
-            throw new Exception("HGV calls execution error", e);
+            logger.error("Search API execution error", e);
+            throw new Exception("Search API execution error", e);
         }
 
         if (vehicle != null) {
@@ -56,21 +76,21 @@ public class HgvVehicleProvider {
         return vehicle;
     }
 
-    private Vehicle getHgvVehicle(String registration) {
-        ResponseVehicle response = getHgvResponse(registration,  "/vehicle/moth", ResponseVehicle.class);
+    private Vehicle getSearchVehicle(String registration) {
+        ResponseVehicle response = getSearchResponse(registration, VEHICLE_PROPERTIES_ENDPOINT, ResponseVehicle.class);
         return response != null ? response.getVehicle() : null;
     }
 
-    private TestHistory[] getHgvVehicleTestHistory(String registration) {
-        ResponseTestHistory response = getHgvResponse(registration, "/testhistory/moth", ResponseTestHistory.class);
+    private List<TestHistory> getSearchVehicleTestHistory(String registration) {
+        ResponseTestHistory response = getSearchResponse(registration, VEHICLE_TEST_HISTORY_ENDPOINT, ResponseTestHistory.class);
 
         return response != null ? response.getTestHistory() : null;
     }
 
-    private <T> T getHgvResponse(String registration, String endpointToCall, Class<T> type) {
+    private <T> T getSearchResponse(String registration, String endpointToCall, Class<T> type) {
 
         try {
-            logger.trace("Entering getHgvResponse(), endpoint to call: " + endpointToCall);
+            logger.trace("Entering getSearchResponse(), endpoint to call: " + endpointToCall);
 
             Response response = getClient().target(configuration.getApiUrl() + endpointToCall)
                     .queryParam("identifier", registration)
@@ -79,7 +99,7 @@ public class HgvVehicleProvider {
                     .get();
 
             int status = response.getStatus();
-            logger.debug("HGV response status code: " + status);
+            logger.debug("Search API response HTTP status: " + status);
 
             switch (status) {
                 case 200:
@@ -88,12 +108,13 @@ public class HgvVehicleProvider {
                     response.close();
                     return type.newInstance();
                 default:
-                    response.close();
+                    String responseBody = response.readEntity(String.class);
+                    logger.error("Got invalid response code - response body: " + responseBody);
                     throw new IOException("Invalid http response code");
             }
         } catch (IOException | InstantiationException | IllegalAccessException e) {
-            logger.error(String.format("Error during communication with api from HGV endpoint : %s", endpointToCall), e);
-            throw new RuntimeException("Error during communication with HGV/PSV API", e);
+            logger.error(String.format("Error during communication with Search API from endpoint : %s", endpointToCall), e);
+            throw new RuntimeException("Error during communication with Search API", e);
         }
     }
 

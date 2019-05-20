@@ -14,16 +14,22 @@ import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
+import uk.gov.dvsa.mot.trade.api.ServiceTemporarilyUnavailableException;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
 import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleResponseMapper;
 import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleResponseMapperFactory;
+import uk.gov.dvsa.mot.trade.api.response.mapper.searchvehicle.SearchVehicleResponseMapper;
+import uk.gov.dvsa.mot.trade.api.response.mapper.searchvehicle.SearchVehicleResponseMapperFactory;
+import uk.gov.dvsa.mot.trade.read.core.TradeAnnualTestsReadService;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -35,6 +41,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import static uk.gov.dvsa.mot.app.ConfigManager.getEnvironmentVariable;
 
 /**
  * Entry point class for Lambdas.
@@ -48,7 +56,9 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     private static final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
 
     private TradeReadService tradeReadService;
+    private TradeAnnualTestsReadService tradeAnnualTestsReadService;
     private VehicleResponseMapperFactory vehicleResponseMapperFactory;
+    private SearchVehicleResponseMapperFactory hgvResponseMapperFactory;
 
     public TradeServiceRequestHandler() {
 
@@ -74,10 +84,28 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
         logger.trace("Exiting setTradeReadService");
     }
 
+    /**
+     * Sets the read service for Annual Tests which will be used to make queries required by this class.
+     *
+     * @param tradeAnnualTestsReadService an instance of something which implements {@link TradeAnnualTestsReadService}
+     */
+    @Inject
+    public void setTradeAnnualTestReadService(TradeAnnualTestsReadService tradeAnnualTestsReadService) {
+        logger.trace("Entering setTradeReadService");
+        this.tradeAnnualTestsReadService = tradeAnnualTestsReadService;
+        logger.trace("Exiting setTradeReadService");
+    }
+
     @Inject
     public void setVehicleResponseMapperFactory(VehicleResponseMapperFactory vehicleResponseMapperFactory) {
 
         this.vehicleResponseMapperFactory = vehicleResponseMapperFactory;
+    }
+
+    @Inject
+    public void setHgvResponseMapperFactory(SearchVehicleResponseMapperFactory hgvResponseMapperFactory) {
+
+        this.hgvResponseMapperFactory = hgvResponseMapperFactory;
     }
 
     /**
@@ -145,7 +173,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                     throw e;
                 }
 
-                Integer decodedVehicleId = Integer.parseInt(deobfuscatedVehicleId);
+                int decodedVehicleId = Integer.parseInt(deobfuscatedVehicleId);
                 logger.trace("Decoded vehicle_id to {}", decodedVehicleId);
                 vehicles = tradeReadService.getVehiclesByVehicleId(decodedVehicleId);
 
@@ -155,7 +183,8 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                             awsRequestId);
                 }
 
-                logger.debug("Trade API request for vehicle_id = {} returned {} records", decodedVehicleId.toString(), vehicles.size());
+                logger.debug("Trade API request for vehicle_id = {} returned {} records",
+                        Integer.toString(decodedVehicleId), vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
             } else if (registration != null) {
@@ -213,6 +242,93 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
         } finally {
             logger.trace("Exiting getTradeMotTests");
         }
+    }
+
+    /**
+     * Get HGV/PSV/Trailer Annual Test History as per the provided request, grouped by vehicle.
+     *
+     * @param registrations Query parameter: accepts 1 or more VRMs as a comma separated list.
+     * @return A list of {@link Vehicle}, with each vehicle populated with its annual tests matching the registrations parameters.
+     * @throws TradeException Under various error conditions, including no vehicles are found. It is expected that the surrounding
+     *                        integration will interpret this exception appropriately.
+     */
+    @GET
+    @Path("trade/vehicles/annual-tests")
+    @Produces({
+            MediaType.APPLICATION_JSON,
+            MediaType.WILDCARD,
+            MediaType.APPLICATION_JSON + "+v6"})
+    public Response getTradeAnnualTests(
+            @QueryParam("registrations") String registrations,
+            @javax.ws.rs.core.Context ContainerRequestContext requestContext
+    ) throws TradeException {
+
+        String awsRequestId = null;
+        SearchVehicleResponseMapper mapper = hgvResponseMapperFactory.getMapper(this.parseVersionNumber(requestContext));
+        List<uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle> vehicles;
+
+        try {
+            logger.trace("Entering getAnnualTests");
+            ApiGatewayRequestContext context = (ApiGatewayRequestContext) requestContext.getProperty(
+                    RequestReader.API_GATEWAY_CONTEXT_PROPERTY);
+            if (context != null) {
+                awsRequestId = context.getRequestId();
+            }
+
+            if (registrations != null) {
+
+                int csvMaxQueryableRegistrations =
+                        Integer.parseInt(getEnvironmentVariable(ConfigKeys.AnnualTestsMaxQueryableRegistrations, false));
+
+                if (csvMaxQueryableRegistrations == 0) {
+                    throw new ServiceTemporarilyUnavailableException("Cannot query annual test registrations at this time", awsRequestId);
+                }
+
+                if (registrations.isEmpty()) {
+                    throw new BadRequestException(
+                            "Query parameter 'registrations' expects one or more registrations separated by commas",
+                            awsRequestId
+                    );
+                }
+
+                HashSet<String> requestedRegistrations = parseRegistrations(registrations);
+                if (requestedRegistrations.size() > csvMaxQueryableRegistrations) {
+                    throw new BadRequestException(
+                            String.format("You have defined %d registrations; the limit is %d per request",
+                                    requestedRegistrations.size(),
+                                    csvMaxQueryableRegistrations
+                            ),
+                            awsRequestId
+                    );
+                }
+
+                vehicles = tradeAnnualTestsReadService.getAnnualTests(requestedRegistrations);
+
+                if (CollectionUtils.isNullOrEmpty(vehicles)) {
+                    throw new InvalidResourceException(
+                            String.format("No annual tests found for registrations: %s", registrations),
+                            awsRequestId
+                    );
+                }
+
+            } else {
+                logger.warn("Unrecognised parameter set");
+                throw new BadRequestException("Unrecognised parameter set", awsRequestId);
+            }
+        } catch (TradeException e) {
+            logger.info(e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            // Log unhandled exceptions then throw a 500 Internal Server Error
+            logger.error("Unhandled error has occurred: ", e);
+            throw new InternalServerErrorException(e, awsRequestId);
+        } finally {
+            logger.trace("Exiting getAnnualTests");
+        }
+
+        return Response.ok(mapper.map(vehicles))
+                .type(MediaType.APPLICATION_JSON)
+                .build();
     }
 
     /**
@@ -305,5 +421,37 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
         logger.warn("Accept mime type header not set. TAPI will use default API version");
         logger.trace("Exiting parseVersionNumber");
         return null;
+    }
+
+    /**
+     * This method accepts the query string of VRMs (separated by commas) and parses them into
+     * a trimmed set.
+     *
+     * Bonus of using {@link HashSet} is that it ensures no duplicate VRMs.
+     *
+     * @param registrations VRMs provided as a comma separated list
+     * @return the set of processed VRMs
+     */
+    private HashSet<String> parseRegistrations(String registrations) {
+        HashSet<String> processedRegistrations = new HashSet<>();
+        StringTokenizer st = new StringTokenizer(registrations, ",");
+
+        while (st.hasMoreTokens()) {
+            processedRegistrations.add(
+                    parseRegistration(st.nextToken())
+            );
+        }
+
+        return processedRegistrations;
+    }
+
+    /**
+     * This method will parse the VRM; currently by trimming excess whitespace.
+     *
+     * @param registration the VRM to be parsed
+     * @return parsed/cleaned VRM
+     */
+    private String parseRegistration(String registration) {
+        return registration.trim();
     }
 }

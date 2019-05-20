@@ -13,12 +13,16 @@ import uk.gov.dvsa.mot.trade.api.BadRequestException;
 import uk.gov.dvsa.mot.trade.api.DisplayMotTestItem;
 import uk.gov.dvsa.mot.trade.api.InternalServerErrorException;
 import uk.gov.dvsa.mot.trade.api.InvalidResourceException;
+import uk.gov.dvsa.mot.trade.api.ServiceTemporarilyUnavailableException;
 import uk.gov.dvsa.mot.trade.api.TradeException;
 import uk.gov.dvsa.mot.trade.api.TradeServiceRequest;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
 import uk.gov.dvsa.mot.trade.api.response.VehicleResponse;
 import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleResponseMapperFactory;
 import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleV4ResponseMapper;
+import uk.gov.dvsa.mot.trade.api.response.mapper.searchvehicle.SearchVehicleResponseMapperFactory;
+import uk.gov.dvsa.mot.trade.api.response.mapper.searchvehicle.SearchVehicleV6ResponseMapper;
+import uk.gov.dvsa.mot.trade.read.core.TradeAnnualTestsReadService;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
 import java.util.ArrayList;
@@ -42,10 +46,19 @@ public class TradeServiceRequestHandlerTest {
     private TradeReadService tradeReadService;
 
     @Mock
+    private TradeAnnualTestsReadService tradeAnnualTestsReadService;
+
+    @Mock
     private VehicleResponseMapperFactory vehicleResponseMapperFactory;
 
     @Mock
+    private SearchVehicleResponseMapperFactory searchVehicleResponseMapperFactory;
+
+    @Mock
     private VehicleV4ResponseMapper vehicleMapper;
+
+    @Mock
+    private SearchVehicleV6ResponseMapper cvsVehicleMapper;
 
     @Mock
     private Context lambdaContext;
@@ -72,6 +85,7 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setTradeAnnualTestReadService(tradeAnnualTestsReadService);
         sut.setVehicleResponseMapperFactory(vehicleResponseMapperFactory);
 
         String obfuscatedVehicleId = null;
@@ -82,6 +96,24 @@ public class TradeServiceRequestHandlerTest {
 
         return sut.getTradeMotTests(obfuscatedVehicleId, request.getNumber(),
                 request.getRegistration(), request.getDate(), request.getPage(), requestContext);
+    }
+
+    /**
+     * Convenience function for testing getTradeAnnualTests calls with less boilerplate.
+     *
+     * @param request The request to test against
+     * @return The result of the call to getTradeAnnualTests
+     * @throws TradeException if getTradeAnnualTests throws
+     */
+    private Response createHandlerAndGetTradeAnnualTests(TradeServiceRequest request)
+            throws TradeException {
+
+        TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
+        sut.setTradeReadService(tradeReadService);
+        sut.setTradeAnnualTestReadService(tradeAnnualTestsReadService);
+        sut.setHgvResponseMapperFactory(searchVehicleResponseMapperFactory);
+
+        return sut.getTradeAnnualTests(request.getAnnualTestsRegistrations(), requestContext);
     }
 
     /**
@@ -96,6 +128,7 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setTradeAnnualTestReadService(tradeAnnualTestsReadService);
         sut.setVehicleResponseMapperFactory(vehicleResponseMapperFactory);
 
         return sut.getTradeMotTestsLegacy(registration, make, requestContext);
@@ -103,7 +136,9 @@ public class TradeServiceRequestHandlerTest {
 
     @Before
     public void setup() {
+        System.setProperty(ConfigKeys.AnnualTestsMaxQueryableRegistrations, "10");
         when(vehicleResponseMapperFactory.getMapper(any())).thenReturn(vehicleMapper);
+        when(searchVehicleResponseMapperFactory.getMapper(any())).thenReturn(cvsVehicleMapper);
         request = new TradeServiceRequest();
     }
 
@@ -121,6 +156,7 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setTradeAnnualTestReadService(tradeAnnualTestsReadService);
 
         List<String> makes = sut.getMakes(null, lambdaContext);
 
@@ -137,6 +173,7 @@ public class TradeServiceRequestHandlerTest {
 
         TradeServiceRequestHandler sut = new TradeServiceRequestHandler(false);
         sut.setTradeReadService(tradeReadService);
+        sut.setTradeAnnualTestReadService(tradeAnnualTestsReadService);
 
         sut.getMakes(null, lambdaContext);
     }
@@ -501,6 +538,70 @@ public class TradeServiceRequestHandlerTest {
 
         createHandlerAndGetTradeMotTests(request);
     }
+
+    @Test(expected = BadRequestException.class)
+    public void getTradeAnnualTests_Registrations_UndefinedThrowsBadRequestException() throws TradeException {
+
+        createHandlerAndGetTradeAnnualTests(request);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void getTradeAnnualTests_Registrations_EmptyThrowsBadRequestException() throws TradeException {
+
+        final String registrations = "";
+
+        request.setAnnualTestsRegistrations(registrations);
+
+        createHandlerAndGetTradeAnnualTests(request);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void getTradeAnnualTests_Registrations_MoreThan50DefinedThrowsBadRequestException() throws TradeException {
+
+        final String registrations = "" +
+                "REG001, REG002, REG003, REG004, REG005, REG006, REG007, REG008, REG009, REG010, " +
+                "REG011, REG012, REG013, REG014, REG015, REG016, REG017, REG018, REG019, REG020, " +
+                "REG021, REG022, REG023, REG024, REG025, REG026, REG027, REG028, REG029, REG030, " +
+                "REG031, REG032, REG033, REG034, REG035, REG036, REG037, REG038, REG039, REG040, " +
+                "REG041, REG042, REG043, REG044, REG045, REG046, REG047, REG048, REG049, REG050, " +
+                "REG051";
+
+        request.setAnnualTestsRegistrations(registrations);
+
+        createHandlerAndGetTradeAnnualTests(request);
+    }
+
+    @Test()
+    public void getTradeAnnualTests_Registrations_DefiningOneRegistrationReturnsOneVehicle() throws TradeException, Exception {
+
+        final String registrations = "REG001, REG002";
+
+        request.setAnnualTestsRegistrations(registrations);
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
+        vehicle.setVehicleIdentifier("REG001");
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle1 = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
+        vehicle.setVehicleIdentifier("REG002");
+
+        when(tradeAnnualTestsReadService.getAnnualTests(any())).thenReturn(Arrays.asList(vehicle, vehicle1));
+
+        createHandlerAndGetTradeAnnualTests(request);
+    }
+
+    @Test(expected = ServiceTemporarilyUnavailableException.class)
+    public void getTradeAnnualTests_Registrations_ReturnsServiceTemporarilyUnavailableWhenEndpointIsDisabled() throws TradeException {
+
+        System.setProperty(ConfigKeys.AnnualTestsMaxQueryableRegistrations, "0");
+
+        final String registrations = "REG001, REG002";
+
+        request.setAnnualTestsRegistrations(registrations);
+
+        createHandlerAndGetTradeAnnualTests(request);
+    }
+
+
 
     /**
      * A null request should get us an InvalidResourceException

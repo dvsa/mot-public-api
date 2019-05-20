@@ -2,9 +2,11 @@ package uk.gov.dvsa.mot.vehicle.hgv.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.List;
+
 public class Vehicle {
     @JsonIgnore
-    private TestHistory[] testHistory;
+    private List<TestHistory> testHistory;
     private String vehicleClass;
     private String vehicleType;
     private String chassisType;
@@ -19,11 +21,11 @@ public class Vehicle {
     private String make;
     private String model;
 
-    public void setTestHistory(TestHistory[] testHistory) {
+    public void setTestHistory(List<TestHistory> testHistory) {
         this.testHistory = testHistory;
     }
 
-    public TestHistory[] getTestHistory() {
+    public List<TestHistory> getTestHistory() {
         return testHistory;
     }
 
