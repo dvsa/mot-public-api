@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -200,7 +201,17 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.trace("Exiting getTradeMotTests");
 
             } else if (motTestDate != null) {
+                Date today = new Date();
                 Date date = sdfDate.parse(motTestDate);
+
+                long millisecondDiff = Math.abs(today.getTime() - date.getTime());
+                long diff = TimeUnit.DAYS.convert(millisecondDiff, TimeUnit.MILLISECONDS);
+
+                // If the difference is greater than 5 weeks, then return a Bad Request response
+                if (diff > 35) {
+                    throw new BadRequestException("Date exceeds 5 weeks from current date", awsRequestId);
+                }
+
                 logger.info("Trade API request for date = {} and page {}", date, page);
                 vehicles = tradeReadService.getVehiclesByDatePage(date, page);
 
