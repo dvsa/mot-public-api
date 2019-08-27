@@ -25,8 +25,10 @@ import uk.gov.dvsa.mot.trade.api.response.mapper.searchvehicle.SearchVehicleV6Re
 import uk.gov.dvsa.mot.trade.read.core.TradeAnnualTestsReadService;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -132,6 +134,21 @@ public class TradeServiceRequestHandlerTest {
         sut.setVehicleResponseMapperFactory(vehicleResponseMapperFactory);
 
         return sut.getTradeMotTestsLegacy(registration, make, requestContext);
+    }
+
+
+    /**
+     * Retrieve date for query parameter that is within 5 weeks of current date
+     *
+     * @return string value 7 days prior to the current day
+     */
+    private String getUsableDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -7);
+        Date date = calendar.getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        String strDate = dateFormat.format(date);
+        return strDate;
     }
 
     @Before
@@ -350,7 +367,7 @@ public class TradeServiceRequestHandlerTest {
     @Test(expected = InternalServerErrorException.class)
     public void getTradeMotTests_Date_NothingForDate() throws TradeException, ParamObfuscator.ObfuscationException {
 
-        final String dateString = "2014-01-01";
+        final String dateString = this.getUsableDate();
         request.setDate(dateString);
 
         when(tradeReadService.getVehiclesByDatePage(any(Date.class), eq(0))).thenReturn(Arrays.asList());
@@ -366,7 +383,7 @@ public class TradeServiceRequestHandlerTest {
     @Test(expected = InvalidResourceException.class)
     public void getTradeMotTests_Date_NothingForDateAndPage() throws TradeException, ParamObfuscator.ObfuscationException {
 
-        final String dateString = "2014-01-01";
+        final String dateString = this.getUsableDate();
         final int page = 45;
         request.setDate(dateString);
         request.setPage(page);
@@ -382,7 +399,7 @@ public class TradeServiceRequestHandlerTest {
     @Test
     public void getTradeMotTests_Date_ReturnsVehicles() throws TradeException, ParamObfuscator.ObfuscationException {
 
-        final String dateString = "2014-01-01";
+        final String dateString = this.getUsableDate();
         final int page = 3;
         final Vehicle vehicle1 = new Vehicle();
         final Vehicle vehicle2 = new Vehicle();
@@ -409,7 +426,24 @@ public class TradeServiceRequestHandlerTest {
     @Test(expected = InternalServerErrorException.class)
     public void getTradeMotTests_Date_DatabaseError() throws TradeException, ParamObfuscator.ObfuscationException {
 
-        final String dateString = "2014-01-01";
+        final String dateString = this.getUsableDate();
+        final int page = 3;
+
+        request.setDate(dateString);
+        request.setPage(page);
+
+        when(tradeReadService.getVehiclesByDatePage(any(Date.class), eq(page))).thenThrow(new ArithmeticException());
+
+        createHandlerAndGetTradeMotTests(request);
+    }
+
+    /**
+     * When the date is out of the accepted range and throws, expect a BadRequestException
+     */
+    @Test(expected = BadRequestException.class)
+    public void getTradeMotTests_Date_BadRequestError() throws TradeException, ParamObfuscator.ObfuscationException {
+
+        final String dateString = "20140101";
         final int page = 3;
 
         request.setDate(dateString);
