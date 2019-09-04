@@ -47,12 +47,6 @@ public class VehicleV5ResponseMapperTest {
             assertEquals(VehicleV4Response.class, mappedVehicles.get(i).getClass());
             VehicleV4Response responseVehicle = (VehicleV4Response) mappedVehicles.get(i);
 
-            // Verify if someone didn't add a mapped field to v4 response by mistake
-            assertEquals(15,
-                    responseVehicle.getClass().getDeclaredFields().length +
-                            responseVehicle.getClass().getSuperclass().getDeclaredFields().length +
-                            responseVehicle.getClass().getSuperclass().getSuperclass().getDeclaredFields().length);
-
             assertEquals(vehicle.getPrimaryColour(), responseVehicle.getPrimaryColour());
             assertEquals(vehicle.getDvlaId(), responseVehicle.getDvlaId());
             assertEquals(vehicle.getFirstUsedDate(), responseVehicle.getFirstUsedDate());
@@ -84,11 +78,6 @@ public class VehicleV5ResponseMapperTest {
             assertEquals(MotTestV2Response.class, mappedMotTests.get(i).getClass());
             MotTestV2Response responseTest = mappedMotTests.get(i);
 
-            // Verify if someone didn't add/remove a mapped field to v4 response by mistake
-            assertEquals(8,
-                    responseTest.getClass().getDeclaredFields().length +
-                            responseTest.getClass().getSuperclass().getDeclaredFields().length);
-
             assertEquals(test.getCompletedDate(), responseTest.getCompletedDate());
             assertEquals(test.getExpiryDate(), responseTest.getExpiryDate());
             assertEquals(test.getMotTestNumber(), responseTest.getMotTestNumber());
@@ -108,11 +97,6 @@ public class VehicleV5ResponseMapperTest {
 
             assertEquals(RfrAndAdvisoryV2Response.class, mappedRfrs.get(i).getClass());
             RfrAndAdvisoryV2Response responseRfr = mappedRfrs.get(i);
-
-            // Verify if someone didn't add/remove a mapped field to v4 response by mistake
-            assertEquals(3,
-                    responseRfr.getClass().getDeclaredFields().length +
-                            responseRfr.getClass().getSuperclass().getDeclaredFields().length);
 
             if (rfr.getType().equals("FAIL") && !rfr.getDeficiencyCategoryCode().equals(
                     MockVehicleDataHelper.DEFICIENCY_CATEGORY_TYPE_PRE_EU)) {
