@@ -23,6 +23,7 @@ project.ext {
 
 apply plugin: 'aspectj.gradle'
 apply plugin: 'java'
+apply plugin: 'jacoco'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'checkstyle'

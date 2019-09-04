@@ -48,11 +48,6 @@ public class VehicleV3ResponseMapperTest {
             assertEquals(VehicleV3Response.class, mappedVehicles.get(i).getClass());
             VehicleV3Response responseVehicle = (VehicleV3Response) mappedVehicles.get(i);
 
-            // Verify if someone didn't add a mapped field to v3 response by mistake
-            assertEquals(12,
-                    responseVehicle.getClass().getDeclaredFields().length +
-                            responseVehicle.getClass().getSuperclass().getDeclaredFields().length);
-
             assertEquals(vehicle.getPrimaryColour(), responseVehicle.getPrimaryColour());
             assertEquals(vehicle.getDvlaId(), responseVehicle.getDvlaId());
             assertEquals(vehicle.getFirstUsedDate(), responseVehicle.getFirstUsedDate());
@@ -82,11 +77,6 @@ public class VehicleV3ResponseMapperTest {
             assertEquals(MotTestV2Response.class, mappedMotTests.get(i).getClass());
             MotTestV2Response responseTest = mappedMotTests.get(i);
 
-            // Verify if someone didn't add/remove a mapped field to v2 response by mistake
-            assertEquals(8,
-                    responseTest.getClass().getDeclaredFields().length +
-                            responseTest.getClass().getSuperclass().getDeclaredFields().length);
-
             assertEquals(test.getCompletedDate(), responseTest.getCompletedDate());
             assertEquals(test.getExpiryDate(), responseTest.getExpiryDate());
             assertEquals(test.getMotTestNumber(), responseTest.getMotTestNumber());
@@ -106,11 +96,6 @@ public class VehicleV3ResponseMapperTest {
 
             assertEquals(RfrAndAdvisoryV2Response.class, mappedRfrs.get(i).getClass());
             RfrAndAdvisoryV2Response responseRfr = mappedRfrs.get(i);
-
-            // Verify if someone didn't add/remove a mapped field to v2 response by mistake
-            assertEquals(3,
-                    responseRfr.getClass().getDeclaredFields().length +
-                            responseRfr.getClass().getSuperclass().getDeclaredFields().length);
 
             assertEquals(rfr.getType(), responseRfr.getType());
             assertEquals(rfr.getText(), responseRfr.getText());
