@@ -70,3 +70,6 @@ gradle-app.setting
 api/out/production/trade-service/config.properties
 api/src/main/resources/config.properties
 *.DS_Store
+
+# SonarQube working dirs
+**/.scannerwork/
