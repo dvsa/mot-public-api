@@ -3,6 +3,7 @@ package uk.gov.dvsa.mot.trade.api.response.mapper;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.gov.dvsa.mot.helper.FieldCounter;
 import uk.gov.dvsa.mot.trade.api.MotTest;
 import uk.gov.dvsa.mot.trade.api.RfrAndAdvisoryItem;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
@@ -11,6 +12,7 @@ import uk.gov.dvsa.mot.trade.api.response.RfrAndAdvisoryV2Response;
 import uk.gov.dvsa.mot.trade.api.response.VehicleResponse;
 import uk.gov.dvsa.mot.trade.api.response.VehicleV4Response;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,11 +49,14 @@ public class VehicleV5ResponseMapperTest {
             assertEquals(VehicleV4Response.class, mappedVehicles.get(i).getClass());
             VehicleV4Response responseVehicle = (VehicleV4Response) mappedVehicles.get(i);
 
+            int fields = FieldCounter.getNumberOfFieldsFromClass(
+                    responseVehicle.getClass().getDeclaredFields(),
+                    responseVehicle.getClass().getSuperclass().getDeclaredFields(),
+                    responseVehicle.getClass().getSuperclass().getSuperclass().getDeclaredFields()
+            );
+
             // Verify if someone didn't add a mapped field to v4 response by mistake
-            assertEquals(15,
-                    responseVehicle.getClass().getDeclaredFields().length +
-                            responseVehicle.getClass().getSuperclass().getDeclaredFields().length +
-                            responseVehicle.getClass().getSuperclass().getSuperclass().getDeclaredFields().length);
+            assertEquals(15, fields);
 
             assertEquals(vehicle.getPrimaryColour(), responseVehicle.getPrimaryColour());
             assertEquals(vehicle.getDvlaId(), responseVehicle.getDvlaId());
@@ -84,10 +89,13 @@ public class VehicleV5ResponseMapperTest {
             assertEquals(MotTestV2Response.class, mappedMotTests.get(i).getClass());
             MotTestV2Response responseTest = mappedMotTests.get(i);
 
+            int fields = FieldCounter.getNumberOfFieldsFromClass(
+                    responseTest.getClass().getDeclaredFields(),
+                    responseTest.getClass().getSuperclass().getDeclaredFields()
+            );
+
             // Verify if someone didn't add/remove a mapped field to v4 response by mistake
-            assertEquals(8,
-                    responseTest.getClass().getDeclaredFields().length +
-                            responseTest.getClass().getSuperclass().getDeclaredFields().length);
+            assertEquals(8, fields);
 
             assertEquals(test.getCompletedDate(), responseTest.getCompletedDate());
             assertEquals(test.getExpiryDate(), responseTest.getExpiryDate());
@@ -109,10 +117,13 @@ public class VehicleV5ResponseMapperTest {
             assertEquals(RfrAndAdvisoryV2Response.class, mappedRfrs.get(i).getClass());
             RfrAndAdvisoryV2Response responseRfr = mappedRfrs.get(i);
 
+            int fields = FieldCounter.getNumberOfFieldsFromClass(
+                    responseRfr.getClass().getDeclaredFields(),
+                    responseRfr.getClass().getSuperclass().getDeclaredFields()
+            );
+
             // Verify if someone didn't add/remove a mapped field to v4 response by mistake
-            assertEquals(3,
-                    responseRfr.getClass().getDeclaredFields().length +
-                            responseRfr.getClass().getSuperclass().getDeclaredFields().length);
+            assertEquals(3, fields);
 
             if (rfr.getType().equals("FAIL") && !rfr.getDeficiencyCategoryCode().equals(
                     MockVehicleDataHelper.DEFICIENCY_CATEGORY_TYPE_PRE_EU)) {
