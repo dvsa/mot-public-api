@@ -47,9 +47,8 @@ import static uk.gov.dvsa.mot.app.ConfigManager.getEnvironmentVariable;
 
 /**
  * Entry point class for Lambdas.
- *
- * Various public methods in this class are called on Lambda invocation for
- * trade service queries.
+ * <p>
+ * Various public methods in this class are called on Lambda invocation for trade service queries.
  */
 @Path("/")
 public class TradeServiceRequestHandler extends AbstractRequestHandler {
@@ -72,8 +71,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     }
 
     /**
-     * Set the read service which will be used to make queries required by this
-     * class.
+     * Set the read service which will be used to make queries required by this class.
      *
      * @param tradeReadService an instance of something which implements {@link TradeReadService}
      */
@@ -112,11 +110,11 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     /**
      * Get MOT tests as per the provided request, grouped by vehicle.
      *
-     * @param vehicleId query parameter
-     * @param number query parameter
-     * @param registration query parameter
-     * @param motTestDate date query parameter
-     * @param page query parameter
+     * @param vehicleId      query parameter
+     * @param number         query parameter
+     * @param registration   query parameter
+     * @param motTestDate    date query parameter
+     * @param page           query parameter
      * @param requestContext AWS Lambda context object
      * @return A list of {@link Vehicle}, with each vehicle populated with its MOT tests matching the search parameters.
      * @throws TradeException Under various error conditions, including no tests found. It is expected that the surrounding integration will
@@ -224,14 +222,14 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 logger.trace("Exiting getTradeMotTests");
 
             } else if (page != null) {
-                logger.info("Trade API request for page = {}",  page);
+                logger.info("Trade API request for page = {}", page);
                 vehicles = tradeReadService.getVehiclesByPage(page);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException("No MOT Tests found for page: " + page.toString(), awsRequestId);
                 }
 
-                logger.debug("Trade API request for page = {} returned {} records",  page, vehicles.size());
+                logger.debug("Trade API request for page = {} returned {} records", page, vehicles.size());
                 logger.trace("Exiting getTradeMotTests");
 
             } else {
@@ -268,7 +266,9 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     @Produces({
             MediaType.APPLICATION_JSON,
             MediaType.WILDCARD,
-            MediaType.APPLICATION_JSON + "+v6"})
+            MediaType.APPLICATION_JSON + "+v6",
+            MediaType.APPLICATION_JSON + "+v7"
+            })
     public Response getTradeAnnualTests(
             @QueryParam("registrations") String registrations,
             @javax.ws.rs.core.Context ContainerRequestContext requestContext
@@ -367,8 +367,8 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     /**
      * Retrieve MOT tests in legacy format, based on the provided request.
      *
-     * @param registration a vehicle registration as a path parameter
-     * @param make a vehicle make as a path parameter.
+     * @param registration   a vehicle registration as a path parameter
+     * @param make           a vehicle make as a path parameter.
      * @param requestContext AWS Lambda request context
      * @return Response A list of MOTs in the legacy format.
      * @throws TradeException If there's an error retrieving data or a not-found condition.
@@ -435,9 +435,8 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     }
 
     /**
-     * This method accepts the query string of VRMs (separated by commas) and parses them into
-     * a trimmed set.
-     *
+     * This method accepts the query string of VRMs (separated by commas) and parses them into a trimmed set.
+     * <p>
      * Bonus of using {@link HashSet} is that it ensures no duplicate VRMs.
      *
      * @param registrations VRMs provided as a comma separated list
