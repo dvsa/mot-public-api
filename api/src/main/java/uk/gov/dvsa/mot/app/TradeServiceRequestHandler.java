@@ -129,7 +129,8 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             "application/json+v3",
             "application/json+v4",
             "application/json+v5",
-            "application/json+v6"})
+            "application/json+v6",
+            "application/json+v7"})
     public Response getTradeMotTests(
             @QueryParam("vehicleId") String vehicleId,
             @QueryParam("number") Long number,
@@ -256,7 +257,7 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     /**
      * Get HGV/PSV/Trailer Annual Test History as per the provided request, grouped by vehicle.
      *
-     * @param registrations Query parameter: accepts 1 or more VRMs as a comma separated list.
+     * @param registrationsOrVins Query parameter: accepts 1 or more VRMs or VINs as a comma separated list.
      * @return A list of {@link Vehicle}, with each vehicle populated with its annual tests matching the registrations parameters.
      * @throws TradeException Under various error conditions, including no vehicles are found. It is expected that the surrounding
      *                        integration will interpret this exception appropriately.
@@ -271,11 +272,18 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
             })
     public Response getTradeAnnualTests(
             @QueryParam("registrations") String registrations,
+            @QueryParam("registrationsOrVins") String registrationsOrVins,
             @javax.ws.rs.core.Context ContainerRequestContext requestContext
     ) throws TradeException {
 
+        String versionNumber = this.parseVersionNumber(requestContext);
+
+        String vehicleIdentifiers = "v7".equals(versionNumber) ? registrationsOrVins : registrations;
+        String errorMessageIdentifiers = "v7".equals(versionNumber) ? "registrations / VINs" : "registrations";
+        String queryParamName = "v7".equals(versionNumber) ? "registrationsOrVins" : "registrations";
+
         String awsRequestId = null;
-        SearchVehicleResponseMapper mapper = hgvResponseMapperFactory.getMapper(this.parseVersionNumber(requestContext));
+        SearchVehicleResponseMapper mapper = hgvResponseMapperFactory.getMapper(versionNumber);
         List<uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle> vehicles;
 
         try {
@@ -286,38 +294,39 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
                 awsRequestId = context.getRequestId();
             }
 
-            if (registrations != null) {
+            if (vehicleIdentifiers != null) {
 
-                int csvMaxQueryableRegistrations =
-                        Integer.parseInt(getEnvironmentVariable(ConfigKeys.AnnualTestsMaxQueryableRegistrations, false));
+                int csvMaxQueryableVehicleIdentifiers =
+                        Integer.parseInt(getEnvironmentVariable(ConfigKeys.AnnualTestsMaxQueryableVehicleIdentifiers, false));
 
-                if (csvMaxQueryableRegistrations == 0) {
-                    throw new ServiceTemporarilyUnavailableException("Cannot query annual test registrations at this time", awsRequestId);
+                if (csvMaxQueryableVehicleIdentifiers == 0) {
+                    throw new ServiceTemporarilyUnavailableException(String.format("Cannot query annual test %s at this time",
+                            errorMessageIdentifiers), awsRequestId);
                 }
 
-                if (registrations.isEmpty()) {
+                if (vehicleIdentifiers.isEmpty()) {
                     throw new BadRequestException(
-                            "Query parameter 'registrations' expects one or more registrations separated by commas",
-                            awsRequestId
-                    );
+                            String.format("Query parameter %s expects one or more %s separated by commas",
+                                    queryParamName, errorMessageIdentifiers), awsRequestId);
                 }
 
-                HashSet<String> requestedRegistrations = parseRegistrations(registrations);
-                if (requestedRegistrations.size() > csvMaxQueryableRegistrations) {
+                HashSet<String> requestedVehicleIdentifiers = parseIdentifiers(vehicleIdentifiers);
+                if (requestedVehicleIdentifiers.size() > csvMaxQueryableVehicleIdentifiers) {
                     throw new BadRequestException(
-                            String.format("You have defined %d registrations; the limit is %d per request",
-                                    requestedRegistrations.size(),
-                                    csvMaxQueryableRegistrations
+                            String.format("You have defined %d %s; the limit is %d per request",
+                                    requestedVehicleIdentifiers.size(),
+                                    errorMessageIdentifiers,
+                                    csvMaxQueryableVehicleIdentifiers
                             ),
                             awsRequestId
                     );
                 }
 
-                vehicles = tradeAnnualTestsReadService.getAnnualTests(requestedRegistrations);
+                vehicles = tradeAnnualTestsReadService.getAnnualTests(requestedVehicleIdentifiers);
 
                 if (CollectionUtils.isNullOrEmpty(vehicles)) {
                     throw new InvalidResourceException(
-                            String.format("No annual tests found for registrations: %s", registrations),
+                            String.format("No annual tests found for %s: %s", errorMessageIdentifiers, vehicleIdentifiers),
                             awsRequestId
                     );
                 }
@@ -435,33 +444,34 @@ public class TradeServiceRequestHandler extends AbstractRequestHandler {
     }
 
     /**
-     * This method accepts the query string of VRMs (separated by commas) and parses them into a trimmed set.
-     * <p>
-     * Bonus of using {@link HashSet} is that it ensures no duplicate VRMs.
+     * This method accepts the query string of VRMs or VINs (separated by commas) and parses them into
+     * a trimmed set.
      *
-     * @param registrations VRMs provided as a comma separated list
-     * @return the set of processed VRMs
+     * Bonus of using {@link HashSet} is that it ensures no duplicate VRMs or VINs.
+     *
+     * @param vehicleIdentifiers VRMs or VINs provided as a comma separated list
+     * @return the set of processed VRMs o VINs
      */
-    private HashSet<String> parseRegistrations(String registrations) {
-        HashSet<String> processedRegistrations = new HashSet<>();
-        StringTokenizer st = new StringTokenizer(registrations, ",");
+    private HashSet<String> parseIdentifiers(String vehicleIdentifiers) {
+        HashSet<String> processedIdentifiers = new HashSet<>();
+        StringTokenizer st = new StringTokenizer(vehicleIdentifiers, ",");
 
         while (st.hasMoreTokens()) {
-            processedRegistrations.add(
-                    parseRegistration(st.nextToken())
+            processedIdentifiers.add(
+                    parseIdentifier(st.nextToken())
             );
         }
 
-        return processedRegistrations;
+        return processedIdentifiers;
     }
 
     /**
-     * This method will parse the VRM; currently by trimming excess whitespace.
+     * This method will parse the VRM or VIN; currently by trimming excess whitespace.
      *
-     * @param registration the VRM to be parsed
-     * @return parsed/cleaned VRM
+     * @param vehicleIdentifier the VRM or VIN to be parsed
+     * @return parsed/cleaned VRM or VIN
      */
-    private String parseRegistration(String registration) {
-        return registration.trim();
+    private String parseIdentifier(String vehicleIdentifier) {
+        return vehicleIdentifier.trim();
     }
 }
