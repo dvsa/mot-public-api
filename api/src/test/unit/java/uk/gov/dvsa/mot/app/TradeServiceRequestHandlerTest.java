@@ -1,6 +1,7 @@
 package uk.gov.dvsa.mot.app;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.tngtech.java.junit.dataprovider.DataProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleResponseMapperFactory;
 import uk.gov.dvsa.mot.trade.api.response.mapper.VehicleV4ResponseMapper;
 import uk.gov.dvsa.mot.trade.api.response.mapper.searchvehicle.SearchVehicleResponseMapperFactory;
 import uk.gov.dvsa.mot.trade.api.response.mapper.searchvehicle.SearchVehicleV6ResponseMapper;
+import uk.gov.dvsa.mot.trade.api.response.mapper.searchvehicle.SearchVehicleV7ResponseMapper;
 import uk.gov.dvsa.mot.trade.read.core.TradeAnnualTestsReadService;
 import uk.gov.dvsa.mot.trade.read.core.TradeReadService;
 
@@ -29,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +63,10 @@ public class TradeServiceRequestHandlerTest {
     private VehicleV4ResponseMapper vehicleMapper;
 
     @Mock
-    private SearchVehicleV6ResponseMapper cvsVehicleMapper;
+    private SearchVehicleV6ResponseMapper cvsV6VehicleMapper;
+
+    @Mock
+    private SearchVehicleV7ResponseMapper cvsV7VehicleMapper;
 
     @Mock
     private Context lambdaContext;
@@ -122,7 +128,7 @@ public class TradeServiceRequestHandlerTest {
      * Convenience function for testing getTradeMotTestsLegacy calls with less boilerplate
      *
      * @param registration is a path parameter passed to getTradeMotTestsLegacy
-     * @param make is a path parameter passed to getTradeMotTestsLegacy
+     * @param make         is a path parameter passed to getTradeMotTestsLegacy
      * @return the return value of getTradeMotTestsLegacy
      * @throws TradeException if getTradeMotTestsLegacy throws
      */
@@ -155,7 +161,9 @@ public class TradeServiceRequestHandlerTest {
     public void setup() {
         System.setProperty(ConfigKeys.AnnualTestsMaxQueryableRegistrations, "10");
         when(vehicleResponseMapperFactory.getMapper(any())).thenReturn(vehicleMapper);
-        when(searchVehicleResponseMapperFactory.getMapper(any())).thenReturn(cvsVehicleMapper);
+        when(searchVehicleResponseMapperFactory.getMapper(null)).thenReturn(cvsV6VehicleMapper);
+        when(searchVehicleResponseMapperFactory.getMapper("v6")).thenReturn(cvsV6VehicleMapper);
+        when(searchVehicleResponseMapperFactory.getMapper("v7")).thenReturn(cvsV7VehicleMapper);
         request = new TradeServiceRequest();
     }
 
@@ -308,7 +316,7 @@ public class TradeServiceRequestHandlerTest {
 
         request.setRegistration(registration);
 
-        List<?> retrievedVehicles =  (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
+        List<?> retrievedVehicles = (List<?>) createHandlerAndGetTradeMotTests(request).getEntity();
 
         assertEquals("Should retrieve only one vehicle", 1, retrievedVehicles.size());
         assertEquals("Should pass through the vehicle from mapper", mappedVehicles, retrievedVehicles);
@@ -623,6 +631,81 @@ public class TradeServiceRequestHandlerTest {
         createHandlerAndGetTradeAnnualTests(request);
     }
 
+    @Test()
+    public void getTradeAnnualTests_WithNoApiVersionUsesV6Mapper() throws Exception {
+        MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
+        headers.put("Accept", Collections.singletonList("application/json"));
+
+        final String registrations = "REG001, REG002";
+
+        request.setAnnualTestsRegistrations(registrations);
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
+        vehicle.setVehicleIdentifier("REG001");
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle1 = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
+        vehicle.setVehicleIdentifier("REG002");
+
+        List<uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle> vehicleList = Arrays.asList(vehicle, vehicle1);
+
+        when(requestContext.getHeaders()).thenReturn(headers);
+        when(tradeAnnualTestsReadService.getAnnualTests(any())).thenReturn(vehicleList);
+
+        createHandlerAndGetTradeAnnualTests(request);
+
+        verify(cvsV6VehicleMapper).map(vehicleList);
+    }
+
+    @Test()
+    public void getTradeAnnualTests_ApiVersionV6VersionUsesV6Mapper() throws Exception {
+        MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
+        headers.put("Accept", Collections.singletonList("application/json+v6"));
+
+        final String registrations = "REG001, REG002";
+
+        request.setAnnualTestsRegistrations(registrations);
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
+        vehicle.setVehicleIdentifier("REG001");
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle1 = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
+        vehicle.setVehicleIdentifier("REG002");
+
+        List<uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle> vehicleList = Arrays.asList(vehicle, vehicle1);
+
+        when(requestContext.getHeaders()).thenReturn(headers);
+        when(tradeAnnualTestsReadService.getAnnualTests(any())).thenReturn(vehicleList);
+
+        createHandlerAndGetTradeAnnualTests(request);
+
+        verify(cvsV6VehicleMapper).map(vehicleList);
+    }
+
+    @Test()
+    public void getTradeAnnualTests_ApiVersionV7VersionUsesV7Mapper() throws Exception {
+        MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
+        headers.put("Accept", Collections.singletonList("application/json+v7"));
+
+        final String registrations = "REG001, REG002";
+
+        request.setAnnualTestsRegistrations(registrations);
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
+        vehicle.setVehicleIdentifier("REG001");
+
+        uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle vehicle1 = new uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle();
+        vehicle.setVehicleIdentifier("REG002");
+
+        List<uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle> vehicleList = Arrays.asList(vehicle, vehicle1);
+
+        when(requestContext.getHeaders()).thenReturn(headers);
+        when(tradeAnnualTestsReadService.getAnnualTests(any())).thenReturn(vehicleList);
+
+        createHandlerAndGetTradeAnnualTests(request);
+
+        verify(cvsV7VehicleMapper).map(vehicleList);
+    }
+
     @Test(expected = ServiceTemporarilyUnavailableException.class)
     public void getTradeAnnualTests_Registrations_ReturnsServiceTemporarilyUnavailableWhenEndpointIsDisabled() throws TradeException {
 
@@ -634,8 +717,6 @@ public class TradeServiceRequestHandlerTest {
 
         createHandlerAndGetTradeAnnualTests(request);
     }
-
-
 
     /**
      * A null request should get us an InvalidResourceException
@@ -690,5 +771,13 @@ public class TradeServiceRequestHandlerTest {
         List<?> receivedTests = (List<?>) createHandlerAndGetLegacy(registration, make).getEntity();
 
         assertEquals(tests, receivedTests);
+    }
+
+    @DataProvider
+    public static Object[][] dataProviderForMapperVersions() {
+        return new Object[][]{
+                {"+v6", "v6"},
+                {"+v7", "v7"},
+        };
     }
 }

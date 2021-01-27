@@ -20,6 +20,9 @@ public class SearchVehicleResponseMapperFactory {
                 case "v6":
                     mapper = new SearchVehicleV6ResponseMapper();
                     break;
+                case "v7":
+                    mapper = new SearchVehicleV7ResponseMapper();
+                    break;
                 default:
                     logger.warn("Unknown API version selected. Using v6");
                     mapper = new SearchVehicleV6ResponseMapper();
