@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class VehicleV6ResponseMapper extends VehicleResponseMapper {
+public class VehicleV7ResponseMapper extends VehicleResponseMapper {
 
     private static final String TEST_TYPE_FAIL = "FAIL";
     private static final String RFR_DEFICIENCY_CATEGORY_PRE_EU_CODE = "PE";
