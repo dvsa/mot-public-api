@@ -1,0 +1,9 @@
+#!/bin/sh
+
+git secrets --install 2> /dev/null || true
+
+git secrets --register-aws
+
+. "$(dirname "$0")/_/husky.sh"
+
+node_modules/.bin/lint-staged

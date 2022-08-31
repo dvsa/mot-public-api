@@ -1,0 +1,12 @@
+{
+  "name": "mot-public-api",
+  "description": "MOT Public Api Repository",
+  "license": "MIT",
+  "dependencies": {
+    "husky": "^8.0.1",
+    "lint-staged": "^12.1.7"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  }
+}
