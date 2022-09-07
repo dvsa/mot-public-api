@@ -24,8 +24,7 @@ import javax.ws.rs.core.Response;
 
 public class SearchVehicleProvider {
     private static final Logger logger = LogManager.getLogger(SearchVehicleProvider.class);
-    private static final String VEHICLE_PROPERTIES_ENDPOINT = "/vehicle/moth";
-    private static final String VEHICLE_TEST_HISTORY_ENDPOINT = "/testhistory/moth";
+    private static final String VEHICLE_MOTH_ENDPOINT = "/mot-test-history";
 
     private SearchConfiguration configuration;
 
@@ -43,9 +42,8 @@ public class SearchVehicleProvider {
      * This method calls SearchAPI asynchronously and returns an instance of {@link Vehicle} if the
      * VRM is found; else returns null.
      *
-     * Two calls are made to SearchAPI (asynchronously):
-     *  First gets the vehicle properties.
-     *  Second gets the vehicle's test history.
+     * One call is made to SearchAPI (asynchronously):
+     *  Gets the vehicle properties and test history.
      *
      * @param registration VRM to query SearchAPI
      * @return
@@ -54,46 +52,30 @@ public class SearchVehicleProvider {
     public Vehicle getVehicle(String registration) throws Exception {
 
         Vehicle vehicle;
-        List<TestHistory> vehicleTestHistory;
 
         try {
             CompletableFuture<Vehicle> vehicleFuture = CompletableFutureWrapper.supplyAsync(() -> getSearchVehicle(registration));
 
-            CompletableFuture<List<TestHistory>> vehicleTestHistoryFuture = CompletableFutureWrapper.supplyAsync(
-                    () -> getSearchVehicleTestHistory(registration));
-
             vehicle = vehicleFuture.get();
-            vehicleTestHistory = vehicleTestHistoryFuture.get();
         } catch (Exception e) {
             logger.error("Search API execution error", e);
             throw new Exception("Search API execution error", e);
-        }
-
-        if (vehicle != null) {
-            vehicle.setTestHistory(vehicleTestHistory);
         }
 
         return vehicle;
     }
 
     private Vehicle getSearchVehicle(String registration) {
-        ResponseVehicle response = getSearchResponse(registration, VEHICLE_PROPERTIES_ENDPOINT, ResponseVehicle.class);
+        ResponseVehicle response = getSearchResponse(VEHICLE_MOTH_ENDPOINT + "/" + registration, ResponseVehicle.class);
         return response != null ? response.getVehicle() : null;
     }
 
-    private List<TestHistory> getSearchVehicleTestHistory(String registration) {
-        ResponseTestHistory response = getSearchResponse(registration, VEHICLE_TEST_HISTORY_ENDPOINT, ResponseTestHistory.class);
-
-        return response != null ? response.getTestHistory() : null;
-    }
-
-    private <T> T getSearchResponse(String registration, String endpointToCall, Class<T> type) {
+    private <T> T getSearchResponse(String endpointToCall, Class<T> type) {
 
         try {
             logger.trace("Entering getSearchResponse(), endpoint to call: " + endpointToCall);
 
             Response response = getClient().target(configuration.getApiUrl() + endpointToCall)
-                    .queryParam("identifier", registration)
                     .request()
                     .header("x-api-key", configuration.getApiKey())
                     .get();
