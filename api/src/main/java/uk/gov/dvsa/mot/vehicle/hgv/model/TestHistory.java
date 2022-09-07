@@ -98,4 +98,20 @@ public class TestHistory {
     public void setTestHistoryDefects(List<Defect> defects) {
         this.testHistoryDefects = defects;
     }
+
+    @Override
+    public String toString() {
+        return "TestHistory{" +
+                "testType='" + testType + '\'' +
+                ", location='" + location + '\'' +
+                ", testResult='" + testResult + '\'' +
+                ", testDate='" + testDate + '\'' +
+                ", testCertificateExpiryDateAtTest='" + testCertificateExpiryDateAtTest + '\'' +
+                ", numberOfDefectsAtTest=" + numberOfDefectsAtTest +
+                ", numberOfAdvisoryDefectsAtTest=" + numberOfAdvisoryDefectsAtTest +
+                ", vehicleIdentifierAtTest='" + vehicleIdentifierAtTest + '\'' +
+                ", testCertificateSerialNo='" + testCertificateSerialNo + '\'' +
+                ", testHistoryDefects=" + testHistoryDefects +
+                '}';
+    }
 }

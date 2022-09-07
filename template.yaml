@@ -22,9 +22,9 @@ Resources:
       MemorySize: 512
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
-          SEARCH_API_URL:
-          SEARCH_API_KEY:
-          SEARCH_API_CONNECTION_TIMEOUT:
+          MOTH_API_URL:
+          MOTH_API_KEY:
+          MOTH_API_CONNECTION_TIMEOUT:
           DATABASE_USERNAME:
           DATABASE_CONNECTION:
           DATABASE_PASSWORD:

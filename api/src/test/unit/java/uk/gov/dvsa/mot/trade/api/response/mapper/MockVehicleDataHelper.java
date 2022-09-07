@@ -5,7 +5,11 @@ import uk.gov.dvsa.mot.trade.api.RfrAndAdvisoryItem;
 import uk.gov.dvsa.mot.trade.api.Vehicle;
 import uk.gov.dvsa.mot.vehicle.hgv.model.Defect;
 import uk.gov.dvsa.mot.vehicle.hgv.model.TestHistory;
+import uk.gov.dvsa.mot.vehicle.hgv.model.moth.DefectText;
+import uk.gov.dvsa.mot.vehicle.hgv.model.moth.MothDefect;
+import uk.gov.dvsa.mot.vehicle.hgv.model.moth.MothTestHistory;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +39,27 @@ public class MockVehicleDataHelper {
                 getMotTest(2015, "PASS"),
                 getMotTest(2016, "FAIL"),
                 getMotTest(2017, "PASS")
+        ));
+
+        return vehicle;
+    }
+
+    public static uk.gov.dvsa.mot.vehicle.hgv.model.moth.MothVehicle getMothVehicle(int id) {
+        uk.gov.dvsa.mot.vehicle.hgv.model.moth.MothVehicle vehicle = new uk.gov.dvsa.mot.vehicle.hgv.model.moth.MothVehicle();
+
+        vehicle.setRegistration("FX1" + id);
+        vehicle.setMakeName("ford");
+        vehicle.setModelName("focus");
+        vehicle.setManufacturedDate(ZonedDateTime.parse("2009-10-10T00:00:00Z"));
+        vehicle.setFuelType("diesel");
+        vehicle.setVehicleClassGroupCode("V");
+        vehicle.setFirstUsedDate(ZonedDateTime.parse("2010-10-10T00:00:00Z"));
+        vehicle.setFirstMotDueDate(ZonedDateTime.parse("2011-10-10T00:00:00Z"));
+
+        vehicle.setMotTestHistory(Arrays.asList(
+                getMotMothTest(2015, "PASS"),
+                getMotMothTest(2016, "FAIL"),
+                getMotMothTest(2017, "PASS")
         ));
 
         return vehicle;
@@ -70,6 +95,45 @@ public class MockVehicleDataHelper {
         ));
 
         return motTest;
+    }
+
+    private static MothTestHistory getMotMothTest(Integer year, String testResult) {
+        MothTestHistory testHistory = new MothTestHistory();
+
+        testHistory.setCompletedDate(ZonedDateTime.parse(year + "-10-10T00:00:00Z"));
+        testHistory.setType("Test Type");
+        testHistory.setTestResult(testResult);
+        testHistory.setMotTestNumber("9999" + year);
+        testHistory.setExpiryDate(ZonedDateTime.parse(year + "-10-10T00:00:00Z"));
+
+        MothDefect mothDefect1 = new MothDefect();
+        DefectText defectText1 = new DefectText();
+        defectText1.setComment("Test1");
+        mothDefect1.setId("1");
+        mothDefect1.setType("ADVISORY");
+        mothDefect1.setText(defectText1);
+
+        MothDefect mothDefect2 = new MothDefect();
+        DefectText defectText2 = new DefectText();
+        defectText2.setComment("Test2");
+        mothDefect2.setId("2");
+        mothDefect2.setType("DANGEROUS");
+        mothDefect2.setText(defectText2);
+
+        MothDefect mothDefect3 = new MothDefect();
+        DefectText defectText3 = new DefectText();
+        defectText3.setComment("Test3");
+        mothDefect3.setId("3");
+        mothDefect3.setType("ADVISORY");
+        mothDefect3.setText(defectText3);
+
+        testHistory.setDefects(Arrays.asList(
+                mothDefect1,
+                mothDefect2,
+                mothDefect3
+        ));
+
+        return testHistory;
     }
 
     private static RfrAndAdvisoryItem getRfr(String type, String deficiencyCode) {

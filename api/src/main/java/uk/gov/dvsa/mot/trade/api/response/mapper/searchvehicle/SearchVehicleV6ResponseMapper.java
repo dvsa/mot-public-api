@@ -41,9 +41,6 @@ public class SearchVehicleV6ResponseMapper extends SearchVehicleResponseMapper {
     }
 
     private AnnualTestResponse mapTest(TestHistory testHistory) {
-        if (!SearchVehicleTestTypeMapFilter.canDisplayTest(testHistory)) {
-            return null;
-        }
 
         AnnualTestV1Response annualTestResponse = new AnnualTestV1Response();
         this.fillBaseTestResponseProperties(annualTestResponse, testHistory);

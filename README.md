@@ -18,11 +18,12 @@ Please ensure you have git-secrets installed on your machine: https://github.com
 - Java 8/JDK8
 - AWS Sam CLI - https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-mac.html
 - MTS database up and running
+- MOTH running locally - https://github.com/dvsa/mot-history
 - Run ``` cp .env.example .env  ``` in the root directory - this will create a .env file using the example file.
 
 - In the ```.env```, change the following variables:-
-- ``` SEARCH_API_URL: "http://localhost:8082"``` to use search api locally  
-- ```SEARCH_API_URL``` and the corresponding ```SEARCH_API_KEY``` to use the SeachApi directly (for example 'https://api.vehicle.search.dev.dvsacloud.uk/1.0')
+- ``` MOTH_API_URL: "http://docker.for.mac.localhost:3010"``` to use MOTH api locally  
+- ```MOTH_API_URL``` and the corresponding ```MOTH_API_KEY``` to use the MOTH api directly.
 
 #### Build
  
@@ -52,15 +53,15 @@ You can add/edit environment variables and paths as shown below:
 ```yaml
  Environment:
         Variables:
-          SEARCH_API_URL:
-          SEARCH_API_KEY:
+          MOTH_API_URL:
+          MOTH_API_KEY:
 ```
 ```.env:```
 ```json
 {
   "Parameters": {
-    "SEARCH_API_URL": "https://api.search.com",
-    "SEARCH_API_KEY": "randomKey"
+    "MOTH_API_URL": "https://api.search.com",
+    "MOTH_API_KEY": "randomKey"
   }
 }
 ```

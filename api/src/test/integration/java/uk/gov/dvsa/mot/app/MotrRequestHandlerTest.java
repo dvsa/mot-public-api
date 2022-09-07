@@ -72,12 +72,12 @@ public class MotrRequestHandlerTest {
     }
 
     private void setSystemProperties() {
-        setPropertyIfMissing(ConfigKeys.SearchApiConnectionTimeout, "100");
+        setPropertyIfMissing(ConfigKeys.MothApiConnectionTimeout, "100");
         setPropertyIfMissing(ConfigKeys.DatabaseConnection, "jdbc:mysql://127.0.0.1:3306/mot2");
         setPropertyIfMissing(ConfigKeys.DatabaseUsername, "motdbuser");
         setPropertyIfMissing(ConfigKeys.DatabasePassword, "password");
-        setPropertyIfMissing(ConfigKeys.SearchApiUrl, "http://localhost:3000");
-        setPropertyIfMissing(ConfigKeys.SearchApiKeyEncrypted, "key");
+        setPropertyIfMissing(ConfigKeys.MothApiUrl, "http://localhost:3000");
+        setPropertyIfMissing(ConfigKeys.MothApiKeyEncrypted, "key");
     }
 
     private void setPropertyIfMissing(String key, String value) {
