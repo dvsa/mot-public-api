@@ -12,10 +12,10 @@ public final class ConfigKeys {
     public static final String ProxyPort = "PROXY_PORT";
     public static final String LogLevel = "LOG_LEVEL";
 
-    public static final String SearchApiUrl = "SEARCH_API_URL";
-    public static final String SearchApiKey = "SEARCH_API_KEY";
-    public static final String SearchApiKeyEncrypted = "SEARCH_API_KEY_ENCRYPTED";
-    public static final String SearchApiConnectionTimeout = "SEARCH_API_CONNECTION_TIMEOUT";
+    public static final String MothApiUrl = "MOTH_API_URL";
+    public static final String MothApiKey = "MOTH_API_KEY";
+    public static final String MothApiKeyEncrypted = "MOTH_API_KEY_ENCRYPTED";
+    public static final String MothApiConnectionTimeout = "MOTH_API_CONNECTION_TIMEOUT";
 
     public static final String ObfuscationSecret = "OBFUSCATION_SECRET";
     public static final String ObfuscationEncryptedSecret = "OBFUSCATION_ENCRYPTED_SECRET";
