@@ -88,9 +88,11 @@ dependencies {
 task wrapper (type: Wrapper)
 
 task setVersion() {
-    doFirst {
-        project.version = System.env.BUILD_VERSION ?: 'local-dev'
-        println "Version set to: ${project.version}"
+    if (System.env.BUILD_VERSION != null) {
+        doFirst {
+            project.version = System.env.BUILD_VERSION ?: 'local-dev'
+            println "Version set to: ${project.version}"
+        }
     }
 }
 
@@ -132,6 +134,7 @@ tasks.withType(Test) {
         }
     }
 }
-
-buildZip.dependsOn setVersion
+if (System.env.BUILD_VERSION != null) {
+    buildZip.dependsOn setVersion
+}
 build.dependsOn buildZip

@@ -21,4 +21,5 @@ public final class ConfigKeys {
     public static final String ObfuscationEncryptedSecret = "OBFUSCATION_ENCRYPTED_SECRET";
 
     public static final String AnnualTestsMaxQueryableVehicleIdentifiers = "ANNUAL_TESTS_MAX_QUERYABLE_REGISTRATIONS";
+    public static final String AppEnv = "APP_ENV";
 }

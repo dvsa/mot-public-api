@@ -24,7 +24,7 @@ public class LoggerParamsManager {
     }
 
     public void populateUrlParamsToLogger(Map<String, String> params) {
-        if (!params.isEmpty()) {
+        if (params != null && !params.isEmpty()) {
             try {
                 String json = new ObjectMapper().writeValueAsString(params);
                 ThreadContext.put(URL_PARAMS_KEY, json);

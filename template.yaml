@@ -1,0 +1,103 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  TAPILocal
+
+  Sample SAM Template for TradeAPILocal
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 60
+
+Parameters:
+  SEARCH_API_URL:
+    Type: String
+    Default: 'https://api.vehicle.search.dev.dvsacloud.uk/1.0'
+  SEARCH_API_KEY:
+    Type: String
+    Default: 'abcde12345'
+  SEARCH_API_CONNECTION_TIMEOUT:
+    Type: String
+    Default: '30'
+  DATABASE_USERNAME:
+    Type: String
+    Default: 'motdbuser'
+  DATABASE_CONNECTION:
+    Type: String
+    Default: 'jdbc:mysql://docker.for.mac.localhost:3306/mot2'
+  DATABASE_PASSWORD:
+    Type: String
+    Default: 'password'
+  OBFUSCATION_SECRET:
+    Type: String
+    Default: 'BbV[`8d7zQnc:?}"CSz$L0t+(3r:_uT$'
+  ANNUAL_TESTS_MAX_QUERYABLE_REGISTRATIONS:
+    Type: String
+    Default: '1'
+  APP_ENV:
+    Type: String
+    Default: 'local'
+  LOG_LEVEL:
+    Type: String
+    Default: 'DEBUG'
+
+Resources:
+  TapiFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: api/
+      Handler: uk.gov.dvsa.mot.app.LambdaHandler::handleRequest
+      Runtime: java8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          REGION: !Ref REGION
+          SEARCH_API_URL: !Ref SEARCH_API_URL
+          SEARCH_API_KEY: !Ref SEARCH_API_KEY
+          SEARCH_API_CONNECTION_TIMEOUT: !Ref SEARCH_API_CONNECTION_TIMEOUT
+          DATABASE_USERNAME: !Ref DATABASE_USERNAME
+          DATABASE_CONNECTION: !Ref DATABASE_CONNECTION
+          DATABASE_PASSWORD: !Ref DATABASE_PASSWORD
+          OBFUSCATION_SECRET: !Ref OBFUSCATION_SECRET
+          ANNUAL_TESTS_MAX_QUERYABLE_REGISTRATIONS: !Ref ANNUAL_TESTS_MAX_QUERYABLE_REGISTRATIONS
+          LOG_LEVEL: !Ref  LOG_LEVEL
+          APP_ENV: !Ref APP_ENV
+      Events:
+        motTests:
+          Type: Api
+          Properties:
+            Path: /trade/vehicles/mot-tests
+            Method: GET
+        AnnualTests:
+          Type: Api
+          Properties:
+            Path: /trade/vehicles/annual-tests
+            Method: GET
+        MotrSearch:
+          Type: Api
+          Properties:
+            Path: /motr/v2/search/registration/{registration}
+            Method: GET
+        MotrSearchCommerical:
+          Type: Api
+          Properties:
+            Path: /motr/v2/search/commercial/registration/{registration}
+            Method: GET
+        MotrSearchDvlaId:
+          Type: Api
+          Properties:
+            Path: /motr/v2/search/dvla-id/{id}
+            Method: GET
+        MotrSearchMotTestNumber:
+          Type: Api
+          Properties:
+            Path: /motr/v2/search/mot-test/{motTestNumber}
+            Method: GET
+        MothRegAndMake:
+          Type: Api
+          Properties:
+            Path: /mot-history/{registration}/{make}
+            Method: GET
