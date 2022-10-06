@@ -65,10 +65,15 @@ public class LambdaHandler implements RequestHandler<AwsProxyRequest, AwsProxyRe
     }
 
     private Map<String, String> readPathParameters(AwsProxyRequest request) {
-        Map<String, String> params = request.getPathParameters();
-        if (!isNullOrEmpty(request.getQueryStringParameters())) {
+        Map<String, String> params = null;
+        if (!isNullOrEmpty(request.getPathParameters())) {
+            params = request.getPathParameters();
+        }
+
+        if (params != null && !isNullOrEmpty(request.getQueryStringParameters())) {
             params.putAll(request.getQueryStringParameters());
         }
+
         return params;
     }
 }

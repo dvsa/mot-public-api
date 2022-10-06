@@ -74,3 +74,5 @@ api/src/main/resources/config.properties
 
 # SonarQube working dirs
 **/.scannerwork/
+
+.aws-sam/
