@@ -13,7 +13,7 @@ Globals:
 Parameters:
   SEARCH_API_URL:
     Type: String
-    Default: 'https://api.vehicle.search.dev.dvsacloud.uk/1.0'
+    Default: 'http://localhost:8082'
   SEARCH_API_KEY:
     Type: String
     Default: 'abcde12345'
