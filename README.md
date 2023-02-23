@@ -18,7 +18,9 @@ Please ensure you have git-secrets installed on your machine: https://github.com
 - Java 8/JDK8
 - AWS Sam CLI - https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-mac.html
 - MTS database up and running
-- In the template.yaml, change the following variables:-
+- Run ``` cp template.yaml.example template.yaml  ``` in the root directory - this will create a template.yaml file using the example file.
+
+- In the ```template.yaml```, change the following variables:-
 - ``` SEARCH_API_URL: "http://localhost:8082"``` to use search api locally  
 - ```SEARCH_API_URL``` and the corresponding ```SEARCH_API_KEY``` to use the SeachApi directly (for example 'https://api.vehicle.search.dev.dvsacloud.uk/1.0')
 - 
