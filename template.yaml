@@ -10,38 +10,6 @@ Globals:
   Function:
     Timeout: 60
 
-Parameters:
-  SEARCH_API_URL:
-    Type: String
-    Default: 'http://localhost:8082'
-  SEARCH_API_KEY:
-    Type: String
-    Default: 'abcde12345'
-  SEARCH_API_CONNECTION_TIMEOUT:
-    Type: String
-    Default: '30'
-  DATABASE_USERNAME:
-    Type: String
-    Default: 'motdbuser'
-  DATABASE_CONNECTION:
-    Type: String
-    Default: 'jdbc:mysql://docker.for.mac.localhost:3306/mot2'
-  DATABASE_PASSWORD:
-    Type: String
-    Default: 'password'
-  OBFUSCATION_SECRET:
-    Type: String
-    Default: 'BbV[`8d7zQnc:?}"CSz$L0t+(3r:_uT$'
-  ANNUAL_TESTS_MAX_QUERYABLE_REGISTRATIONS:
-    Type: String
-    Default: '1'
-  APP_ENV:
-    Type: String
-    Default: 'local'
-  LOG_LEVEL:
-    Type: String
-    Default: 'DEBUG'
-
 Resources:
   TapiFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -54,17 +22,16 @@ Resources:
       MemorySize: 512
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
-          REGION: !Ref REGION
-          SEARCH_API_URL: !Ref SEARCH_API_URL
-          SEARCH_API_KEY: !Ref SEARCH_API_KEY
-          SEARCH_API_CONNECTION_TIMEOUT: !Ref SEARCH_API_CONNECTION_TIMEOUT
-          DATABASE_USERNAME: !Ref DATABASE_USERNAME
-          DATABASE_CONNECTION: !Ref DATABASE_CONNECTION
-          DATABASE_PASSWORD: !Ref DATABASE_PASSWORD
-          OBFUSCATION_SECRET: !Ref OBFUSCATION_SECRET
-          ANNUAL_TESTS_MAX_QUERYABLE_REGISTRATIONS: !Ref ANNUAL_TESTS_MAX_QUERYABLE_REGISTRATIONS
-          LOG_LEVEL: !Ref  LOG_LEVEL
-          APP_ENV: !Ref APP_ENV
+          SEARCH_API_URL:
+          SEARCH_API_KEY:
+          SEARCH_API_CONNECTION_TIMEOUT:
+          DATABASE_USERNAME:
+          DATABASE_CONNECTION:
+          DATABASE_PASSWORD:
+          OBFUSCATION_SECRET:
+          ANNUAL_TESTS_MAX_QUERYABLE_REGISTRATIONS:
+          LOG_LEVEL:
+          APP_ENV:
       Events:
         motTests:
           Type: Api

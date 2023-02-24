@@ -12,7 +12,7 @@ local.properties
 .recommenders
 api/out/
 /node_modules
-template.yaml
+.env
 # Eclipse Core
 .project
 
