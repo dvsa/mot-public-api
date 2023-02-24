@@ -12,6 +12,7 @@ local.properties
 .recommenders
 api/out/
 /node_modules
+.env
 # Eclipse Core
 .project
 
