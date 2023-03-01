@@ -83,3 +83,5 @@ Events:
 
 Each time you edit the code or ```template.yaml```/```.env``` you will need to build: ```sam build``` and run the application: ``` sam local start-api --env-vars .env``` to see the changes.
 
+#### Apple Silicon Troubleshooting
+If you are using an M1 based machine or similar in the template.yaml the Architecture should be set to ```arm64``` and the Runtime should be set to ```java8.al2```
