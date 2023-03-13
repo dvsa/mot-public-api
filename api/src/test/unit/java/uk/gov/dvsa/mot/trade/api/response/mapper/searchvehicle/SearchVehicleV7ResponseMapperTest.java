@@ -49,7 +49,7 @@ public class SearchVehicleV7ResponseMapperTest {
 
         List<Vehicle> vehicleList = Arrays.asList(
                 MockVehicleDataHelper.getSearchVehicleContainingSpecificTestType(
-                        "HGV", Arrays.asList("INVALIDTYPE", "ANNUAL MV")),
+                        "HGV", Arrays.asList("TYPE", "ANNUAL MV")),
                 MockVehicleDataHelper.getSearchVehicleContainingSpecificTestType(
                         "PSV", Arrays.asList("PAID RETEST", "1ST PAID RETEST", "NOPE", "ANNUAL PSV SMALL")),
                 MockVehicleDataHelper.getSearchVehicleContainingSpecificTestType(
@@ -74,7 +74,7 @@ public class SearchVehicleV7ResponseMapperTest {
         );
 
         assertEquals("Unexpected number of tests in HGV response test history",
-                1,
+                2,
                 vehicleResponse.getAnnualTests().size()
         );
 
@@ -89,12 +89,12 @@ public class SearchVehicleV7ResponseMapperTest {
         );
 
         assertTrue(
-                "Failed asserting that HGV response vehicle did NOT contain INVALIDTYPE",
+                "Failed asserting that HGV response vehicle contained TYPE",
                 vehicleResponse
                         .getAnnualTests()
                         .stream()
-                        .noneMatch(t -> t.getTestType()
-                                .equals("INVALIDTYPE")
+                        .anyMatch(t -> t.getTestType()
+                                .equals("TYPE")
                         )
         );
 
@@ -109,7 +109,7 @@ public class SearchVehicleV7ResponseMapperTest {
         );
 
         assertEquals("Unexpected number of tests in PSV response test history",
-                3,
+                4,
                 vehicleResponse.getAnnualTests().size()
         );
 
@@ -144,11 +144,11 @@ public class SearchVehicleV7ResponseMapperTest {
         );
 
         assertTrue(
-                "Failed asserting that PSV response vehicle NOT contain INVALIDTYPE",
+                "Failed asserting that PSV response vehicle contained TYPE",
                 vehicleResponse
                         .getAnnualTests()
                         .stream()
-                        .noneMatch(t -> t.getTestType()
+                        .anyMatch(t -> t.getTestType()
                                 .equals("NOPE")
                         )
         );

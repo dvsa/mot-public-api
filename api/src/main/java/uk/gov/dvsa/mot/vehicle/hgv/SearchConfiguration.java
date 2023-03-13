@@ -20,15 +20,15 @@ public class SearchConfiguration {
     public SearchConfiguration() throws IOException {
 
         if (StringUtils.isNullOrEmpty(apiKey)) {
-            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.SearchApiKey);
+            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.MothApiKey);
         }
 
         if (StringUtils.isNullOrEmpty(apiKey)) {
-            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.SearchApiKeyEncrypted);
+            apiKey = ConfigManager.getEnvironmentVariable(ConfigKeys.MothApiKeyEncrypted);
         }
-
-        this.apiUrl = ConfigManager.getEnvironmentVariable(ConfigKeys.SearchApiUrl);
-        this.timeoutInSeconds = Integer.parseInt(ConfigManager.getEnvironmentVariable(ConfigKeys.SearchApiConnectionTimeout));
+        
+        this.apiUrl = ConfigManager.getEnvironmentVariable(ConfigKeys.MothApiUrl);
+        this.timeoutInSeconds = Integer.parseInt(ConfigManager.getEnvironmentVariable(ConfigKeys.MothApiConnectionTimeout));
         if (!Objects.equals(ConfigManager.getEnvironmentVariable(ConfigKeys.AppEnv), "local")) {
             this.proxyHost = ConfigManager.getEnvironmentVariable(ConfigKeys.ProxyHost);
             this.proxyPort = ConfigManager.getEnvironmentVariable(ConfigKeys.ProxyPort);

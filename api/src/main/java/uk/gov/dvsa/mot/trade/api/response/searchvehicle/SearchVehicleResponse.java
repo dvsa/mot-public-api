@@ -88,4 +88,19 @@ public abstract class SearchVehicleResponse {
     public void setAnnualTestExpiryDate(String annualTestExpiryDate) {
         this.annualTestExpiryDate = annualTestExpiryDate;
     }
+
+    @Override
+    public String toString() {
+        return "SearchVehicleResponse{" +
+                "registration='" + registration + '\'' +
+                ", make='" + make + '\'' +
+                ", model='" + model + '\'' +
+                ", manufactureDate='" + manufactureDate + '\'' +
+                ", vehicleType='" + vehicleType + '\'' +
+                ", vehicleClass='" + vehicleClass + '\'' +
+                ", registrationDate='" + registrationDate + '\'' +
+                ", annualTestExpiryDate='" + annualTestExpiryDate + '\'' +
+                ", annualTests=" + annualTests +
+                '}';
+    }
 }

@@ -79,4 +79,18 @@ public abstract class AnnualTestResponse {
     public void setDefects(List<DefectResponse> defects) {
         this.defects = defects;
     }
+
+    @Override
+    public String toString() {
+        return "AnnualTestResponse{" +
+                "testDate='" + testDate + '\'' +
+                ", testType='" + testType + '\'' +
+                ", testResult='" + testResult + '\'' +
+                ", testCertificateNumber='" + testCertificateNumber + '\'' +
+                ", expiryDate='" + expiryDate + '\'' +
+                ", numberOfDefectsAtTest='" + numberOfDefectsAtTest + '\'' +
+                ", numberOfAdvisoryDefectsAtTest='" + numberOfAdvisoryDefectsAtTest + '\'' +
+                ", defects=" + defects +
+                '}';
+    }
 }

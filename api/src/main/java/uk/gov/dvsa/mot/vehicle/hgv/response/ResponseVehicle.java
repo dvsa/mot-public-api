@@ -1,15 +1,15 @@
 package uk.gov.dvsa.mot.vehicle.hgv.response;
 
-import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
+import uk.gov.dvsa.mot.vehicle.hgv.model.moth.MothVehicle;
 
 public class ResponseVehicle {
-    Vehicle vehicle;
+    MothVehicle vehicle;
 
-    public Vehicle getVehicle() {
+    public MothVehicle getVehicle() {
         return vehicle;
     }
 
-    public void setVehicle(Vehicle vehicle) {
+    public void setVehicle(MothVehicle vehicle) {
         this.vehicle = vehicle;
     }
 }

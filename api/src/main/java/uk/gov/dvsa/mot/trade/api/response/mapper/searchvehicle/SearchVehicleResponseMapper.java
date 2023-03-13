@@ -32,8 +32,12 @@ public abstract class SearchVehicleResponseMapper {
         annualTestResponse.setTestResult(testHistory.getTestResult());
         annualTestResponse.setTestCertificateNumber(testHistory.getTestCertificateSerialNo());
         annualTestResponse.setExpiryDate(transformDate(testHistory.getTestCertificateExpiryDateAtTest()));
-        annualTestResponse.setNumberOfDefectsAtTest(testHistory.getNumberOfDefectsAtTest().toString());
-        annualTestResponse.setNumberOfAdvisoryDefectsAtTest(testHistory.getNumberOfAdvisoryDefectsAtTest().toString());
+        if (testHistory.getNumberOfDefectsAtTest() != null) {
+            annualTestResponse.setNumberOfDefectsAtTest(testHistory.getNumberOfDefectsAtTest().toString());
+        }
+        if (testHistory.getNumberOfAdvisoryDefectsAtTest() != null) {
+            annualTestResponse.setNumberOfAdvisoryDefectsAtTest(testHistory.getNumberOfAdvisoryDefectsAtTest().toString());
+        }
     }
 
     protected String transformDate(String searchApiDate) {

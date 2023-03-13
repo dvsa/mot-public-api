@@ -132,4 +132,24 @@ public class Vehicle {
     public void setModel(String model) {
         this.model = model;
     }
+
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "testHistory=" + testHistory +
+                ", vehicleClass='" + vehicleClass + '\'' +
+                ", vehicleType='" + vehicleType + '\'' +
+                ", chassisType='" + chassisType + '\'' +
+                ", manufactureDate='" + manufactureDate + '\'' +
+                ", yearOfManufacture=" + yearOfManufacture +
+                ", testCertificateExpiryDate='" + testCertificateExpiryDate + '\'' +
+                ", outOfTestMarker='" + outOfTestMarker + '\'' +
+                ", vehicleIdentifier='" + vehicleIdentifier + '\'' +
+                ", previousRegmark='" + previousRegmark + '\'' +
+                ", registrationDate='" + registrationDate + '\'' +
+                ", numberOfAxles=" + numberOfAxles +
+                ", make='" + make + '\'' +
+                ", model='" + model + '\'' +
+                '}';
+    }
 }
