@@ -61,7 +61,11 @@ public class MothVehicleMapper {
                 .format(outputFormatter));
         testHistory.setTestType(mothTestHistory.getType());
         testHistory.setTestResult(mothTestHistory.getTestResult());
-        testHistory.setTestCertificateSerialNo(String.valueOf(mothTestHistory.getMotTestNumber()));
+        if (isValidString(String.valueOf(mothTestHistory.getMotTestNumber()))) {
+            testHistory.setTestCertificateSerialNo(String.valueOf(mothTestHistory.getMotTestNumber()));
+        } else {
+            testHistory.setTestCertificateSerialNo("Not applicable");
+        }
         if (mothTestHistory.getExpiryDate() != null) {
             testHistory.setTestCertificateExpiryDateAtTest(mothTestHistory.getExpiryDate().toLocalDate()
                     .format(outputFormatter));
@@ -98,32 +102,42 @@ public class MothVehicleMapper {
 
         StringBuilder failureReason = new StringBuilder();
         if (mothDefect.getText() != null) {
-            if (mothDefect.getText().getLateral() != null) {
+            if (isValidString(mothDefect.getText().getLateral())) {
                 failureReason.append(mothDefect.getText().getLateral()).append(" ");
             }
-            if (mothDefect.getText().getLongitudinal() != null) {
+            if (isValidString(mothDefect.getText().getLongitudinal())) {
                 failureReason.append(mothDefect.getText().getLongitudinal()).append(" ");
             }
-            if (mothDefect.getText().getVertical() != null) {
+            if (isValidString(mothDefect.getText().getVertical())) {
                 failureReason.append(mothDefect.getText().getVertical()).append(" ");
             }
             if (mothDefect.getText().getCategory() != null) {
                 for (DefectTextCategory defectTextCategory: mothDefect.getText().getCategory()) {
-                    failureReason.append(defectTextCategory.getDescription()).append(" ");
+                    if (isValidString(defectTextCategory.getDescription())) {
+                        failureReason.append(defectTextCategory.getDescription()).append(" ");
+                    }
                 }
             }
             if (mothDefect.getText().getDescription() != null) {
                 for (DefectTextDescription defectTextDescription: mothDefect.getText().getDescription()) {
-                    failureReason.append(defectTextDescription.getName()).append(" ");
+                    if (isValidString(defectTextDescription.getName())) {
+                        failureReason.append(defectTextDescription.getName()).append(" ");
+                    }
                 }
             }
-            if (mothDefect.getText().getComment() != null) {
+            if (isValidString(mothDefect.getText().getComment())) {
                 failureReason.append(mothDefect.getText().getComment()).append(" ");
             }
-            failureReason.append("(").append(mothDefect.getText().getInspectionManualReference()).append(")");
-            defect.setFailureReason(failureReason.toString());
+            if (isValidString(mothDefect.getText().getInspectionManualReference())) {
+                failureReason.append("(").append(mothDefect.getText().getInspectionManualReference()).append(")");
+            }
+            defect.setFailureReason(failureReason.toString().trim());
         }
 
         return defect;
+    }
+
+    public static boolean isValidString(String str) {
+        return str != null && !str.trim().isEmpty() && !str.toLowerCase().contains("null");
     }
 }
