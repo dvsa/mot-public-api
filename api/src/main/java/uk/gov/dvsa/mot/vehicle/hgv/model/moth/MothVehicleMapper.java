@@ -6,6 +6,7 @@ import uk.gov.dvsa.mot.vehicle.hgv.model.Vehicle;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,9 +49,13 @@ public class MothVehicleMapper {
         }
         
         if (mothVehicle.getMotTestHistory() != null && !mothVehicle.getMotTestHistory().isEmpty()) {
-            vehicle.setTestHistory(
-                    mothVehicle.getMotTestHistory().stream().map(MothVehicleMapper::apply).collect(Collectors.toList())
-            );
+
+            List<TestHistory> testHistoryList = mothVehicle.getMotTestHistory().stream()
+                    .filter(motTestVehicle -> motTestVehicle.getOrigin().contains("CVS"))
+                    .map(MothVehicleMapper::apply)
+                    .collect(Collectors.toList());
+
+            vehicle.setTestHistory(testHistoryList);
         }
         return vehicle;
     }
@@ -59,6 +64,7 @@ public class MothVehicleMapper {
         TestHistory testHistory = new TestHistory();
         testHistory.setTestDate(mothTestHistory.getCompletedDate().toLocalDate()
                 .format(outputFormatter));
+        testHistory.setOrigin(mothTestHistory.getOrigin());
         testHistory.setTestType(mothTestHistory.getType());
         testHistory.setTestResult(mothTestHistory.getTestResult());
         if (isValidString(String.valueOf(mothTestHistory.getMotTestNumber()))) {
