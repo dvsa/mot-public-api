@@ -125,7 +125,7 @@ public class HgvPsvVehicleWithLatestTest implements VehicleWithLatestTest {
 
     private static TestHistory findLatestTest(Vehicle vehicle) {
         if (vehicle.getTestHistory() != null && !vehicle.getTestHistory().isEmpty()) {
-            return vehicle.getTestHistory().get(vehicle.getTestHistory().size() - 1);
+            return vehicle.getTestHistory().get(0);
         } else {
             return null;
         }
