@@ -18,6 +18,8 @@ public class HgvPsvVehicleWithLatestTestTest {
     private static final String REGISTRATION = "REG123456";
     private static final String DVLA_VEHICLE_ID = "1234";
     private static final String TEST_NUMBER = "12345678";
+
+    private static final String SECOND_TEST_NUMBER = "8754321";
     private static final String MAKE = "MAKE";
     private static final String MODEL = "MODEL";
     private static final int YEAR_OF_MANUFACTURE = 2013;
@@ -64,6 +66,24 @@ public class HgvPsvVehicleWithLatestTestTest {
     @Test
     public void whenVehicleTestHistoryIsNotEmpty_TestNumberShouldBeReturnedAsMotTestNumber() throws Exception {
         Vehicle vehicle = createVehicleWithTestHistory("HGV");
+        VehicleWithLatestTest vehicleModel = new HgvPsvVehicleWithLatestTest(vehicle, DVLA_VEHICLE_ID);
+
+        assertEquals(TEST_NUMBER, vehicleModel.getTestNumber());
+    }
+
+    @Test
+    public void whenVehicleTestHistoryIsNotEmpty_LatestTestNumberShouldBeReturnedAsMotTestNumber() throws Exception {
+        Vehicle vehicle = createVehicleWithTestHistory("HGV");
+        List<TestHistory> testHistory = new ArrayList<>();
+        TestHistory historyItem =  new TestHistory();
+        historyItem.setTestCertificateSerialNo(TEST_NUMBER);
+        historyItem.setTestDate("03/01/2013");
+        testHistory.add(historyItem);
+        TestHistory historyItem2 =  new TestHistory();
+        historyItem2.setTestCertificateSerialNo(SECOND_TEST_NUMBER);
+        historyItem2.setTestDate("03/01/2011");
+        testHistory.add(historyItem2);
+        vehicle.setTestHistory(testHistory);
         VehicleWithLatestTest vehicleModel = new HgvPsvVehicleWithLatestTest(vehicle, DVLA_VEHICLE_ID);
 
         assertEquals(TEST_NUMBER, vehicleModel.getTestNumber());
