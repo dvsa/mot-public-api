@@ -57,9 +57,10 @@ public class MockVehicleDataHelper {
         vehicle.setFirstMotDueDate(ZonedDateTime.parse("2011-10-10T00:00:00Z"));
 
         vehicle.setMotTestHistory(Arrays.asList(
-                getMotMothTest(2015, "PASS"),
-                getMotMothTest(2016, "FAIL"),
-                getMotMothTest(2017, "PASS")
+                getMotMothTest(2015, "PASS", "CVS"),
+                getMotMothTest(2016, "FAIL", "CVS"),
+                getMotMothTest(2017, "PASS", "CVS"),
+                getMotMothTest(2017, "PASS", "MTS")
         ));
 
         return vehicle;
@@ -97,9 +98,9 @@ public class MockVehicleDataHelper {
         return motTest;
     }
 
-    private static MothTestHistory getMotMothTest(Integer year, String testResult) {
+    private static MothTestHistory getMotMothTest(Integer year, String testResult, String origin) {
         MothTestHistory testHistory = new MothTestHistory();
-
+        testHistory.setOrigin(origin);
         testHistory.setCompletedDate(ZonedDateTime.parse(year + "-10-10T00:00:00Z"));
         testHistory.setType("Test Type");
         testHistory.setTestResult(testResult);

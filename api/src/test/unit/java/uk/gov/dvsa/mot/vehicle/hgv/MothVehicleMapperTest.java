@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -73,9 +74,14 @@ public class MothVehicleMapperTest {
             assertNull(mappedMotTests);
             return;
         }
-        assertEquals(motTests.size(), mappedMotTests.size());
-        for (int i = 0; i < motTests.size(); i++) {
-            MothTestHistory test = motTests.get(i);
+
+        List<MothTestHistory> filteredMotTests = motTests.stream()
+                .filter(motTestVehicle -> motTestVehicle.getOrigin()
+                .contains("CVS")).collect(Collectors.toList());
+
+        assertEquals(filteredMotTests.size(), mappedMotTests.size());
+        for (int i = 0; i < filteredMotTests.size(); i++) {
+            MothTestHistory test = filteredMotTests.get(i);
 
             assertEquals(TestHistory.class, mappedMotTests.get(i).getClass());
             TestHistory responseTest = mappedMotTests.get(i);
@@ -86,7 +92,7 @@ public class MothVehicleMapperTest {
             );
 
             // Verify if someone didn't add/remove a mapped field to TestHistory response by mistake
-            assertEquals(10, fields);
+            assertEquals(11, fields);
 
             assertEquals(test.getCompletedDate().toLocalDate()
                     .format(outputFormatter), responseTest.getTestDate());
