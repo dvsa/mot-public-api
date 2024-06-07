@@ -82,7 +82,7 @@ public class MotrVehicleHistoryProvider {
     }
 
     @NotNull public VehicleWithLatestTest getDvlaVehicleWithTestByDvlaVehicleId(Integer dvlaVehicleId)
-    throws TradeException {
+        throws TradeException {
         Optional<VehicleWithLatestTest> vehicle = motrReadService.getLatestMotTestByDvlaVehicleId(dvlaVehicleId);
 
         return vehicle.orElseThrow(() ->
@@ -92,7 +92,7 @@ public class MotrVehicleHistoryProvider {
     }
 
     @NotNull public VehicleWithLatestTest getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(Long motTestNumber)
-    throws TradeException {
+        throws TradeException {
         Optional<VehicleWithLatestTest> vehicle = motrReadService.getLatestMotTestByMotTestNumberWithSameRegistrationAndVin(motTestNumber);
         return vehicle.orElseThrow(() ->
             new InvalidResourceException(String.format("No MOT Tests found with number: %d", motTestNumber))
