@@ -241,7 +241,7 @@ public class MotrVehicleHistoryProviderTest {
 
     @Test
     public void getDvlaVehicleWithTestByDvlaVehicleId_WhenMotrReadServiceReturnsNull_ShouldThrowException()
-    throws Exception {
+        throws Exception {
         when(motrReadService.getLatestMotTestByDvlaVehicleId(DVLA_VEHICLE_ID)).thenReturn(Optional.empty());
 
         catchException(motrVehicleHistoryProvider).getDvlaVehicleWithTestByDvlaVehicleId(DVLA_VEHICLE_ID);

@@ -30,7 +30,7 @@ apply plugin: 'checkstyle'
 
 checkstyle {
     configFile = getRootProject().file("dvsa_java_checks.xml")
-    toolVersion = "6.15"
+    toolVersion = "6.19"
 }
 
 sourceSets {
